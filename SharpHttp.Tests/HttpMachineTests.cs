@@ -23,6 +23,7 @@ namespace SharpHttp.Tests
 
         public static TestRequest[] Requests = new TestRequest[] {
             // TODO
+            // parse request path
             // leading \r\n, ? in query, requests from common clients
             
             new TestRequest() {
