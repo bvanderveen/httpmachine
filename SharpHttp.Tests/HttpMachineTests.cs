@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using HttpSharp;
+using HttpMachine;
 using NUnit.Framework;
 
 // TODO
@@ -158,7 +158,7 @@ namespace SharpHttp.Tests
     }
 
 
-    public class Handler : IHttpMachineHandler
+    public class Handler : IHttpParserHandler
     {
         StringBuilder method, requestUri, queryString, fragment, headerName, headerValue, versionMajor, versionMinor;
         Dictionary<string, string> headers;
@@ -306,7 +306,7 @@ namespace SharpHttp.Tests
     public class HttpMachineTests
     {
 
-        void AssertRequest(TestRequest expected, Handler test, HttpMachine machine)
+        void AssertRequest(TestRequest expected, Handler test, HttpParser machine)
         {
             Assert.AreEqual(expected.Method, test.Method, "Unexpected method.");
             Assert.AreEqual(expected.RequestUri, test.RequestUri, "Unexpected request URI.");
@@ -355,7 +355,7 @@ namespace SharpHttp.Tests
             foreach (var request in TestRequest.Requests)
             {
                 var handler = new Handler();
-                var parser = new HttpMachine(handler);
+                var parser = new HttpParser(handler);
                 Console.WriteLine("----- Testing request: '" + request.Name + "' -----");
 
                 parser.Execute(new ArraySegment<byte>(request.Raw));
@@ -391,7 +391,7 @@ namespace SharpHttp.Tests
                         operationsCompleted++;
 
                         var handler = new Handler();
-                        var parser = new HttpMachine(handler);
+                        var parser = new HttpParser(handler);
 
                         var buffer1Length = i;
                         Buffer.BlockCopy(raw, 0, buffer1, 0, buffer1Length);

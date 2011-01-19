@@ -1,14 +1,14 @@
 using System;
 
-namespace HttpSharp
+namespace HttpMachine
 {
-    public class HttpMachine
+    public class HttpParser
     {
         int cs;
         int mark;
 		int qsMark;
 		int fragMark;
-        IHttpRequestParser parser;
+        IHttpParserHandler parser;
 		int bytesRead;
 
 		// internal for testing
@@ -183,7 +183,7 @@ namespace HttpSharp
         
         %% write data;
         
-        public HttpMachine(IHttpRequestParser parser)
+        public HttpParser(IHttpParserHandler parser)
         {
 			this.parser = parser;
             %% write init;

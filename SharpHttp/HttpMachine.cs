@@ -2,29 +2,15 @@
 #line 1 "HttpMachine.cs.rl"
 using System;
 
-namespace HttpSharp
+namespace HttpMachine
 {
-    public interface IHttpRequestParser
-    {
-        void OnMethod(ArraySegment<byte> data);
-        void OnRequestUri(ArraySegment<byte> data);
-		void OnQueryString(ArraySegment<byte> data);
-		void OnFragment(ArraySegment<byte> data);
-		void OnVersionMajor(ArraySegment<byte> data);
-		void OnVersionMinor(ArraySegment<byte> data);
-        void OnHeaderName(ArraySegment<byte> data);
-        void OnHeaderValue(ArraySegment<byte> data);
-        void OnHeadersComplete();
-		void OnBody(ArraySegment<byte> data);
-    }
-
-    public class HttpMachine
+    public class HttpParser
     {
         int cs;
         int mark;
 		int qsMark;
 		int fragMark;
-        IHttpRequestParser parser;
+        IHttpParserHandler parser;
 		int bytesRead;
 
 		// internal for testing
@@ -33,11 +19,11 @@ namespace HttpSharp
 
 
         
-#line 196 "HttpMachine.cs.rl"
+#line 182 "HttpMachine.cs.rl"
 
         
         
-#line 41 "HttpMachine.cs"
+#line 27 "HttpMachine.cs"
 static readonly sbyte[] _http_parser_actions =  new sbyte [] {
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4, 1, 5, 1, 6, 1, 
@@ -243,18 +229,18 @@ const int http_parser_error = 0;
 const int http_parser_en_main = 1;
 
 
-#line 199 "HttpMachine.cs.rl"
+#line 185 "HttpMachine.cs.rl"
         
-        public HttpMachine(IHttpRequestParser parser)
+        public HttpParser(IHttpParserHandler parser)
         {
 			this.parser = parser;
             
-#line 253 "HttpMachine.cs"
+#line 239 "HttpMachine.cs"
 	{
 	cs = http_parser_start;
 	}
 
-#line 204 "HttpMachine.cs.rl"
+#line 190 "HttpMachine.cs.rl"
         }
 
         public int Execute(ArraySegment<byte> buf)
@@ -269,7 +255,7 @@ const int http_parser_en_main = 1;
 			fragMark = 0;
             
             
-#line 273 "HttpMachine.cs"
+#line 259 "HttpMachine.cs"
 	{
 	sbyte _klen;
 	short _trans;
@@ -344,118 +330,118 @@ _match:
 		switch ( _http_parser_actions[_acts++] )
 		{
 	case 0:
-#line 51 "HttpMachine.cs.rl"
+#line 37 "HttpMachine.cs.rl"
 	{
             mark = p;
         }
 	break;
 	case 2:
-#line 60 "HttpMachine.cs.rl"
+#line 46 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_method fpc " + fpc + " mark " + mark);
             parser.OnMethod(new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
 	case 3:
-#line 65 "HttpMachine.cs.rl"
+#line 51 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("enter_request_uri fpc " + fpc);
             mark = p;
         }
 	break;
 	case 5:
-#line 75 "HttpMachine.cs.rl"
+#line 61 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_request_uri fpc " + fpc + " mark " + mark);
             parser.OnRequestUri(new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
 	case 6:
-#line 80 "HttpMachine.cs.rl"
+#line 66 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("enter_query_string fpc " + fpc);
             qsMark = p;
         }
 	break;
 	case 7:
-#line 85 "HttpMachine.cs.rl"
+#line 71 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_query_string fpc " + fpc + " qsMark " + qsMark);
             parser.OnQueryString(new ArraySegment<byte>(data, qsMark, p - qsMark));
         }
 	break;
 	case 8:
-#line 89 "HttpMachine.cs.rl"
+#line 75 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("enter_fragment fpc " + fpc);
             fragMark = p;
         }
 	break;
 	case 9:
-#line 94 "HttpMachine.cs.rl"
+#line 80 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_fragment fpc " + fpc + " fragMark " + fragMark);
             parser.OnFragment(new ArraySegment<byte>(data, fragMark, p - fragMark));
         }
 	break;
 	case 10:
-#line 99 "HttpMachine.cs.rl"
+#line 85 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("enter_version_major fpc " + fpc);
             mark = p;
         }
 	break;
 	case 12:
-#line 109 "HttpMachine.cs.rl"
+#line 95 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_version_major fpc " + fpc + " mark " + mark);
             parser.OnVersionMajor(new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
 	case 13:
-#line 114 "HttpMachine.cs.rl"
+#line 100 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("enter_request_uri fpc " + fpc);
             mark = p;
         }
 	break;
 	case 15:
-#line 124 "HttpMachine.cs.rl"
+#line 110 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_version_minor fpc " + fpc + " mark " + mark);
             parser.OnVersionMinor(new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
 	case 16:
-#line 129 "HttpMachine.cs.rl"
+#line 115 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("enter_header_name fpc " + fpc + " fc " + (char)fc);
             mark = p;
         }
 	break;
 	case 17:
-#line 134 "HttpMachine.cs.rl"
+#line 120 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_header_name fpc " + fpc + " fc " + (char)fc);
             parser.OnHeaderName(new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
 	case 18:
-#line 139 "HttpMachine.cs.rl"
+#line 125 "HttpMachine.cs.rl"
 	{
 			if (gotContentLength) throw new Exception("Already got Content-Length. Possible attack?");
 			gotContentLength = true;
 		}
 	break;
 	case 19:
-#line 144 "HttpMachine.cs.rl"
+#line 130 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("enter_header_value fpc " + fpc + " fc " + (char)fc);
             mark = p;
         }
 	break;
 	case 20:
-#line 149 "HttpMachine.cs.rl"
+#line 135 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("header_value_char fpc " + fpc + " fc " + (char)fc);
 			if (gotContentLength)
@@ -475,26 +461,26 @@ _match:
 		}
 	break;
 	case 21:
-#line 167 "HttpMachine.cs.rl"
+#line 153 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_header_value fpc " + fpc + " fc " + (char)fc);
             parser.OnHeaderValue(new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
 	case 22:
-#line 172 "HttpMachine.cs.rl"
+#line 158 "HttpMachine.cs.rl"
 	{
 			parser.OnHeadersComplete();
 		}
 	break;
 	case 23:
-#line 176 "HttpMachine.cs.rl"
+#line 162 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("enter_body fpc " + fpc);
 			mark = p;
 		}
 	break;
-#line 498 "HttpMachine.cs"
+#line 484 "HttpMachine.cs"
 		default: break;
 		}
 	}
@@ -512,75 +498,75 @@ _again:
 	while ( __nacts-- > 0 ) {
 		switch ( _http_parser_actions[__acts++] ) {
 	case 1:
-#line 55 "HttpMachine.cs.rl"
+#line 41 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("eof_leave_method fpc " + fpc + " mark " + mark);
             parser.OnMethod(new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
 	case 4:
-#line 70 "HttpMachine.cs.rl"
+#line 56 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("eof_leave_request_uri!! fpc " + fpc + " mark " + mark);
             parser.OnRequestUri(new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
 	case 7:
-#line 85 "HttpMachine.cs.rl"
+#line 71 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_query_string fpc " + fpc + " qsMark " + qsMark);
             parser.OnQueryString(new ArraySegment<byte>(data, qsMark, p - qsMark));
         }
 	break;
 	case 9:
-#line 94 "HttpMachine.cs.rl"
+#line 80 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_fragment fpc " + fpc + " fragMark " + fragMark);
             parser.OnFragment(new ArraySegment<byte>(data, fragMark, p - fragMark));
         }
 	break;
 	case 11:
-#line 104 "HttpMachine.cs.rl"
+#line 90 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("eof_leave_version_major fpc " + fpc + " mark " + mark);
             parser.OnVersionMajor(new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
 	case 14:
-#line 119 "HttpMachine.cs.rl"
+#line 105 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("eof_leave_version_minor!! fpc " + fpc + " mark " + mark);
             parser.OnVersionMinor(new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
 	case 17:
-#line 134 "HttpMachine.cs.rl"
+#line 120 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_header_name fpc " + fpc + " fc " + (char)fc);
             parser.OnHeaderName(new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
 	case 21:
-#line 167 "HttpMachine.cs.rl"
+#line 153 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_header_value fpc " + fpc + " fc " + (char)fc);
             parser.OnHeaderValue(new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
 	case 22:
-#line 172 "HttpMachine.cs.rl"
+#line 158 "HttpMachine.cs.rl"
 	{
 			parser.OnHeadersComplete();
 		}
 	break;
 	case 24:
-#line 189 "HttpMachine.cs.rl"
+#line 175 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_body fpc " + fpc);
 			parser.OnBody(new ArraySegment<byte>(data, mark, p - mark));
 		}
 	break;
-#line 584 "HttpMachine.cs"
+#line 570 "HttpMachine.cs"
 		default: break;
 		}
 	}
@@ -589,7 +575,7 @@ _again:
 	_out: {}
 	}
 
-#line 218 "HttpMachine.cs.rl"
+#line 204 "HttpMachine.cs.rl"
             
             return p - buf.Offset;
         }
