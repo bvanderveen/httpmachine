@@ -303,7 +303,7 @@ namespace HttpMachine.Tests
         }
     }
 
-    public class HttpMachineTests
+    public class HttpParserTests
     {
 
         void AssertRequest(TestRequest expected, Handler test, HttpParser machine)
