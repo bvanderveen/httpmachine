@@ -1,2 +1,2 @@
-/opt/bin/ragel HttpMachine.cs.rl -A -o HttpMachine.cs
+/opt/bin/ragel HttpParser.cs.rl -A -o HttpParser.cs
 
