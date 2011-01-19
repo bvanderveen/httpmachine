@@ -13,6 +13,7 @@ namespace HttpSharp
         void OnHeaderName(ArraySegment<byte> data);
         void OnHeaderValue(ArraySegment<byte> data);
         void OnHeadersComplete();
+		void OnBody(ArraySegment<byte> data);
     }
 
     public class HttpMachine
@@ -22,6 +23,12 @@ namespace HttpSharp
 		int qsMark;
 		int fragMark;
         IHttpRequestParser parser;
+		int bytesRead;
+
+		// internal for testing
+		internal int contentLength;
+		internal bool gotContentLength;
+
 
         %%{
 
@@ -128,11 +135,34 @@ namespace HttpSharp
 			//Console.WriteLine("leave_header_name fpc " + fpc + " fc " + (char)fc);
             parser.OnHeaderName(new ArraySegment<byte>(data, mark, fpc - mark));
         }
+
+		action leave_content_length {
+			if (gotContentLength) throw new Exception("Already got Content-Length. Possible attack?");
+			gotContentLength = true;
+		}
         
         action enter_header_value {
 			//Console.WriteLine("enter_header_value fpc " + fpc + " fc " + (char)fc);
             mark = fpc;
         }
+
+		action header_value_char {
+			//Console.WriteLine("header_value_char fpc " + fpc + " fc " + (char)fc);
+			if (gotContentLength)
+			{
+				var cfc = (char)fc;
+				if (cfc == ' ')
+				{
+					fbreak;
+				}
+
+				if (cfc < '0' || cfc > '9')
+					throw new Exception("Bogus content length");
+
+				contentLength *= 10;
+				contentLength += (int)fc - (int)'0';
+			}
+		}
         
         action leave_header_value {
 			//Console.WriteLine("leave_header_value fpc " + fpc + " fc " + (char)fc);

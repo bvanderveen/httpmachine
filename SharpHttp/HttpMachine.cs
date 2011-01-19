@@ -15,6 +15,7 @@ namespace HttpSharp
         void OnHeaderName(ArraySegment<byte> data);
         void OnHeaderValue(ArraySegment<byte> data);
         void OnHeadersComplete();
+		void OnBody(ArraySegment<byte> data);
     }
 
     public class HttpMachine
@@ -24,30 +25,39 @@ namespace HttpSharp
 		int qsMark;
 		int fragMark;
         IHttpRequestParser parser;
+		int bytesRead;
+
+		// internal for testing
+		internal int contentLength;
+		internal bool gotContentLength;
+
 
         
-#line 148 "HttpMachine.cs.rl"
+#line 178 "HttpMachine.cs.rl"
 
         
         
-#line 34 "HttpMachine.cs"
+#line 41 "HttpMachine.cs"
 static readonly sbyte[] _http_parser_actions =  new sbyte [] {
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4, 1, 5, 1, 6, 1, 
 	7, 1, 8, 1, 10, 1, 11, 1, 
 	12, 1, 13, 1, 14, 1, 15, 1, 
-	16, 1, 17, 1, 18, 1, 19, 1, 
-	20, 2, 7, 4, 2, 7, 5, 2, 
-	9, 4, 2, 9, 5
+	16, 1, 17, 1, 20, 1, 21, 1, 
+	22, 2, 7, 4, 2, 7, 5, 2, 
+	9, 4, 2, 9, 5, 2, 18, 17, 
+	2, 19, 20
 };
 
-static readonly byte[] _http_parser_key_offsets =  new byte [] {
+static readonly short[] _http_parser_key_offsets =  new short [] {
 	0, 0, 4, 9, 12, 15, 16, 17, 
 	18, 19, 20, 22, 25, 27, 30, 31, 
-	47, 48, 64, 66, 67, 68, 69, 71, 
-	73, 78, 83, 88, 93, 98, 103, 108, 
-	113, 118, 123, 128, 133, 138, 143, 148, 
-	153, 158, 163, 168, 173, 178, 183, 184
+	49, 50, 66, 68, 69, 87, 105, 123, 
+	141, 159, 177, 193, 211, 229, 247, 265, 
+	283, 301, 317, 318, 319, 321, 323, 328, 
+	333, 338, 343, 348, 353, 358, 363, 368, 
+	373, 378, 383, 388, 393, 398, 403, 408, 
+	413, 418, 423, 428, 433, 434, 434
 };
 
 static readonly char[] _http_parser_trans_keys =  new char [] {
@@ -55,13 +65,43 @@ static readonly char[] _http_parser_trans_keys =  new char [] {
 	'\u007a', '\u0020', '\u0023', '\u003f', '\u0020', '\u0023', '\u003f', '\u0048', 
 	'\u0054', '\u0054', '\u0050', '\u002f', '\u0030', '\u0039', '\u002e', '\u0030', 
 	'\u0039', '\u0030', '\u0039', '\u000d', '\u0030', '\u0039', '\u000a', '\u000d', 
-	'\u0021', '\u007c', '\u007e', '\u0023', '\u0027', '\u002a', '\u002b', '\u002d', 
-	'\u002e', '\u0030', '\u0039', '\u0041', '\u005a', '\u005e', '\u007a', '\u000a', 
-	'\u0021', '\u003a', '\u007c', '\u007e', '\u0023', '\u0027', '\u002a', '\u002b', 
-	'\u002d', '\u002e', '\u0030', '\u0039', '\u0041', '\u005a', '\u005e', '\u007a', 
-	'\u0009', '\u0020', '\u000d', '\u0020', '\u0020', '\u0020', '\u0023', '\u0020', 
-	'\u0023', '\u0020', '\u0041', '\u005a', '\u0061', '\u007a', '\u0020', '\u0041', 
-	'\u005a', '\u0061', '\u007a', '\u0020', '\u0041', '\u005a', '\u0061', '\u007a', 
+	'\u0021', '\u0043', '\u0063', '\u007c', '\u007e', '\u0023', '\u0027', '\u002a', 
+	'\u002b', '\u002d', '\u002e', '\u0030', '\u0039', '\u0041', '\u005a', '\u005e', 
+	'\u007a', '\u000a', '\u0021', '\u003a', '\u007c', '\u007e', '\u0023', '\u0027', 
+	'\u002a', '\u002b', '\u002d', '\u002e', '\u0030', '\u0039', '\u0041', '\u005a', 
+	'\u005e', '\u007a', '\u0009', '\u0020', '\u000d', '\u0021', '\u003a', '\u004f', 
+	'\u006f', '\u007c', '\u007e', '\u0023', '\u0027', '\u002a', '\u002b', '\u002d', 
+	'\u002e', '\u0030', '\u0039', '\u0041', '\u005a', '\u005e', '\u007a', '\u0021', 
+	'\u003a', '\u004e', '\u006e', '\u007c', '\u007e', '\u0023', '\u0027', '\u002a', 
+	'\u002b', '\u002d', '\u002e', '\u0030', '\u0039', '\u0041', '\u005a', '\u005e', 
+	'\u007a', '\u0021', '\u003a', '\u0054', '\u0074', '\u007c', '\u007e', '\u0023', 
+	'\u0027', '\u002a', '\u002b', '\u002d', '\u002e', '\u0030', '\u0039', '\u0041', 
+	'\u005a', '\u005e', '\u007a', '\u0021', '\u003a', '\u0045', '\u0065', '\u007c', 
+	'\u007e', '\u0023', '\u0027', '\u002a', '\u002b', '\u002d', '\u002e', '\u0030', 
+	'\u0039', '\u0041', '\u005a', '\u005e', '\u007a', '\u0021', '\u003a', '\u004e', 
+	'\u006e', '\u007c', '\u007e', '\u0023', '\u0027', '\u002a', '\u002b', '\u002d', 
+	'\u002e', '\u0030', '\u0039', '\u0041', '\u005a', '\u005e', '\u007a', '\u0021', 
+	'\u003a', '\u0054', '\u0074', '\u007c', '\u007e', '\u0023', '\u0027', '\u002a', 
+	'\u002b', '\u002d', '\u002e', '\u0030', '\u0039', '\u0041', '\u005a', '\u005e', 
+	'\u007a', '\u0021', '\u002d', '\u002e', '\u003a', '\u007c', '\u007e', '\u0023', 
+	'\u0027', '\u002a', '\u002b', '\u0030', '\u0039', '\u0041', '\u005a', '\u005e', 
+	'\u007a', '\u0021', '\u003a', '\u004c', '\u006c', '\u007c', '\u007e', '\u0023', 
+	'\u0027', '\u002a', '\u002b', '\u002d', '\u002e', '\u0030', '\u0039', '\u0041', 
+	'\u005a', '\u005e', '\u007a', '\u0021', '\u003a', '\u0045', '\u0065', '\u007c', 
+	'\u007e', '\u0023', '\u0027', '\u002a', '\u002b', '\u002d', '\u002e', '\u0030', 
+	'\u0039', '\u0041', '\u005a', '\u005e', '\u007a', '\u0021', '\u003a', '\u004e', 
+	'\u006e', '\u007c', '\u007e', '\u0023', '\u0027', '\u002a', '\u002b', '\u002d', 
+	'\u002e', '\u0030', '\u0039', '\u0041', '\u005a', '\u005e', '\u007a', '\u0021', 
+	'\u003a', '\u0047', '\u0067', '\u007c', '\u007e', '\u0023', '\u0027', '\u002a', 
+	'\u002b', '\u002d', '\u002e', '\u0030', '\u0039', '\u0041', '\u005a', '\u005e', 
+	'\u007a', '\u0021', '\u003a', '\u0054', '\u0074', '\u007c', '\u007e', '\u0023', 
+	'\u0027', '\u002a', '\u002b', '\u002d', '\u002e', '\u0030', '\u0039', '\u0041', 
+	'\u005a', '\u005e', '\u007a', '\u0021', '\u003a', '\u0048', '\u0068', '\u007c', 
+	'\u007e', '\u0023', '\u0027', '\u002a', '\u002b', '\u002d', '\u002e', '\u0030', 
+	'\u0039', '\u0041', '\u005a', '\u005e', '\u007a', '\u0021', '\u003a', '\u007c', 
+	'\u007e', '\u0023', '\u0027', '\u002a', '\u002b', '\u002d', '\u002e', '\u0030', 
+	'\u0039', '\u0041', '\u005a', '\u005e', '\u007a', '\u0020', '\u0020', '\u0020', 
+	'\u0023', '\u0020', '\u0023', '\u0020', '\u0041', '\u005a', '\u0061', '\u007a', 
 	'\u0020', '\u0041', '\u005a', '\u0061', '\u007a', '\u0020', '\u0041', '\u005a', 
 	'\u0061', '\u007a', '\u0020', '\u0041', '\u005a', '\u0061', '\u007a', '\u0020', 
 	'\u0041', '\u005a', '\u0061', '\u007a', '\u0020', '\u0041', '\u005a', '\u0061', 
@@ -74,34 +114,41 @@ static readonly char[] _http_parser_trans_keys =  new char [] {
 	'\u005a', '\u0061', '\u007a', '\u0020', '\u0041', '\u005a', '\u0061', '\u007a', 
 	'\u0020', '\u0041', '\u005a', '\u0061', '\u007a', '\u0020', '\u0041', '\u005a', 
 	'\u0061', '\u007a', '\u0020', '\u0041', '\u005a', '\u0061', '\u007a', '\u0020', 
-	(char) 0
+	'\u0041', '\u005a', '\u0061', '\u007a', '\u0020', '\u0041', '\u005a', '\u0061', 
+	'\u007a', '\u0020', (char) 0
 };
 
 static readonly sbyte[] _http_parser_single_lengths =  new sbyte [] {
 	0, 0, 1, 3, 3, 1, 1, 1, 
-	1, 1, 0, 1, 0, 1, 1, 4, 
-	1, 4, 2, 1, 1, 1, 2, 2, 
+	1, 1, 0, 1, 0, 1, 1, 6, 
+	1, 4, 2, 1, 6, 6, 6, 6, 
+	6, 6, 6, 6, 6, 6, 6, 6, 
+	6, 4, 1, 1, 2, 2, 1, 1, 
 	1, 1, 1, 1, 1, 1, 1, 1, 
 	1, 1, 1, 1, 1, 1, 1, 1, 
-	1, 1, 1, 1, 1, 1, 1, 0
+	1, 1, 1, 1, 1, 0, 0
 };
 
 static readonly sbyte[] _http_parser_range_lengths =  new sbyte [] {
 	0, 2, 2, 0, 0, 0, 0, 0, 
 	0, 0, 1, 1, 1, 1, 0, 6, 
-	0, 6, 0, 0, 0, 0, 0, 0, 
+	0, 6, 0, 0, 6, 6, 6, 6, 
+	6, 6, 5, 6, 6, 6, 6, 6, 
+	6, 6, 0, 0, 0, 0, 2, 2, 
 	2, 2, 2, 2, 2, 2, 2, 2, 
 	2, 2, 2, 2, 2, 2, 2, 2, 
-	2, 2, 2, 2, 2, 2, 0, 0
+	2, 2, 2, 2, 0, 0, 0
 };
 
-static readonly byte[] _http_parser_index_offsets =  new byte [] {
+static readonly short[] _http_parser_index_offsets =  new short [] {
 	0, 0, 3, 7, 11, 15, 17, 19, 
 	21, 23, 25, 27, 30, 32, 35, 37, 
-	48, 50, 61, 64, 66, 68, 70, 73, 
-	76, 80, 84, 88, 92, 96, 100, 104, 
-	108, 112, 116, 120, 124, 128, 132, 136, 
-	140, 144, 148, 152, 156, 160, 164, 166
+	50, 52, 63, 66, 68, 81, 94, 107, 
+	120, 133, 146, 158, 171, 184, 197, 210, 
+	223, 236, 247, 249, 251, 254, 257, 261, 
+	265, 269, 273, 277, 281, 285, 289, 293, 
+	297, 301, 305, 309, 313, 317, 321, 325, 
+	329, 333, 337, 341, 345, 347, 348
 };
 
 static readonly sbyte[] _http_parser_indicies =  new sbyte [] {
@@ -109,75 +156,104 @@ static readonly sbyte[] _http_parser_indicies =  new sbyte [] {
 	1, 1, 4, 6, 7, 8, 5, 9, 
 	1, 10, 1, 11, 1, 12, 1, 13, 
 	1, 14, 1, 15, 16, 1, 17, 1, 
-	18, 19, 1, 20, 1, 21, 22, 22, 
-	22, 22, 22, 22, 22, 22, 22, 1, 
-	23, 1, 24, 25, 24, 24, 24, 24, 
-	24, 24, 24, 24, 1, 27, 27, 26, 
-	29, 28, 6, 30, 32, 31, 6, 7, 
-	33, 35, 36, 34, 2, 37, 37, 1, 
-	2, 38, 38, 1, 2, 39, 39, 1, 
-	2, 40, 40, 1, 2, 41, 41, 1, 
-	2, 42, 42, 1, 2, 43, 43, 1, 
-	2, 44, 44, 1, 2, 45, 45, 1, 
-	2, 46, 46, 1, 2, 47, 47, 1, 
-	2, 48, 48, 1, 2, 49, 49, 1, 
-	2, 50, 50, 1, 2, 51, 51, 1, 
-	2, 52, 52, 1, 2, 53, 53, 1, 
-	2, 54, 54, 1, 2, 55, 55, 1, 
-	2, 56, 56, 1, 2, 57, 57, 1, 
-	2, 58, 58, 1, 2, 1, 1, 0
+	18, 19, 1, 20, 1, 21, 22, 23, 
+	23, 22, 22, 22, 22, 22, 22, 22, 
+	22, 1, 24, 1, 25, 26, 25, 25, 
+	25, 25, 25, 25, 25, 25, 1, 28, 
+	28, 27, 30, 29, 25, 26, 31, 31, 
+	25, 25, 25, 25, 25, 25, 25, 25, 
+	1, 25, 26, 32, 32, 25, 25, 25, 
+	25, 25, 25, 25, 25, 1, 25, 26, 
+	33, 33, 25, 25, 25, 25, 25, 25, 
+	25, 25, 1, 25, 26, 34, 34, 25, 
+	25, 25, 25, 25, 25, 25, 25, 1, 
+	25, 26, 35, 35, 25, 25, 25, 25, 
+	25, 25, 25, 25, 1, 25, 26, 36, 
+	36, 25, 25, 25, 25, 25, 25, 25, 
+	25, 1, 25, 37, 25, 26, 25, 25, 
+	25, 25, 25, 25, 25, 1, 25, 26, 
+	38, 38, 25, 25, 25, 25, 25, 25, 
+	25, 25, 1, 25, 26, 39, 39, 25, 
+	25, 25, 25, 25, 25, 25, 25, 1, 
+	25, 26, 40, 40, 25, 25, 25, 25, 
+	25, 25, 25, 25, 1, 25, 26, 41, 
+	41, 25, 25, 25, 25, 25, 25, 25, 
+	25, 1, 25, 26, 42, 42, 25, 25, 
+	25, 25, 25, 25, 25, 25, 1, 25, 
+	26, 43, 43, 25, 25, 25, 25, 25, 
+	25, 25, 25, 1, 25, 44, 25, 25, 
+	25, 25, 25, 25, 25, 25, 1, 6, 
+	45, 47, 46, 6, 7, 48, 50, 51, 
+	49, 2, 52, 52, 1, 2, 53, 53, 
+	1, 2, 54, 54, 1, 2, 55, 55, 
+	1, 2, 56, 56, 1, 2, 57, 57, 
+	1, 2, 58, 58, 1, 2, 59, 59, 
+	1, 2, 60, 60, 1, 2, 61, 61, 
+	1, 2, 62, 62, 1, 2, 63, 63, 
+	1, 2, 64, 64, 1, 2, 65, 65, 
+	1, 2, 66, 66, 1, 2, 67, 67, 
+	1, 2, 68, 68, 1, 2, 69, 69, 
+	1, 2, 70, 70, 1, 2, 71, 71, 
+	1, 2, 72, 72, 1, 2, 73, 73, 
+	1, 2, 1, 74, 75, 0
 };
 
 static readonly sbyte[] _http_parser_trans_targs =  new sbyte [] {
-	2, 0, 3, 24, 4, 4, 5, 20, 
-	22, 6, 7, 8, 9, 10, 11, 12, 
-	11, 13, 14, 13, 15, 16, 17, 47, 
-	17, 18, 19, 18, 19, 14, 21, 21, 
-	5, 23, 23, 5, 20, 25, 26, 27, 
-	28, 29, 30, 31, 32, 33, 34, 35, 
-	36, 37, 38, 39, 40, 41, 42, 43, 
-	44, 45, 46
+	2, 0, 3, 38, 4, 4, 5, 34, 
+	36, 6, 7, 8, 9, 10, 11, 12, 
+	11, 13, 14, 13, 15, 16, 17, 20, 
+	61, 17, 18, 19, 18, 19, 14, 21, 
+	22, 23, 24, 25, 26, 27, 28, 29, 
+	30, 31, 32, 33, 18, 35, 35, 5, 
+	37, 37, 5, 34, 39, 40, 41, 42, 
+	43, 44, 45, 46, 47, 48, 49, 50, 
+	51, 52, 53, 54, 55, 56, 57, 58, 
+	59, 60, 62, 62
 };
 
 static readonly sbyte[] _http_parser_trans_actions =  new sbyte [] {
 	1, 0, 5, 0, 7, 0, 11, 0, 
 	0, 0, 0, 0, 0, 0, 19, 23, 
-	0, 25, 29, 0, 0, 0, 31, 0, 
-	0, 33, 35, 0, 0, 37, 17, 0, 
-	50, 13, 0, 44, 15, 0, 0, 0, 
+	0, 25, 29, 0, 0, 0, 31, 31, 
+	0, 0, 33, 56, 0, 35, 37, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 53, 17, 0, 50, 
+	13, 0, 44, 15, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0
+	0, 0, 39, 0
 };
 
 static readonly sbyte[] _http_parser_eof_actions =  new sbyte [] {
 	0, 0, 3, 0, 9, 0, 0, 0, 
 	0, 0, 0, 21, 0, 27, 0, 0, 
-	0, 33, 0, 37, 9, 47, 9, 41, 
+	0, 33, 0, 37, 33, 33, 33, 33, 
+	33, 33, 33, 33, 33, 33, 33, 33, 
+	33, 33, 9, 47, 9, 41, 3, 3, 
 	3, 3, 3, 3, 3, 3, 3, 3, 
 	3, 3, 3, 3, 3, 3, 3, 3, 
-	3, 3, 3, 3, 3, 3, 3, 39
+	3, 3, 3, 3, 3, 39, 0
 };
 
 const int http_parser_start = 1;
-const int http_parser_first_final = 47;
+const int http_parser_first_final = 61;
 const int http_parser_error = 0;
 
 const int http_parser_en_main = 1;
 
 
-#line 151 "HttpMachine.cs.rl"
+#line 181 "HttpMachine.cs.rl"
         
         public HttpMachine(IHttpRequestParser parser)
         {
 			this.parser = parser;
             
-#line 176 "HttpMachine.cs"
+#line 252 "HttpMachine.cs"
 	{
 	cs = http_parser_start;
 	}
 
-#line 156 "HttpMachine.cs.rl"
+#line 186 "HttpMachine.cs.rl"
         }
 
         public int Execute(ArraySegment<byte> buf)
@@ -192,13 +268,13 @@ const int http_parser_en_main = 1;
 			fragMark = 0;
             
             
-#line 196 "HttpMachine.cs"
+#line 272 "HttpMachine.cs"
 	{
 	sbyte _klen;
-	byte _trans;
+	short _trans;
 	sbyte _acts;
 	sbyte _nacts;
-	byte _keys;
+	short _keys;
 
 	if ( p == pe )
 		goto _test_eof;
@@ -206,7 +282,7 @@ const int http_parser_en_main = 1;
 		goto _out;
 _resume:
 	_keys = _http_parser_key_offsets[cs];
-	_trans = (byte)_http_parser_index_offsets[cs];
+	_trans = (short)_http_parser_index_offsets[cs];
 
 	_klen = _http_parser_single_lengths[cs];
 	if ( _klen > 0 ) {
@@ -223,12 +299,12 @@ _resume:
 			else if ( data[p] > _http_parser_trans_keys[_mid] )
 				_lower = (short) (_mid + 1);
 			else {
-				_trans += (byte) (_mid - _keys);
+				_trans += (short) (_mid - _keys);
 				goto _match;
 			}
 		}
-		_keys += (byte) _klen;
-		_trans += (byte) _klen;
+		_keys += (short) _klen;
+		_trans += (short) _klen;
 	}
 
 	_klen = _http_parser_range_lengths[cs];
@@ -246,15 +322,15 @@ _resume:
 			else if ( data[p] > _http_parser_trans_keys[_mid+1] )
 				_lower = (short) (_mid + 2);
 			else {
-				_trans += (byte)((_mid - _keys)>>1);
+				_trans += (short)((_mid - _keys)>>1);
 				goto _match;
 			}
 		}
-		_trans += (byte) _klen;
+		_trans += (short) _klen;
 	}
 
 _match:
-	_trans = (byte)_http_parser_indicies[_trans];
+	_trans = (short)_http_parser_indicies[_trans];
 	cs = _http_parser_trans_targs[_trans];
 
 	if ( _http_parser_trans_actions[_trans] == 0 )
@@ -267,117 +343,150 @@ _match:
 		switch ( _http_parser_actions[_acts++] )
 		{
 	case 0:
-#line 44 "HttpMachine.cs.rl"
+#line 51 "HttpMachine.cs.rl"
 	{
             mark = p;
         }
 	break;
 	case 2:
-#line 53 "HttpMachine.cs.rl"
+#line 60 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_method fpc " + fpc + " mark " + mark);
             parser.OnMethod(new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
 	case 3:
-#line 58 "HttpMachine.cs.rl"
+#line 65 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("enter_request_uri fpc " + fpc);
             mark = p;
         }
 	break;
 	case 5:
-#line 68 "HttpMachine.cs.rl"
+#line 75 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_request_uri fpc " + fpc + " mark " + mark);
             parser.OnRequestUri(new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
 	case 6:
-#line 73 "HttpMachine.cs.rl"
+#line 80 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("enter_query_string fpc " + fpc);
             qsMark = p;
         }
 	break;
 	case 7:
-#line 78 "HttpMachine.cs.rl"
+#line 85 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_query_string fpc " + fpc + " qsMark " + qsMark);
             parser.OnQueryString(new ArraySegment<byte>(data, qsMark, p - qsMark));
         }
 	break;
 	case 8:
-#line 82 "HttpMachine.cs.rl"
+#line 89 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("enter_fragment fpc " + fpc);
             fragMark = p;
         }
 	break;
 	case 9:
-#line 87 "HttpMachine.cs.rl"
+#line 94 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_fragment fpc " + fpc + " fragMark " + fragMark);
             parser.OnFragment(new ArraySegment<byte>(data, fragMark, p - fragMark));
         }
 	break;
 	case 10:
-#line 92 "HttpMachine.cs.rl"
+#line 99 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("enter_version_major fpc " + fpc);
             mark = p;
         }
 	break;
 	case 12:
-#line 102 "HttpMachine.cs.rl"
+#line 109 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_version_major fpc " + fpc + " mark " + mark);
             parser.OnVersionMajor(new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
 	case 13:
-#line 107 "HttpMachine.cs.rl"
+#line 114 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("enter_request_uri fpc " + fpc);
             mark = p;
         }
 	break;
 	case 15:
-#line 117 "HttpMachine.cs.rl"
+#line 124 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_version_minor fpc " + fpc + " mark " + mark);
             parser.OnVersionMinor(new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
 	case 16:
-#line 122 "HttpMachine.cs.rl"
+#line 129 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("enter_header_name fpc " + fpc + " fc " + (char)fc);
             mark = p;
         }
 	break;
 	case 17:
-#line 127 "HttpMachine.cs.rl"
+#line 134 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_header_name fpc " + fpc + " fc " + (char)fc);
             parser.OnHeaderName(new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
 	case 18:
-#line 132 "HttpMachine.cs.rl"
+#line 139 "HttpMachine.cs.rl"
+	{
+			if (gotContentLength) throw new Exception("Already got Content-Length. Possible attack?");
+			gotContentLength = true;
+		}
+	break;
+	case 19:
+#line 144 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("enter_header_value fpc " + fpc + " fc " + (char)fc);
             mark = p;
         }
 	break;
-	case 19:
-#line 137 "HttpMachine.cs.rl"
+	case 20:
+#line 149 "HttpMachine.cs.rl"
+	{
+			//Console.WriteLine("header_value_char fpc " + fpc + " fc " + (char)fc);
+			if (gotContentLength)
+			{
+				var cfc = (char)data[p];
+				if (cfc == ' ')
+				{
+					{p++; if (true) goto _out; }
+				}
+
+				if (cfc < '0' || cfc > '9')
+					throw new Exception("Bogus content length");
+
+				contentLength *= 10;
+				contentLength += (int)data[p] - (int)'0';
+			}
+		}
+	break;
+	case 21:
+#line 167 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_header_value fpc " + fpc + " fc " + (char)fc);
             parser.OnHeaderValue(new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
-#line 381 "HttpMachine.cs"
+	case 22:
+#line 172 "HttpMachine.cs.rl"
+	{
+			parser.OnHeadersComplete();
+		}
+	break;
+#line 490 "HttpMachine.cs"
 		default: break;
 		}
 	}
@@ -395,68 +504,68 @@ _again:
 	while ( __nacts-- > 0 ) {
 		switch ( _http_parser_actions[__acts++] ) {
 	case 1:
-#line 48 "HttpMachine.cs.rl"
+#line 55 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("eof_leave_method fpc " + fpc + " mark " + mark);
             parser.OnMethod(new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
 	case 4:
-#line 63 "HttpMachine.cs.rl"
+#line 70 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("eof_leave_request_uri!! fpc " + fpc + " mark " + mark);
             parser.OnRequestUri(new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
 	case 7:
-#line 78 "HttpMachine.cs.rl"
+#line 85 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_query_string fpc " + fpc + " qsMark " + qsMark);
             parser.OnQueryString(new ArraySegment<byte>(data, qsMark, p - qsMark));
         }
 	break;
 	case 9:
-#line 87 "HttpMachine.cs.rl"
+#line 94 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_fragment fpc " + fpc + " fragMark " + fragMark);
             parser.OnFragment(new ArraySegment<byte>(data, fragMark, p - fragMark));
         }
 	break;
 	case 11:
-#line 97 "HttpMachine.cs.rl"
+#line 104 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("eof_leave_version_major fpc " + fpc + " mark " + mark);
             parser.OnVersionMajor(new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
 	case 14:
-#line 112 "HttpMachine.cs.rl"
+#line 119 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("eof_leave_version_minor!! fpc " + fpc + " mark " + mark);
             parser.OnVersionMinor(new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
 	case 17:
-#line 127 "HttpMachine.cs.rl"
+#line 134 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_header_name fpc " + fpc + " fc " + (char)fc);
             parser.OnHeaderName(new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
-	case 19:
-#line 137 "HttpMachine.cs.rl"
+	case 21:
+#line 167 "HttpMachine.cs.rl"
 	{
 			//Console.WriteLine("leave_header_value fpc " + fpc + " fc " + (char)fc);
             parser.OnHeaderValue(new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
-	case 20:
-#line 142 "HttpMachine.cs.rl"
+	case 22:
+#line 172 "HttpMachine.cs.rl"
 	{
 			parser.OnHeadersComplete();
 		}
 	break;
-#line 460 "HttpMachine.cs"
+#line 569 "HttpMachine.cs"
 		default: break;
 		}
 	}
@@ -465,7 +574,7 @@ _again:
 	_out: {}
 	}
 
-#line 170 "HttpMachine.cs.rl"
+#line 200 "HttpMachine.cs.rl"
             
             return p - buf.Offset;
         }

@@ -86,6 +86,54 @@ namespace SharpHttp.Tests
                     { "Baz", "Quux" }
                 },
                 Body = null
+            },
+            new TestRequest() {
+                Name = "zero content length",
+                Raw = Encoding.ASCII.GetBytes("POST /foo HTTP/1.1\r\nFoo: Bar\r\nContent-Length: 0\r\n\r\n"),
+                Method = "POST",
+                RequestUri = "/foo",
+                RequestPath = "/foo",
+                QueryString = "",
+                Fragment = "",
+                VersionMajor = 1,
+                VersionMinor = 1,
+                Headers = new Dictionary<string,string>(StringComparer.InvariantCultureIgnoreCase) {
+                    { "Foo", "Bar" },
+                    { "Content-Length", "0" }
+                },
+                Body = null
+            },
+            new TestRequest() {
+                Name = "some content length",
+                Raw = Encoding.ASCII.GetBytes("POST /foo HTTP/1.1\r\nFoo: Bar\r\nContent-Length: 5\r\n\r\nhello"),
+                Method = "POST",
+                RequestUri = "/foo",
+                RequestPath = "/foo",
+                QueryString = "",
+                Fragment = "",
+                VersionMajor = 1,
+                VersionMinor = 1,
+                Headers = new Dictionary<string,string>(StringComparer.InvariantCultureIgnoreCase) {
+                    { "Foo", "Bar" },
+                    { "Content-Length", "5" }
+                },
+                Body = null
+            },
+            new TestRequest() {
+                Name = "more content length",
+                Raw = Encoding.ASCII.GetBytes("POST /foo HTTP/1.1\r\nFoo: Bar\r\nContent-Length: 15\r\n\r\nhelloworldhello"),
+                Method = "POST",
+                RequestUri = "/foo",
+                RequestPath = "/foo",
+                QueryString = "",
+                Fragment = "",
+                VersionMajor = 1,
+                VersionMinor = 1,
+                Headers = new Dictionary<string,string>(StringComparer.InvariantCultureIgnoreCase) {
+                    { "Foo", "Bar" },
+                    { "Content-Length", "15" }
+                },
+                Body = null
             }
         };
     }
@@ -95,6 +143,7 @@ namespace SharpHttp.Tests
     {
         StringBuilder method, requestUri, queryString, fragment, headerName, headerValue, versionMajor, versionMinor;
         Dictionary<string, string> headers;
+        List<ArraySegment<byte>> body;
 
         public string Method
         {
@@ -130,6 +179,11 @@ namespace SharpHttp.Tests
             get { return headers; }
         }
 
+        public List<ArraySegment<byte>> Body
+        {
+            get { return body; }
+        }
+
         public Handler()
         {
             method = new StringBuilder();
@@ -140,7 +194,8 @@ namespace SharpHttp.Tests
             headerValue = new StringBuilder();
             versionMajor = new StringBuilder(1);
             versionMinor = new StringBuilder(1);
-            headers = new Dictionary<string, string>();
+            headers = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+            body = new List<ArraySegment<byte>>();
         }
 
         public void OnMethod(ArraySegment<byte> data)
@@ -220,12 +275,17 @@ namespace SharpHttp.Tests
             headers[headerName.ToString()] = headerValue.ToString();
             headerName.Length = headerValue.Length = 0;
         }
+
+        public void OnBody(ArraySegment<byte> data)
+        {
+            body.Add(data);
+        }
     }
 
     public class HttpMachineTests
     {
 
-        void AssertRequest(TestRequest expected, Handler test)
+        void AssertRequest(TestRequest expected, Handler test, HttpMachine machine)
         {
             Assert.AreEqual(expected.Method, test.Method, "Unexpected method.");
             Assert.AreEqual(expected.RequestUri, test.RequestUri, "Unexpected request URI.");
@@ -234,6 +294,13 @@ namespace SharpHttp.Tests
             Assert.AreEqual(expected.QueryString, test.QueryString, "Unexpected query string.");
             Assert.AreEqual(expected.Fragment, test.Fragment, "Unexpected fragment.");
             //Assert.AreEqual(expected.RequestPath, test.RequestPath, "Unexpected path.");
+
+            if (expected.Headers.Keys.Any(k => k.ToLowerInvariant() == "content-length"))
+            {
+                //Console.WriteLine("verifying content length");
+                Assert.IsTrue(machine.gotContentLength);
+                Assert.AreEqual(int.Parse(expected.Headers["content-length"]), machine.contentLength);
+            }
 
             foreach (var pair in expected.Headers)
             {
@@ -261,7 +328,7 @@ namespace SharpHttp.Tests
                 Console.WriteLine("----- Testing request: '" + request.Name + "' -----");
 
                 parser.Execute(new ArraySegment<byte>(request.Raw));
-                AssertRequest(request, handler);
+                AssertRequest(request, handler, parser);
             }
         }
 
@@ -286,8 +353,6 @@ namespace SharpHttp.Tests
 
                         operationsCompleted++;
                         //Console.WriteLine("----- Testing request: '" + request.Name + "' (" + operationsCompleted + ") -----");
-
-
 
 
                         var handler = new Handler();
@@ -318,7 +383,7 @@ namespace SharpHttp.Tests
 
                         parser.Execute(new ArraySegment<byte>(buffer3, 0, buffer3Length));
 
-                        AssertRequest(request, handler);
+                        AssertRequest(request, handler, parser);
 
                     }
             }
@@ -326,9 +391,10 @@ namespace SharpHttp.Tests
 
         // TODO 
         // extract content-length/parse body
-        // keepalive
-        // decode chunked encoding
         // error conditions/fuzz
+        // decode chunked encoding
+        // upgrade?
+        // keepalive
         [Test]
         public void Upgrade()
         {

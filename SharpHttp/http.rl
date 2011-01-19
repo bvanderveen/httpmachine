@@ -24,9 +24,10 @@ http_header_name = http_token;
 # thus we don't support line folding. fuck that noise.
 http_header_value = any+;
 
-http_header = http_header_name >enter_header_name %/leave_header_name %leave_header_name ((":" (" " | "\t")*) ) <: http_header_value >enter_header_value %/leave_header_value %leave_header_value :> http_crlf;
+http_content_length = "content-length"i %leave_content_length;
+http_header = (http_header_name | http_content_length) >enter_header_name %/leave_header_name %leave_header_name ((":" (" " | "\t")*) ) <: http_header_value $header_value_char >enter_header_value %/leave_header_value %leave_header_value :> http_crlf;
 
-http_request = http_request_line (http_header)* http_crlf %leave_headers;
+http_request = http_request_line (http_header)* http_crlf %leave_headers any*;
 
 main := http_request;
 
