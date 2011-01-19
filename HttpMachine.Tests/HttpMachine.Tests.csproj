@@ -53,7 +53,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SharpHttp\HttpMachine.csproj">
+    <ProjectReference Include="..\HttpMachine\HttpMachine.csproj">
       <Project>{76FB25C5-15B1-4541-8D19-D78790257C95}</Project>
       <Name>HttpMachine</Name>
     </ProjectReference>

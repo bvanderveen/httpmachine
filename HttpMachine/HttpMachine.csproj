@@ -40,13 +40,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HttpMachine.cs" />
-    <Compile Include="IHttpMachineHandler.cs" />
+    <Compile Include="HttpParser.cs" />
+    <Compile Include="IHttpParserHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="http.rl" />
-    <None Include="HttpMachine.cs.rl" />
+    <None Include="HttpParser.cs.rl" />
+    <None Include="recompilemachine" />
     <None Include="uri.rl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

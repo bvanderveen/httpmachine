@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMachine", "SharpHttp\HttpMachine.csproj", "{76FB25C5-15B1-4541-8D19-D78790257C95}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMachine", "HttpMachine\HttpMachine.csproj", "{76FB25C5-15B1-4541-8D19-D78790257C95}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMachine.Tests", "SharpHttp.Tests\HttpMachine.Tests.csproj", "{75BEA10B-761A-474F-9522-57E8974B52D6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMachine.Tests", "HttpMachine.Tests\HttpMachine.Tests.csproj", "{75BEA10B-761A-474F-9522-57E8974B52D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

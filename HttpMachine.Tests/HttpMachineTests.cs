@@ -28,7 +28,7 @@ using NUnit.Framework;
 // - too-long headers
 // - too-long body (or, will error out on next read)
 
-namespace SharpHttp.Tests
+namespace HttpMachine.Tests
 {
     class TestRequest
     {
