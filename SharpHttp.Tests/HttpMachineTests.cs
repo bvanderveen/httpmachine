@@ -6,11 +6,13 @@ using HttpSharp;
 using NUnit.Framework;
 
 // TODO
+// reset state after body is read (add OnBeginMessage, OnEndMessage)
+// extract connection header, indicate keepalive
 // parse request path
+// parse http version as integers
 // allow leading \r\n
 // allow ? in query
 // test requests from common clients (firefox etc)
-// extract connection header, indicate keepalive
 // extract transfer-encoding header, decode chunked encoding
 // extract upgrade header, indicate upgrade
 // line folding?
@@ -18,13 +20,13 @@ using NUnit.Framework;
 // error conditions
 // - too-long method
 // - bogus http version numbers
-// - too-long body
-// fuzz
+// - fuzz
 
 // not in scope (clients responsibility)
 // 
 // - too-long request uri
 // - too-long headers
+// - too-long body (or, will error out on next read)
 
 namespace SharpHttp.Tests
 {
@@ -156,7 +158,7 @@ namespace SharpHttp.Tests
     }
 
 
-    public class Handler : IHttpRequestParser
+    public class Handler : IHttpMachineHandler
     {
         StringBuilder method, requestUri, queryString, fragment, headerName, headerValue, versionMajor, versionMinor;
         Dictionary<string, string> headers;
