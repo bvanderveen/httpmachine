@@ -27,7 +27,7 @@ http_header_value = any+;
 http_content_length = "content-length"i %leave_content_length;
 http_header = (http_header_name | http_content_length) >enter_header_name %/leave_header_name %leave_header_name ((":" (" " | "\t")*) ) <: http_header_value $header_value_char >enter_header_value %/leave_header_value %leave_header_value :> http_crlf;
 
-http_request = http_request_line (http_header)* http_crlf %leave_headers any*;
+http_request = http_request_line (http_header)* http_crlf %/leave_headers %leave_headers (any+ >enter_body %/leave_body %leave_body)?;
 
 main := http_request;
 

@@ -5,6 +5,27 @@ using System.Text;
 using HttpSharp;
 using NUnit.Framework;
 
+// TODO
+// parse request path
+// allow leading \r\n
+// allow ? in query
+// test requests from common clients (firefox etc)
+// extract connection header, indicate keepalive
+// extract transfer-encoding header, decode chunked encoding
+// extract upgrade header, indicate upgrade
+// line folding?
+//
+// error conditions
+// - too-long method
+// - bogus http version numbers
+// - too-long body
+// fuzz
+
+// not in scope (clients responsibility)
+// 
+// - too-long request uri
+// - too-long headers
+
 namespace SharpHttp.Tests
 {
     class TestRequest
@@ -22,10 +43,6 @@ namespace SharpHttp.Tests
         public byte[] Body;
 
         public static TestRequest[] Requests = new TestRequest[] {
-            // TODO
-            // parse request path
-            // leading \r\n, ? in query, requests from common clients
-            
             new TestRequest() {
                 Name = "No headers, no body",
                 Raw = Encoding.ASCII.GetBytes("GET /foo HTTP/1.1\r\n\r\n"),
@@ -117,7 +134,7 @@ namespace SharpHttp.Tests
                     { "Foo", "Bar" },
                     { "Content-Length", "5" }
                 },
-                Body = null
+                Body = Encoding.UTF8.GetBytes("hello")
             },
             new TestRequest() {
                 Name = "more content length",
@@ -133,7 +150,7 @@ namespace SharpHttp.Tests
                     { "Foo", "Bar" },
                     { "Content-Length", "15" }
                 },
-                Body = null
+                Body = Encoding.UTF8.GetBytes("helloworldhello")
             }
         };
     }
@@ -278,6 +295,8 @@ namespace SharpHttp.Tests
 
         public void OnBody(ArraySegment<byte> data)
         {
+            var str = Encoding.ASCII.GetString(data.Array, data.Offset, data.Count);
+            //Console.WriteLine("OnBody:  '" + str + "'");
             body.Add(data);
         }
     }
@@ -312,6 +331,17 @@ namespace SharpHttp.Tests
             {
                 Assert.IsTrue(expected.Headers.ContainsKey(pair.Key), "Unexpected header named '" + pair.Key + "'");
             }
+
+            if (expected.Body != null)
+            {
+                //Console.WriteLine("Verifying body");
+                var sb = new StringBuilder();
+
+                foreach (var seg in test.Body)
+                    sb.Append(Encoding.UTF8.GetString(seg.Array, seg.Offset, seg.Count));
+
+                Assert.AreEqual(Encoding.UTF8.GetString(expected.Body), sb.ToString());
+            }
         }
 
 
@@ -319,7 +349,6 @@ namespace SharpHttp.Tests
         public void SingleChunk()
         {
             // read each request as a single block and parse
-            // read each request as three blocks, with the breaks in every possible combination
 
             foreach (var request in TestRequest.Requests)
             {
@@ -335,6 +364,10 @@ namespace SharpHttp.Tests
         [Test]
         public void ThreeChunkScan()
         {
+            // read each request as three blocks, with the breaks in every possible combination.
+            //
+            // roughly O(n^2) where n is number of bytes in the request. D:
+
             foreach (var request in TestRequest.Requests)
             {
                 var raw = request.Raw;
@@ -344,60 +377,54 @@ namespace SharpHttp.Tests
                 byte[] buffer2 = new byte[80 * 1024];
                 byte[] buffer3 = new byte[80 * 1024];
 
+                Console.WriteLine("----- Testing request: '" + request.Name + "' (" + operationsCompleted + ") -----");
                 Console.WriteLine("total ops: " + totalOperations);
                 for (int j = 2; j < raw.Length; j++)
                     for (int i = 1; i < j; i++)
                     {
+                        //Console.WriteLine();
                         if (operationsCompleted % 100 == 0)
                             Console.WriteLine("  " + (100.0 * ((float)operationsCompleted / (float)totalOperations)));
 
                         operationsCompleted++;
-                        //Console.WriteLine("----- Testing request: '" + request.Name + "' (" + operationsCompleted + ") -----");
-
 
                         var handler = new Handler();
                         var parser = new HttpMachine(handler);
 
-                        //Console.WriteLine("--- Parsing Chunk 1 --- ");
                         var buffer1Length = i;
                         Buffer.BlockCopy(raw, 0, buffer1, 0, buffer1Length);
-                        //Console.WriteLine(Encoding.ASCII.GetString(buffer1, 0, buffer1Length));
-                        //Console.WriteLine("---");
 
                         parser.Execute(new ArraySegment<byte>(buffer1, 0, buffer1Length));
 
-                        //Console.WriteLine("--- Parsing Chunk 2 --- ");
                         var buffer2Length = j - i;
-                        //Console.WriteLine("j - i = " + (j - i));
                         Buffer.BlockCopy(raw, i, buffer2, 0, buffer2Length);
-                        //Console.WriteLine(Encoding.ASCII.GetString(buffer2, 0, buffer2Length));
-                        //Console.WriteLine("---");
 
                         parser.Execute(new ArraySegment<byte>(buffer2, 0, buffer2Length));
 
-                        //Console.WriteLine("--- Parsing Chunk 3 --- ");
                         var buffer3Length = raw.Length - j;
                         Buffer.BlockCopy(raw, j, buffer3, 0, buffer3Length);
-                        //Console.WriteLine(Encoding.ASCII.GetString(buffer3, 0, buffer3Length));
-                        //Console.WriteLine("---");
 
                         parser.Execute(new ArraySegment<byte>(buffer3, 0, buffer3Length));
 
-                        AssertRequest(request, handler, parser);
+                        try
+                        {
+                            AssertRequest(request, handler, parser);
+                        }
+                        catch (AssertionException e)
+                        {
+                            Console.WriteLine("Problem while parsing chunks:");
+                            Console.WriteLine("---");
+                            Console.WriteLine(Encoding.UTF8.GetString(buffer1, 0, buffer1Length));
+                            Console.WriteLine("---");
+                            Console.WriteLine(Encoding.UTF8.GetString(buffer2, 0, buffer2Length));
+                            Console.WriteLine("---");
+                            Console.WriteLine(Encoding.UTF8.GetString(buffer3, 0, buffer3Length));
+                            Console.WriteLine("---");
+                            throw;
+                        }
 
                     }
             }
-        }
-
-        // TODO 
-        // extract content-length/parse body
-        // error conditions/fuzz
-        // decode chunked encoding
-        // upgrade?
-        // keepalive
-        [Test]
-        public void Upgrade()
-        {
         }
     }
 }

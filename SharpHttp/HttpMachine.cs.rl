@@ -173,6 +173,24 @@ namespace HttpSharp
 			parser.OnHeadersComplete();
 		}
 
+		action enter_body {
+			//Console.WriteLine("enter_body fpc " + fpc);
+			mark = fpc;
+		}
+
+		action body_char {
+			//Console.WriteLine("body_char fpc " + fpc);
+			bytesRead++;
+
+			//if (bytesRead == contentLength)
+			//	TODO reset state and read next message
+		}
+
+		action leave_body {
+			//Console.WriteLine("leave_body fpc " + fpc);
+			parser.OnBody(new ArraySegment<byte>(data, mark, fpc - mark));
+		}
+
         include http "http.rl";
         
         }%%

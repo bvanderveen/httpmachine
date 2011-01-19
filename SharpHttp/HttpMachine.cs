@@ -33,7 +33,7 @@ namespace HttpSharp
 
 
         
-#line 178 "HttpMachine.cs.rl"
+#line 196 "HttpMachine.cs.rl"
 
         
         
@@ -44,9 +44,10 @@ static readonly sbyte[] _http_parser_actions =  new sbyte [] {
 	7, 1, 8, 1, 10, 1, 11, 1, 
 	12, 1, 13, 1, 14, 1, 15, 1, 
 	16, 1, 17, 1, 20, 1, 21, 1, 
-	22, 2, 7, 4, 2, 7, 5, 2, 
-	9, 4, 2, 9, 5, 2, 18, 17, 
-	2, 19, 20
+	22, 1, 24, 2, 7, 4, 2, 7, 
+	5, 2, 9, 4, 2, 9, 5, 2, 
+	18, 17, 2, 19, 20, 2, 22, 23
+	
 };
 
 static readonly short[] _http_parser_key_offsets =  new short [] {
@@ -215,13 +216,13 @@ static readonly sbyte[] _http_parser_trans_actions =  new sbyte [] {
 	1, 0, 5, 0, 7, 0, 11, 0, 
 	0, 0, 0, 0, 0, 0, 19, 23, 
 	0, 25, 29, 0, 0, 0, 31, 31, 
-	0, 0, 33, 56, 0, 35, 37, 0, 
+	0, 0, 33, 58, 0, 35, 37, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 53, 17, 0, 50, 
-	13, 0, 44, 15, 0, 0, 0, 0, 
+	0, 0, 0, 0, 55, 17, 0, 52, 
+	13, 0, 46, 15, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 39, 0
+	0, 0, 61, 0
 };
 
 static readonly sbyte[] _http_parser_eof_actions =  new sbyte [] {
@@ -229,10 +230,10 @@ static readonly sbyte[] _http_parser_eof_actions =  new sbyte [] {
 	0, 0, 0, 21, 0, 27, 0, 0, 
 	0, 33, 0, 37, 33, 33, 33, 33, 
 	33, 33, 33, 33, 33, 33, 33, 33, 
-	33, 33, 9, 47, 9, 41, 3, 3, 
+	33, 33, 9, 49, 9, 43, 3, 3, 
 	3, 3, 3, 3, 3, 3, 3, 3, 
 	3, 3, 3, 3, 3, 3, 3, 3, 
-	3, 3, 3, 3, 3, 39, 0
+	3, 3, 3, 3, 3, 39, 41
 };
 
 const int http_parser_start = 1;
@@ -242,18 +243,18 @@ const int http_parser_error = 0;
 const int http_parser_en_main = 1;
 
 
-#line 181 "HttpMachine.cs.rl"
+#line 199 "HttpMachine.cs.rl"
         
         public HttpMachine(IHttpRequestParser parser)
         {
 			this.parser = parser;
             
-#line 252 "HttpMachine.cs"
+#line 253 "HttpMachine.cs"
 	{
 	cs = http_parser_start;
 	}
 
-#line 186 "HttpMachine.cs.rl"
+#line 204 "HttpMachine.cs.rl"
         }
 
         public int Execute(ArraySegment<byte> buf)
@@ -268,7 +269,7 @@ const int http_parser_en_main = 1;
 			fragMark = 0;
             
             
-#line 272 "HttpMachine.cs"
+#line 273 "HttpMachine.cs"
 	{
 	sbyte _klen;
 	short _trans;
@@ -486,7 +487,14 @@ _match:
 			parser.OnHeadersComplete();
 		}
 	break;
-#line 490 "HttpMachine.cs"
+	case 23:
+#line 176 "HttpMachine.cs.rl"
+	{
+			//Console.WriteLine("enter_body fpc " + fpc);
+			mark = p;
+		}
+	break;
+#line 498 "HttpMachine.cs"
 		default: break;
 		}
 	}
@@ -565,7 +573,14 @@ _again:
 			parser.OnHeadersComplete();
 		}
 	break;
-#line 569 "HttpMachine.cs"
+	case 24:
+#line 189 "HttpMachine.cs.rl"
+	{
+			//Console.WriteLine("leave_body fpc " + fpc);
+			parser.OnBody(new ArraySegment<byte>(data, mark, p - mark));
+		}
+	break;
+#line 584 "HttpMachine.cs"
 		default: break;
 		}
 	}
@@ -574,7 +589,7 @@ _again:
 	_out: {}
 	}
 
-#line 200 "HttpMachine.cs.rl"
+#line 218 "HttpMachine.cs.rl"
             
             return p - buf.Offset;
         }
