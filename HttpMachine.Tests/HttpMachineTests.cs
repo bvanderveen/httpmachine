@@ -153,6 +153,38 @@ namespace HttpMachine.Tests
                     { "Content-Length", "15" }
                 },
                 Body = Encoding.UTF8.GetBytes("helloworldhello")
+            },
+            new TestRequest() {
+                Name = "safari",
+                Raw = Encoding.ASCII.GetBytes(@"GET /portfolio HTTP/1.1
+Host: bvanderveen.com
+User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_5; en-us) AppleWebKit/533.18.1 (KHTML, like Gecko) Version/5.0.2 Safari/533.18.5
+Accept: application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5
+Referer: http://bvanderveen.com/
+Accept-Language: en-us
+Accept-Encoding: gzip, deflate
+Cookie: __utmb=251228503.1.12.12338288212; __utmc=393939923957034890; __utma=1847567578628673.487437863768.2382773744.4893288295.485438934.99; __utmz=838388383.23433321112905.23.96.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=fooobnn%20ittszz
+Connection: keep-alive
+
+"),
+                Method = "GET",
+                RequestUri = "/portfolio",
+                RequestPath = "/portfolio",
+                QueryString = "",
+                Fragment = "",
+                VersionMajor = 1,
+                VersionMinor = 1,
+                Headers = new Dictionary<string,string>(StringComparer.InvariantCultureIgnoreCase) {
+                    { "Host", "bvanderveen.com" },
+                    { "User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_5; en-us) AppleWebKit/533.18.1 (KHTML, like Gecko) Version/5.0.2 Safari/533.18.5" },
+                    { "Accept", "application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5" },
+                    { "Referer", "http://bvanderveen.com/" },
+                    { "Accept-Language", "en-us" },
+                    { "Accept-Encoding", "gzip, deflate" },
+                    { "Cookie", "__utmb=251228503.1.12.12338288212; __utmc=393939923957034890; __utma=1847567578628673.487437863768.2382773744.4893288295.485438934.99; __utmz=838388383.23433321112905.23.96.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=fooobnn%20ittszz" },
+                    { "Connection", "keep-alive" }
+                },
+                Body = null
             }
         };
     }
@@ -379,8 +411,7 @@ namespace HttpMachine.Tests
                 byte[] buffer2 = new byte[80 * 1024];
                 byte[] buffer3 = new byte[80 * 1024];
 
-                Console.WriteLine("----- Testing request: '" + request.Name + "' (" + operationsCompleted + ") -----");
-                Console.WriteLine("total ops: " + totalOperations);
+                Console.WriteLine("----- Testing request: '" + request.Name + "' (" + totalOperations + " ops) -----");
                 for (int j = 2; j < raw.Length; j++)
                     for (int i = 1; i < j; i++)
                     {
