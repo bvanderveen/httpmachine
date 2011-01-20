@@ -18,12 +18,12 @@ userinfo = (unreserved | escaped | ";" | ":" | "&" | "=" | "+" | "$" | "," )*;
 param = pchar*;
 segment = pchar* (";" param)*;
 path_segments = segment ("/" segment)*;
-abs_path = "/" path_segments;
+uri_abs_path = "/" path_segments;
 
-rel_path = rel_segment abs_path?;
+rel_path = rel_segment uri_abs_path?;
 
-query = uric*;
-fragment = uric*;
+uri_query = uric*;
+uri_fragment = uric*;
 
 ipv4address = digit{1,3} "." digit{1,3} "." digit{1,3} "." digit{1,3};
 toplabel = alpha | alpha (alnum | "-")* alnum;
@@ -34,18 +34,18 @@ hostname = (domainlabel ".") toplabel "."?;
 host = hostname | ipv4address;
 port = digit*;
 
-hostport = host (":" port);
+hostport = host (":" port)?;
 server = ((userinfo "@")? hostport)?;
-authority = server | reg_name;
-net_path = "//" authority abs_path?;
+uri_authority = server | reg_name;
+net_path = "//" uri_authority uri_abs_path?;
 
 opaque_part = uric_no_slash uric*;
-hier_part = (net_path | abs_path) ("?" query)?;
+hier_part = (net_path | uri_abs_path) ("?" uri_query)?;
 
 
-absolute_uri = scheme ":" (hier_part | opaque_part);
-relative_uri = (abs_path | rel_path) ("?" query)?;
+uri_absolute_uri = scheme ":" (hier_part | opaque_part);
+relative_uri = (uri_abs_path | rel_path) ("?" uri_query)?;
 
-uri_reference = (absolute_uri | relative_uri)? ("#" fragment)?;
+uri_reference = (uri_absolute_uri | relative_uri)? ("#" uri_fragment)?;
 
 }%%

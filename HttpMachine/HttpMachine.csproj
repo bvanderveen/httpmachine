@@ -8,7 +8,7 @@
     <ProjectGuid>{76FB25C5-15B1-4541-8D19-D78790257C95}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SharpHttp</RootNamespace>
+    <RootNamespace>HttpMachine</RootNamespace>
     <AssemblyName>SharpHttp</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
