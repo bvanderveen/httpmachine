@@ -73,7 +73,6 @@ namespace HttpMachine.Tests
             request.QueryString = queryString.ToString();
             request.Fragment = fragment.ToString();
             request.Headers = headers;
-            Console.WriteLine("Setting onheadersended = " + onHeadersEndCalled);
             request.OnHeadersEndCalled = onHeadersEndCalled;
 
             // aggregate body chunks into one big chunk
@@ -173,7 +172,7 @@ namespace HttpMachine.Tests
         public void OnBody(HttpParser parser, ArraySegment<byte> data)
         {
             var str = Encoding.ASCII.GetString(data.Array, data.Offset, data.Count);
-            //Console.WriteLine("OnBody:  '" + str + "'");
+            Console.WriteLine("OnBody:  '" + str + "'");
             body.Add(data);
         }
     }
@@ -199,12 +198,6 @@ namespace HttpMachine.Tests
 
                 Assert.IsTrue(actualRequest.OnHeadersEndCalled, "OnHeadersEnd was not called.");
                 Assert.AreEqual(expectedRequest.ShouldKeepAlive, actualRequest.ShouldKeepAlive, "Wrong value for ShouldKeepAlive");
-
-                if (expectedRequest.Headers.Keys.Any(k => k.ToLowerInvariant() == "content-length"))
-                {
-                    //Console.WriteLine("verifying content length");
-                    Assert.AreEqual(int.Parse(actualRequest.Headers["content-length"]), machine.contentLength);
-                }
 
                 foreach (var pair in expectedRequest.Headers)
                 {

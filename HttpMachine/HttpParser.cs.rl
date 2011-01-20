@@ -18,9 +18,14 @@ namespace HttpMachine
 		public int MajorVersion { get { return versionMajor; } }
 		public int MinorVersion { get { return versionMinor; } }
 
+		bool gotConnectionHeader;
+		bool gotTransferEncodingHeader;
+		bool gotUpgradeHeader;
+
 		bool gotConnectionClose;
 		bool gotConnectionKeepAlive;
-		bool shouldKeepAlive;
+		bool gotTransferEncodingChunked;
+		bool gotUpgradeValue;
 
         // internal for testing
         internal int contentLength = -1;
@@ -62,8 +67,12 @@ namespace HttpMachine
 		action matched_header { 
 			Console.WriteLine("matched header");
 		}
+
 		action matched_last_crlf_before_body {
 			Console.WriteLine("matched_last_crlf_before_body");
+		}
+		action matched_header_crlf {
+			Console.WriteLine("matched_header_crlf");
 		}
 
         action enter_method {
@@ -132,46 +141,69 @@ namespace HttpMachine
             parser.OnHeaderName(this, new ArraySegment<byte>(data, mark, fpc - mark));
         }
 
-        action leave_header_content_length {
+        action header_content_length {
             if (contentLength != -1) throw new Exception("Already got Content-Length. Possible attack?");
+			Console.WriteLine("Saw content length");
 			contentLength = 0;
         }
+
+		action header_connection {
+			Console.WriteLine("header_connection");
+			gotConnectionHeader = true;
+		}
+
+		action header_connection_close {
+			Console.WriteLine("header_connection_close");
+			if (gotConnectionHeader)
+				gotConnectionClose = true;
+		}
+
+		action header_connection_keepalive {
+			Console.WriteLine("header_connection_keepalive");
+			if (gotConnectionHeader)
+				gotConnectionKeepAlive = true;
+		}
 		
-		action leave_header_transfer_encoding {
+		action header_transfer_encoding {
+			Console.WriteLine("Saw transfer encoding");
+			gotTransferEncodingHeader = true;
 		}
 
-		action leave_header_connection {
+		action header_transfer_encoding_chunked {
+			if (gotTransferEncodingHeader)
+				gotTransferEncodingChunked = true;
 		}
 
-		action leave_header_upgrade {
+		action header_upgrade {
+			gotUpgradeHeader = true;
 		}
-        
+
         action enter_header_value {
             //Console.WriteLine("enter_header_value fpc " + fpc + " fc " + (char)fc);
             mark = fpc;
         }
 
         action header_value_char {
-            //Console.WriteLine("header_value_char fpc " + fpc + " fc " + (char)fc);
+            //Console.WriteLine("header_value_char fpc " + fpc + " fc '" + (char)fc + "'");
             if (contentLength > -1)
             {
                 var cfc = (char)fc;
-                if (cfc == ' ')
-                {
-                    fbreak;
-                }
 
                 if (cfc < '0' || cfc > '9')
                     throw new Exception("Bogus content length");
 
                 contentLength *= 10;
                 contentLength += (int)fc - (int)'0';
+				Console.WriteLine("Content length is looking like " + contentLength);
             }
         }
         
         action leave_header_value {
             //Console.WriteLine("leave_header_value fpc " + fpc + " fc " + (char)fc);
-            parser.OnHeaderValue(this, new ArraySegment<byte>(data, mark, fpc - mark));
+			var count = fpc - mark;
+			if (count > 0 && gotUpgradeHeader)
+				gotUpgradeValue = true;
+            parser.OnHeaderValue(this, new ArraySegment<byte>(data, mark, count));
         }
 
         action leave_headers {
@@ -193,6 +225,7 @@ namespace HttpMachine
 			}
 			else if (contentLength > 0)
 			{
+				fhold;
 				fgoto body_identity;
 			}
 			else
@@ -214,8 +247,9 @@ namespace HttpMachine
 			}
         }
 
-		action eof_leave_body_identity {
+		action body_identity {
 			var toRead = Math.Min(pe - p, contentLength);
+			Console.WriteLine("Reading " + toRead + " bytes from body.");
 			if (toRead > 0)
 			{
 				parser.OnBody(this, new ArraySegment<byte>(data, p, toRead));
@@ -227,7 +261,10 @@ namespace HttpMachine
 					parser.OnMessageEnd(this);
 
 					if (ShouldKeepAlive)
-						fret;
+					{
+						fhold;
+						fgoto main;
+					}
 					else
 					{
 						fhold;
