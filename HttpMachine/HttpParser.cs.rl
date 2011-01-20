@@ -81,7 +81,11 @@ namespace HttpMachine
             //Console.WriteLine("leave_fragment fpc " + fpc + " fragMark " + fragMark);
             parser.OnFragment(new ArraySegment<byte>(data, fragMark, fpc - fragMark));
         }
-        
+
+        action version_major {
+			parser.OnVersionMajor((char)fc - '0');
+		}
+
         action enter_version_major {
             //Console.WriteLine("enter_version_major fpc " + fpc);
             mark = fpc;
@@ -96,6 +100,10 @@ namespace HttpMachine
             //Console.WriteLine("leave_version_major fpc " + fpc + " mark " + mark);
             parser.OnVersionMajor(new ArraySegment<byte>(data, mark, fpc - mark));
         }
+
+		action version_minor {
+			parser.OnVersionMinor((char)fc - '0');
+		}
 
         action enter_version_minor {
             //Console.WriteLine("enter_request_uri fpc " + fpc);
@@ -156,7 +164,7 @@ namespace HttpMachine
         }
 
         action leave_headers {
-            parser.OnHeadersComplete();
+            parser.OnHeadersEnd();
         }
 
         action enter_body {

@@ -6,10 +6,10 @@ using HttpMachine;
 using NUnit.Framework;
 
 // TODO
+// parse http version as integers
 // reset state after body is read (add OnBeginMessage, OnEndMessage)
 // extract connection header, indicate keepalive
 // parse request path
-// parse http version as integers
 // allow leading \r\n
 // allow ? in query
 // test requests from common clients (firefox etc)
@@ -192,9 +192,18 @@ Connection: keep-alive
 
     public class Handler : IHttpParserHandler
     {
-        StringBuilder method, requestUri, queryString, fragment, headerName, headerValue, versionMajor, versionMinor;
+        StringBuilder method, requestUri, queryString, fragment, headerName, headerValue;
+        int versionMajor, versionMinor;
         Dictionary<string, string> headers;
         List<ArraySegment<byte>> body;
+
+        public void OnMessageBegin()
+        {
+        }
+
+        public void OnMessageEnd()
+        {
+        }
 
         public string Method
         {
@@ -243,8 +252,6 @@ Connection: keep-alive
             fragment = new StringBuilder();
             headerName = new StringBuilder();
             headerValue = new StringBuilder();
-            versionMajor = new StringBuilder(1);
-            versionMinor = new StringBuilder(1);
             headers = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
             body = new List<ArraySegment<byte>>();
         }
@@ -299,23 +306,21 @@ Connection: keep-alive
             headerValue.Append(str);
         }
 
-        public void OnVersionMajor(ArraySegment<byte> data)
+        public void OnVersionMajor(int major)
         {
-            var str = Encoding.ASCII.GetString(data.Array, data.Offset, data.Count);
-            //Console.WriteLine("OnVersionMajor:  '" + str + "'");
-            versionMajor.Append(str);
+            //Console.WriteLine("OnVersionMajor:  '" + major + "'");
+            versionMajor = major;
         }
 
-        public void OnVersionMinor(ArraySegment<byte> data)
+        public void OnVersionMinor(int minor)
         {
-            var str = Encoding.ASCII.GetString(data.Array, data.Offset, data.Count);
-            //Console.WriteLine("OnVersionMinor:  '" + str + "'");
-            versionMinor.Append(str);
+            //Console.WriteLine("OnVersionMinor:  '" + minor + "'");
+            versionMinor = minor;
         }
 
-        public void OnHeadersComplete()
+        public void OnHeadersEnd()
         {
-            //Console.WriteLine("OnHeadersComplete");
+            //Console.WriteLine("OnHeadersEnd");
             if (headerValue.Length != 0)
                 CommitHeader();
         }
@@ -416,7 +421,7 @@ Connection: keep-alive
                     for (int i = 1; i < j; i++)
                     {
                         //Console.WriteLine();
-                        if (operationsCompleted % 100 == 0)
+                        if (operationsCompleted % 1000 == 0)
                             Console.WriteLine("  " + (100.0 * ((float)operationsCompleted / (float)totalOperations)));
 
                         operationsCompleted++;

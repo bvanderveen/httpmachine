@@ -15,7 +15,9 @@ http_request_method = alpha {1,24};
 #http_request_uri = ("*" | absolute_uri >matched_absolute_uri | abs_path >matched_abs_path | authority >matched_authority);
 http_request_uri = "*" | ((any -- (" " | "#" | "?" | http_crlf))+ ("?" ((any -- (" " | "#" | http_crlf))+ >enter_query_string %/leave_query_string %leave_query_string)?)? ("#" ((any -- (" " | http_crlf))+ >enter_fragment %/leave_fragment %leave_fragment)?)?);
 
-http_version = "HTTP/" (digit+ >enter_version_major %/eof_leave_version_major %leave_version_major) "." (digit+ >enter_version_minor %/eof_leave_version_minor %leave_version_minor);
+# http_version = "HTTP/" (digit{1} >enter_version_major %/eof_leave_version_major %leave_version_major) "." (digit{1} >enter_version_minor %/eof_leave_version_minor %leave_version_minor);
+http_version = "HTTP/" (digit{1} $version_major) "." (digit{1} $version_minor);
+
 http_request_line = (http_request_method >enter_method %/eof_leave_method %leave_method) " " (http_request_uri >enter_request_uri %/eof_leave_request_uri %leave_request_uri) " " http_version http_crlf;
 
 http_header_name = http_token;
