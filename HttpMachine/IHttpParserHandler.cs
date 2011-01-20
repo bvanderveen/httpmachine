@@ -7,17 +7,15 @@ namespace HttpMachine
 {
     public interface IHttpParserHandler
     {
-        void OnMessageBegin();
-        void OnMethod(ArraySegment<byte> data);
-        void OnRequestUri(ArraySegment<byte> data);
-        void OnQueryString(ArraySegment<byte> data);
-        void OnFragment(ArraySegment<byte> data);
-        void OnVersionMajor(int major);
-        void OnVersionMinor(int minor);
-        void OnHeaderName(ArraySegment<byte> data);
-        void OnHeaderValue(ArraySegment<byte> data);
-        void OnHeadersEnd();
-        void OnBody(ArraySegment<byte> data);
-        void OnMessageEnd();
+        void OnMessageBegin(HttpParser parser);
+        void OnMethod(HttpParser parser, ArraySegment<byte> data);
+        void OnRequestUri(HttpParser parser, ArraySegment<byte> data);
+        void OnQueryString(HttpParser parser, ArraySegment<byte> data);
+        void OnFragment(HttpParser parser, ArraySegment<byte> data);
+        void OnHeaderName(HttpParser parser, ArraySegment<byte> data);
+        void OnHeaderValue(HttpParser parser, ArraySegment<byte> data);
+        void OnHeadersEnd(HttpParser parser);
+        void OnBody(HttpParser parser, ArraySegment<byte> data);
+        void OnMessageEnd(HttpParser parser);
     }
 }

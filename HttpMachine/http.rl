@@ -18,7 +18,7 @@ http_request_uri = "*" | ((any -- (" " | "#" | "?" | http_crlf))+ ("?" ((any -- 
 # http_version = "HTTP/" (digit{1} >enter_version_major %/eof_leave_version_major %leave_version_major) "." (digit{1} >enter_version_minor %/eof_leave_version_minor %leave_version_minor);
 http_version = "HTTP/" (digit{1} $version_major) "." (digit{1} $version_minor);
 
-http_request_line = (http_request_method >enter_method %/eof_leave_method %leave_method) " " (http_request_uri >enter_request_uri %/eof_leave_request_uri %leave_request_uri) " " http_version http_crlf;
+http_request_line = (http_request_method >enter_method %/eof_leave_method %leave_method) " " (http_request_uri >enter_request_uri %/eof_leave_request_uri %leave_request_uri) " "? http_version? http_crlf;
 
 http_header_name = http_token;
 
@@ -29,8 +29,8 @@ http_header_value = any+;
 http_content_length = "content-length"i %leave_content_length;
 http_header = (http_header_name | http_content_length) >enter_header_name %/leave_header_name %leave_header_name ((":" (" " | "\t")*) ) <: http_header_value $header_value_char >enter_header_value %/leave_header_value %leave_header_value :> http_crlf;
 
-http_request = http_request_line (http_header)* http_crlf %/leave_headers %leave_headers (any+ >enter_body %/leave_body %leave_body)?;
+http_request = http_request_line (http_header)* http_crlf %/leave_headers %leave_headers (any+ >enter_body %/leave_body)?;
 
-main := http_request;
+main := >message_begin http_request;
 
 }%%

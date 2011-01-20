@@ -11,15 +11,40 @@ namespace HttpMachine
         IHttpParserHandler parser;
         int bytesRead;
 
+		int versionMajor = 0;
+		int versionMinor = 9;
+
+		public int MajorVersion { get { return versionMajor; } }
+		public int MinorVersion { get { return versionMinor; } }
+
+		bool gotConnectionClose;
+		bool gotConnectionKeepAlive;
+
         // internal for testing
         internal int contentLength;
         internal bool gotContentLength;
+
+		bool shouldKeepAlive;
+		public bool ShouldKeepAlive { 
+			get { 
+				if (versionMajor > 0 && versionMinor > 0)
+					// HTTP/1.1
+					return !gotConnectionClose;
+				else 
+					// < HTTP/1.1
+					return gotConnectionKeepAlive;
+			}
+		}
 
 
         %%{
 
         # define actions
         machine http_parser;
+
+		action message_begin {
+			parser.OnMessageBegin();
+		}
         
         action matched_absolute_uri {
             Console.WriteLine("matched absolute_uri");
@@ -40,12 +65,12 @@ namespace HttpMachine
         
         action eof_leave_method {
             //Console.WriteLine("eof_leave_method fpc " + fpc + " mark " + mark);
-            parser.OnMethod(new ArraySegment<byte>(data, mark, fpc - mark));
+            parser.OnMethod(this, new ArraySegment<byte>(data, mark, fpc - mark));
         }
 
         action leave_method {
             //Console.WriteLine("leave_method fpc " + fpc + " mark " + mark);
-            parser.OnMethod(new ArraySegment<byte>(data, mark, fpc - mark));
+            parser.OnMethod(this, new ArraySegment<byte>(data, mark, fpc - mark));
         }
         
         action enter_request_uri {
@@ -55,12 +80,12 @@ namespace HttpMachine
         
         action eof_leave_request_uri {
             //Console.WriteLine("eof_leave_request_uri!! fpc " + fpc + " mark " + mark);
-            parser.OnRequestUri(new ArraySegment<byte>(data, mark, fpc - mark));
+            parser.OnRequestUri(this, new ArraySegment<byte>(data, mark, fpc - mark));
         }
 
         action leave_request_uri {
             //Console.WriteLine("leave_request_uri fpc " + fpc + " mark " + mark);
-            parser.OnRequestUri(new ArraySegment<byte>(data, mark, fpc - mark));
+            parser.OnRequestUri(this, new ArraySegment<byte>(data, mark, fpc - mark));
         }
         
         action enter_query_string {
@@ -70,7 +95,7 @@ namespace HttpMachine
 
         action leave_query_string {
             //Console.WriteLine("leave_query_string fpc " + fpc + " qsMark " + qsMark);
-            parser.OnQueryString(new ArraySegment<byte>(data, qsMark, fpc - qsMark));
+            parser.OnQueryString(this, new ArraySegment<byte>(data, qsMark, fpc - qsMark));
         }
         action enter_fragment {
             //Console.WriteLine("enter_fragment fpc " + fpc);
@@ -79,46 +104,16 @@ namespace HttpMachine
 
         action leave_fragment {
             //Console.WriteLine("leave_fragment fpc " + fpc + " fragMark " + fragMark);
-            parser.OnFragment(new ArraySegment<byte>(data, fragMark, fpc - fragMark));
+            parser.OnFragment(this, new ArraySegment<byte>(data, fragMark, fpc - fragMark));
         }
 
         action version_major {
-			parser.OnVersionMajor((char)fc - '0');
+			versionMajor = (char)fc - '0';
 		}
-
-        action enter_version_major {
-            //Console.WriteLine("enter_version_major fpc " + fpc);
-            mark = fpc;
-        }
-        
-        action eof_leave_version_major {
-            //Console.WriteLine("eof_leave_version_major fpc " + fpc + " mark " + mark);
-            parser.OnVersionMajor(new ArraySegment<byte>(data, mark, fpc - mark));
-        }
-
-        action leave_version_major {
-            //Console.WriteLine("leave_version_major fpc " + fpc + " mark " + mark);
-            parser.OnVersionMajor(new ArraySegment<byte>(data, mark, fpc - mark));
-        }
 
 		action version_minor {
-			parser.OnVersionMinor((char)fc - '0');
+			versionMinor = (char)fc - '0';
 		}
-
-        action enter_version_minor {
-            //Console.WriteLine("enter_request_uri fpc " + fpc);
-            mark = fpc;
-        }
-        
-        action eof_leave_version_minor {
-            //Console.WriteLine("eof_leave_version_minor!! fpc " + fpc + " mark " + mark);
-            parser.OnVersionMinor(new ArraySegment<byte>(data, mark, fpc - mark));
-        }
-
-        action leave_version_minor {
-            //Console.WriteLine("leave_version_minor fpc " + fpc + " mark " + mark);
-            parser.OnVersionMinor(new ArraySegment<byte>(data, mark, fpc - mark));
-        }
         
         action enter_header_name {
             //Console.WriteLine("enter_header_name fpc " + fpc + " fc " + (char)fc);
@@ -127,7 +122,7 @@ namespace HttpMachine
         
         action leave_header_name {
             //Console.WriteLine("leave_header_name fpc " + fpc + " fc " + (char)fc);
-            parser.OnHeaderName(new ArraySegment<byte>(data, mark, fpc - mark));
+            parser.OnHeaderName(this, new ArraySegment<byte>(data, mark, fpc - mark));
         }
 
         action leave_content_length {
@@ -160,7 +155,7 @@ namespace HttpMachine
         
         action leave_header_value {
             //Console.WriteLine("leave_header_value fpc " + fpc + " fc " + (char)fc);
-            parser.OnHeaderValue(new ArraySegment<byte>(data, mark, fpc - mark));
+            parser.OnHeaderValue(this, new ArraySegment<byte>(data, mark, fpc - mark));
         }
 
         action leave_headers {
@@ -176,13 +171,17 @@ namespace HttpMachine
             //Console.WriteLine("body_char fpc " + fpc);
             bytesRead++;
 
-            //if (bytesRead == contentLength)
-            //	TODO reset state and read next message
+            if (bytesRead == contentLength)
+			{
+				parser.OnBody(this, new ArraySegment<byte>(data, mark, fpc - mark));
+				fgoto main;
+			}
         }
 
         action leave_body {
             //Console.WriteLine("leave_body fpc " + fpc);
-            parser.OnBody(new ArraySegment<byte>(data, mark, fpc - mark));
+			var count = Math.Max(fpc - mark, contentLength - bytesRead);
+            parser.OnBody(this, new ArraySegment<byte>(data, mark, count));
         }
 
         include http "http.rl";
