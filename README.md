@@ -5,20 +5,20 @@ HttpMachine is a C# HTTP request parser. It implements a state machine with [Adr
 HttpMachine is Copyright (c) 2011 [Benjamin van der Veen](http://bvanderveen.com). HttpMachine is licensed under the 
 MIT License. See LICENSE.txt.
 
-# Features
+## Features
 
 - HTTP/1.1 and 1.0
 - Supports pipelined requests
 - Tells your server if it should keep-alive
 - Extracts the length of the entity body 
 
-# Possible future features
+## Eminently-possible future features
 
 - Support for decoding chunked transfers.
 - Support for protocol upgrade.
 - Support for parsing responses.
 
-# Usage
+## Usage
 
 HttpMachine provides HTTP data through callbacks. To receive these callbacks, implement the `IHttpParserHandler` interface.
 
