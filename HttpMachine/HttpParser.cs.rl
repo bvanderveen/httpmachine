@@ -4,8 +4,6 @@ namespace HttpMachine
 {
     public class HttpParser
     {
-		int[] stack = new int[3];
-		int top = 0;
         int cs;
         int mark;
         int qsMark;
@@ -64,10 +62,18 @@ namespace HttpMachine
         action matched_first_space {
             Console.WriteLine("matched first space");
         }
+        action leave_first_space {
+            Console.WriteLine("leave_first_space");
+        }
+        action eof_leave_first_space {
+            Console.WriteLine("eof_leave_first_space");
+        }
 		action matched_header { 
 			Console.WriteLine("matched header");
 		}
-
+		action matched_leading_crlf {
+			Console.WriteLine("matched_leading_crlf");
+		}
 		action matched_last_crlf_before_body {
 			Console.WriteLine("matched_last_crlf_before_body");
 		}
@@ -76,31 +82,32 @@ namespace HttpMachine
 		}
 
         action enter_method {
+			Console.WriteLine("enter_method");
             mark = fpc;
         }
         
         action eof_leave_method {
-            //Console.WriteLine("eof_leave_method fpc " + fpc + " mark " + mark);
+            Console.WriteLine("eof_leave_method fpc " + fpc + " mark " + mark);
             parser.OnMethod(this, new ArraySegment<byte>(data, mark, fpc - mark));
         }
 
         action leave_method {
-            //Console.WriteLine("leave_method fpc " + fpc + " mark " + mark);
+            Console.WriteLine("leave_method fpc " + fpc + " mark " + mark);
             parser.OnMethod(this, new ArraySegment<byte>(data, mark, fpc - mark));
         }
         
         action enter_request_uri {
-            //Console.WriteLine("enter_request_uri fpc " + fpc);
+            Console.WriteLine("enter_request_uri fpc " + fpc);
             mark = fpc;
         }
         
         action eof_leave_request_uri {
-            //Console.WriteLine("eof_leave_request_uri!! fpc " + fpc + " mark " + mark);
+            Console.WriteLine("eof_leave_request_uri!! fpc " + fpc + " mark " + mark);
             parser.OnRequestUri(this, new ArraySegment<byte>(data, mark, fpc - mark));
         }
 
         action leave_request_uri {
-            //Console.WriteLine("leave_request_uri fpc " + fpc + " mark " + mark);
+            Console.WriteLine("leave_request_uri fpc " + fpc + " mark " + mark);
             parser.OnRequestUri(this, new ArraySegment<byte>(data, mark, fpc - mark));
         }
         
@@ -253,7 +260,7 @@ namespace HttpMachine
 			if (toRead > 0)
 			{
 				parser.OnBody(this, new ArraySegment<byte>(data, p, toRead));
-				p += toRead - 1;
+				p += toRead;
 				contentLength -= toRead;
 
 				if (contentLength == 0)
@@ -262,6 +269,7 @@ namespace HttpMachine
 
 					if (ShouldKeepAlive)
 					{
+						Console.WriteLine("Transitioning from identity body to next message.");
 						fhold;
 						fgoto main;
 					}

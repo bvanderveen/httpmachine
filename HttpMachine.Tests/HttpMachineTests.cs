@@ -183,11 +183,12 @@ namespace HttpMachine.Tests
         {
             for (int i = 0; i < expected.Length; i++)
             {
+                
                 Assert.IsTrue(i <= actual.Length - 1, "Expected more requests than received");
 
                 var expectedRequest = expected[i];
                 var actualRequest = actual[i];
-
+                Console.WriteLine("Asserting request " + expectedRequest.Name);
                 Assert.AreEqual(expectedRequest.Method, actualRequest.Method, "Unexpected method.");
                 Assert.AreEqual(expectedRequest.RequestUri, actualRequest.RequestUri, "Unexpected request URI.");
                 Assert.AreEqual(expectedRequest.VersionMajor, actualRequest.VersionMajor, "Unexpected major version.");
@@ -298,18 +299,18 @@ namespace HttpMachine.Tests
 
                     var buffer1Length = i;
                     Buffer.BlockCopy(raw, 0, buffer1, 0, buffer1Length);
-
-                    parser.Execute(new ArraySegment<byte>(buffer1, 0, buffer1Length));
+                    Console.WriteLine("Parsing buffer 1.");
+                    Assert.AreEqual(buffer1Length, parser.Execute(new ArraySegment<byte>(buffer1, 0, buffer1Length)), "Error parsing buffer 1.");
 
                     var buffer2Length = j - i;
                     Buffer.BlockCopy(raw, i, buffer2, 0, buffer2Length);
-
-                    parser.Execute(new ArraySegment<byte>(buffer2, 0, buffer2Length));
+                    Console.WriteLine("Parsing buffer 2.");
+                    Assert.AreEqual(buffer2Length, parser.Execute(new ArraySegment<byte>(buffer2, 0, buffer2Length)), "Error parsing buffer 2.");
 
                     var buffer3Length = raw.Length - j;
                     Buffer.BlockCopy(raw, j, buffer3, 0, buffer3Length);
-
-                    parser.Execute(new ArraySegment<byte>(buffer3, 0, buffer3Length));
+                    Console.WriteLine("Parsing buffer 3.");
+                    Assert.AreEqual(buffer3Length, parser.Execute(new ArraySegment<byte>(buffer3, 0, buffer3Length)), "Error parsing buffer 3.");
 
                     parser.Execute(default(ArraySegment<byte>));
 

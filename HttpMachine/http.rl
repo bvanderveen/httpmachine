@@ -11,7 +11,7 @@ http_token = (ascii -- (http_cntrl | http_separators))+;
 
 
 # not as picky as the spec at the moment, accept any method name less than 24 chars
-http_request_method = (alpha {1,24} >enter_method %leave_method);
+http_request_method = (alpha {1,24} >enter_method %/eof_leave_method %leave_method);
 
 query_string = (uri_query >enter_query_string %/leave_query_string %leave_query_string);
 fragment = (uri_fragment >enter_fragment %/leave_fragment %leave_fragment);
@@ -21,14 +21,15 @@ abs_path = (uri_abs_path ("?" query_string)? ("#" fragment?)?) >matched_abs_path
 authority = uri_authority >matched_authority;
 
 http_request_uri = ("*" | absolute_uri | abs_path | authority) >enter_request_uri %/eof_leave_request_uri %leave_request_uri;
+#http_request_uri = ("*" | ((any -- (" " | "#" | "?" | http_crlf))+ ("?" ((any -- (" " | "#" | http_crlf))+ >enter_query_string %/leave_query_string %leave_query_string)?)? ("#" ((any -- (" " | http_crlf))+ >enter_fragment %/leave_fragment %leave_fragment)?)?)) >enter_request_uri %/eof_leave_request_uri %leave_request_uri;
 
 http_version = "HTTP/" (digit{1} $version_major) "." (digit{1} $version_minor);
 
-http_request_line = http_crlf? http_request_method " " http_request_uri (" " http_version)? http_crlf;
+http_request_line = (http_crlf $matched_leading_crlf)? http_request_method " " $matched_first_space %leave_first_space %/eof_leave_first_space http_request_uri (" " http_version)? http_crlf;
 
 # not getting fancy with header values, just reading everything until CRLF and calling it good. 
 # thus we don't support line folding. fuck that noise.
-http_header_value_text = (any+ -- ("\r" | "\n"));
+http_header_value_text = (any -- ("\r" | "\n"))+;
 
 
 http_header_content_length = "content-length"i %header_content_length;
