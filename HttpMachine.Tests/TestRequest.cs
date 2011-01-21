@@ -155,7 +155,41 @@ namespace HttpMachine.Tests
                 ShouldKeepAlive = true
             },
             new TestRequest() {
-                Name = "more content length",
+                Name = "1.1 get",
+                Raw = Encoding.ASCII.GetBytes("GET /foo HTTP/1.1\r\nFoo: Bar\r\nConnection: keep-alive\r\n\r\n"),
+                Method = "GET",
+                RequestUri = "/foo",
+                RequestPath = "/foo",
+                QueryString = "",
+                Fragment = "",
+                VersionMajor = 1,
+                VersionMinor = 1,
+                Headers = new Dictionary<string,string>(StringComparer.InvariantCultureIgnoreCase) {
+                    { "Foo", "Bar" },
+                    { "Connection", "keep-alive" }
+                },
+                Body = null,
+                ShouldKeepAlive = true
+            },
+            new TestRequest() {
+                Name = "1.1 get close",
+                Raw = Encoding.ASCII.GetBytes("GET /foo HTTP/1.1\r\nFoo: Bar\r\nConnection: CLOSE\r\n\r\n"),
+                Method = "GET",
+                RequestUri = "/foo",
+                RequestPath = "/foo",
+                QueryString = "",
+                Fragment = "",
+                VersionMajor = 1,
+                VersionMinor = 1,
+                Headers = new Dictionary<string,string>(StringComparer.InvariantCultureIgnoreCase) {
+                    { "Foo", "Bar" },
+                    { "CoNNection", "CLOSE" }
+                },
+                Body = null,
+                ShouldKeepAlive = false
+            },
+            new TestRequest() {
+                Name = "1.1 post",
                 Raw = Encoding.ASCII.GetBytes("POST /foo HTTP/1.1\r\nFoo: Bar\r\nContent-Length: 15\r\n\r\nhelloworldhello"),
                 Method = "POST",
                 RequestUri = "/foo",
@@ -172,6 +206,25 @@ namespace HttpMachine.Tests
                 ShouldKeepAlive = true
             },
             new TestRequest() {
+                Name = "1.1 post close",
+                Raw = Encoding.ASCII.GetBytes("POST /foo HTTP/1.1\r\nFoo: Bar\r\nContent-Length: 15\r\nConnection: close\r\nBaz: Quux\r\n\r\nhelloworldhello"),
+                Method = "POST",
+                RequestUri = "/foo",
+                RequestPath = "/foo",
+                QueryString = "",
+                Fragment = "",
+                VersionMajor = 1,
+                VersionMinor = 1,
+                Headers = new Dictionary<string,string>(StringComparer.InvariantCultureIgnoreCase) {
+                    { "Foo", "Bar" },
+                    { "Content-Length", "15" },
+                    { "Connection", "close" },
+                    { "Baz", "Quux" }
+                },
+                Body = Encoding.UTF8.GetBytes("helloworldhello"),
+                ShouldKeepAlive = false
+            },
+            new TestRequest() {
                 Name = "safari",
                 Raw = Encoding.ASCII.GetBytes(@"GET /portfolio HTTP/1.1
 Host: bvanderveen.com
@@ -180,7 +233,7 @@ Accept: application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,i
 Referer: http://bvanderveen.com/
 Accept-Language: en-us
 Accept-Encoding: gzip, deflate
-Cookie: __utmb=251228503.1.12.12338288212; __utmc=393939923957034890; __utma=1847567578628673.487437863768.2382773744.4893288295.485438934.99; __utmz=838388383.23433321112905.23.96.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=fooobnn%20ittszz
+Cookie:  __utma=7373..111.99; __utmz=.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=fooobnn%20ittszz
 Connection: keep-alive
 
 "),
@@ -198,7 +251,7 @@ Connection: keep-alive
                     { "Referer", "http://bvanderveen.com/" },
                     { "Accept-Language", "en-us" },
                     { "Accept-Encoding", "gzip, deflate" },
-                    { "Cookie", "__utmb=251228503.1.12.12338288212; __utmc=393939923957034890; __utma=1847567578628673.487437863768.2382773744.4893288295.485438934.99; __utmz=838388383.23433321112905.23.96.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=fooobnn%20ittszz" },
+                    { "Cookie", "__utma=7373..111.99; __utmz=.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=fooobnn%20ittszz" },
                     { "Connection", "keep-alive" }
                 },
                 Body = null,
@@ -224,7 +277,7 @@ Connection: keep-alive
                 ShouldKeepAlive = false
             },
             new TestRequest() {
-                Name = "get 1.0",
+                Name = "1.0 get",
                 Raw = Encoding.ASCII.GetBytes("GET /foo?asdf=jklol#poopz HTTP/1.0\r\nFoo: Bar\r\nBaz: Quux\r\n\r\n"),
                 Method = "GET",
                 RequestUri = "/foo?asdf=jklol#poopz",
@@ -241,7 +294,7 @@ Connection: keep-alive
                 ShouldKeepAlive = false
             },
             new TestRequest() {
-                Name = "get 1.0 connection keep-alive",
+                Name = "1.0 get keep-alive",
                 Raw = Encoding.ASCII.GetBytes("GET /foo?asdf=jklol#poopz HTTP/1.0\r\nFoo: Bar\r\nBaz: Quux\r\nConnection: keep-alive\r\n\r\n"),
                 Method = "GET",
                 RequestUri = "/foo?asdf=jklol#poopz",
@@ -257,7 +310,41 @@ Connection: keep-alive
                 },
                 Body = null,
                 ShouldKeepAlive = true
-            }
+            },
+            new TestRequest() {
+                Name = "1.0 post",
+                Raw = Encoding.ASCII.GetBytes("POST /foo HTTP/1.0\r\nFoo: Bar\r\n\r\nhelloworldhello"),
+                Method = "POST",
+                RequestUri = "/foo",
+                RequestPath = "/foo",
+                QueryString = "",
+                Fragment = "",
+                VersionMajor = 1,
+                VersionMinor = 0,
+                Headers = new Dictionary<string,string>(StringComparer.InvariantCultureIgnoreCase) {
+                    { "Foo", "Bar" }
+                },
+                Body = Encoding.UTF8.GetBytes("helloworldhello"),
+                ShouldKeepAlive = false
+            },
+            new TestRequest() {
+                Name = "1.0 post keep-alive with content length",
+                Raw = Encoding.ASCII.GetBytes("POST /foo HTTP/1.0\r\nContent-Length: 15\r\nFoo: Bar\r\nConnection: keep-alive\r\n\r\nhelloworldhello"),
+                Method = "POST",
+                RequestUri = "/foo",
+                RequestPath = "/foo",
+                QueryString = "",
+                Fragment = "",
+                VersionMajor = 1,
+                VersionMinor = 0,
+                Headers = new Dictionary<string,string>(StringComparer.InvariantCultureIgnoreCase) {
+                    { "Foo", "Bar" },
+                    { "Connection", "keep-alive" },
+                    { "Content-Length", "15" }
+                },
+                Body = Encoding.UTF8.GetBytes("helloworldhello"),
+                ShouldKeepAlive = true
+            },
         };
     }
 
