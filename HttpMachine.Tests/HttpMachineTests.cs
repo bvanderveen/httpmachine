@@ -15,6 +15,7 @@ using System.Diagnostics;
 
 // error conditions
 // - too-long method
+// - data after dead
 // - fuzz
 
 // not in scope (clients responsibility)
@@ -29,7 +30,7 @@ namespace HttpMachine.Tests
     {
         public List<TestRequest> Requests = new List<TestRequest>();
 
-        StringBuilder method, requestUri, queryString, fragment, headerName, headerValue;
+        string method, requestUri, queryString, fragment, headerName, headerValue;
         int versionMajor = -1, versionMinor = -1;
         Dictionary<string, string> headers;
         List<ArraySegment<byte>> body;
@@ -38,16 +39,11 @@ namespace HttpMachine.Tests
         public void OnMessageBegin(HttpParser parser)
         {
             //Console.WriteLine("OnMessageBegin");
-
+            
+            // TODO: this used to work, but i removed the StringBuffers. so work around maybe
             // defer creation of buffers until message is created so 
             // NullRef will be thrown if OnMessageBegin is not called.
 
-            method = new StringBuilder();
-            requestUri = new StringBuilder();
-            queryString = new StringBuilder();
-            fragment = new StringBuilder();
-            headerName = new StringBuilder();
-            headerValue = new StringBuilder();
             headers = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
             body = new List<ArraySegment<byte>>();
         }
@@ -64,10 +60,10 @@ namespace HttpMachine.Tests
             request.VersionMinor = versionMinor;
             request.ShouldKeepAlive = shouldKeepAlive;
 
-            request.Method = method.ToString();
-            request.RequestUri = requestUri.ToString();
-            request.QueryString = queryString.ToString();
-            request.Fragment = fragment.ToString();
+            request.Method = method;
+            request.RequestUri = requestUri;
+            request.QueryString = queryString;
+            request.Fragment = fragment;
             request.Headers = headers;
             request.OnHeadersEndCalled = onHeadersEndCalled;
 
@@ -95,54 +91,48 @@ namespace HttpMachine.Tests
             onHeadersEndCalled = false;
         }
 
-        public void OnMethod(HttpParser parser, ArraySegment<byte> data)
+        public void OnMethod(HttpParser parser, string str)
         {
-            var str = Encoding.ASCII.GetString(data.Array, data.Offset, data.Count);
             //Console.WriteLine("OnMethod: '" + str + "'");
-            method.Append(str);
+            method = str;
         }
 
-        public void OnRequestUri(HttpParser parser, ArraySegment<byte> data)
+        public void OnRequestUri(HttpParser parser, string str)
         {
-            var str = Encoding.ASCII.GetString(data.Array, data.Offset, data.Count);
             //Console.WriteLine("OnRequestUri:  '" + str + "'");
-            requestUri.Append(str);
+            requestUri = str;
         }
 
-        public void OnQueryString(HttpParser parser, ArraySegment<byte> data)
+        public void OnQueryString(HttpParser parser, string str)
         {
-            var str = Encoding.ASCII.GetString(data.Array, data.Offset, data.Count);
             //Console.WriteLine("OnQueryString:  '" + str + "'");
-            queryString.Append(str);
+            queryString = str;
         }
 
-        public void OnFragment(HttpParser parser, ArraySegment<byte> data)
+        public void OnFragment(HttpParser parser, string str)
         {
-            var str = Encoding.ASCII.GetString(data.Array, data.Offset, data.Count);
             //Console.WriteLine("OnFragment:  '" + str + "'");
-            fragment.Append(str);
+            fragment = str;
         }
 
-        public void OnHeaderName(HttpParser parser, ArraySegment<byte> data)
+        public void OnHeaderName(HttpParser parser, string str)
         {
-            var str = Encoding.ASCII.GetString(data.Array, data.Offset, data.Count);
             //Console.WriteLine("OnHeaderName:  '" + str + "'");
 
             if (headerValue.Length != 0)
                 CommitHeader();
 
-            headerName.Append(str);
+            headerName = str;
         }
 
-        public void OnHeaderValue(HttpParser parser, ArraySegment<byte> data)
+        public void OnHeaderValue(HttpParser parser, string str)
         {
-            var str = Encoding.ASCII.GetString(data.Array, data.Offset, data.Count);
             //Console.WriteLine("OnHeaderValue:  '" + str + "'");
 
             if (headerName.Length == 0)
                 throw new Exception("Got header value without name.");
 
-            headerValue.Append(str);
+            headerValue = str;
         }
 
         public void OnHeadersEnd(HttpParser parser)
@@ -160,14 +150,13 @@ namespace HttpMachine.Tests
 
         void CommitHeader()
         {
-            //Console.WriteLine("Committing header '" + headerName.ToString() + "' : '" + headerValue.ToString() + "'");
-            headers[headerName.ToString()] = headerValue.ToString();
-            headerName.Length = headerValue.Length = 0;
+            //Console.WriteLine("Committing header '" + headerName + "' : '" + headerValue + "'");
+            headers[headerName] = headerValue;
         }
 
         public void OnBody(HttpParser parser, ArraySegment<byte> data)
         {
-            var str = Encoding.ASCII.GetString(data.Array, data.Offset, data.Count);
+            //var str = Encoding.ASCII.GetString(data.Array, data.Offset, data.Count);
             //Console.WriteLine("OnBody:  '" + str + "'");
             body.Add(data);
         }

@@ -3,47 +3,32 @@ using System.Text;
 
 namespace HttpMachine
 {
-    public class HttpParser
+    public partial class HttpParser
     {
-        int cs;
-        int mark;
-        int qsMark;
-        int fragMark;
         IHttpParserHandler parser;
 
-		// ew!
+		// necessary evil?
 		StringBuilder sb;
 		StringBuilder sb2;
+		Uri uri;
 
 		int versionMajor;
 		int versionMinor;
-
-		public int MajorVersion { get { return versionMajor; } }
-		public int MinorVersion { get { return versionMinor; } }
 		
+        int contentLength;
+
+		// TODO make flags or something, dang
 		bool inContentLengthHeader;
 		bool inConnectionHeader;
 		bool inTransferEncodingHeader;
 		bool inUpgradeHeader;
-
 		bool gotConnectionClose;
 		bool gotConnectionKeepAlive;
 		bool gotTransferEncodingChunked;
 		bool gotUpgradeValue;
 
-        int contentLength;
-
-		public bool ShouldKeepAlive { 
-			get { 
-				if (versionMajor > 0 && versionMinor > 0)
-					// HTTP/1.1
-					return !gotConnectionClose;
-				else 
-					// < HTTP/1.1
-					return gotConnectionKeepAlive;
-			}
-		}
-
+        int cs;
+        int mark;
 
         %%{
 
@@ -72,13 +57,17 @@ namespace HttpMachine
 			//Console.WriteLine("message_begin");
 			versionMajor = 0;
 			versionMinor = 9;
+			contentLength = -1;
+
+			inContentLengthHeader = false;
 			inConnectionHeader = false;
 			inTransferEncodingHeader = false;
+			inUpgradeHeader = false;
+
 			gotConnectionClose = false;
 			gotConnectionKeepAlive = false;
 			gotTransferEncodingChunked = false;
 			gotUpgradeValue = false;
-			contentLength = -1;
 			parser.OnMessageBegin(this);
 		}
         
@@ -114,46 +103,16 @@ namespace HttpMachine
 		}
 
 		action on_method {
-			parser.OnMethod(this, new ArraySegment<byte>(Encoding.ASCII.GetBytes(sb.ToString())));
+			parser.OnMethod(this, sb.ToString());
 		}
-
-        action enter_method {
-			Console.WriteLine("enter_method");
-            mark = fpc;
-        }
-        
-        action eof_leave_method {
-            //Console.WriteLine("eof_leave_method fpc " + fpc + " mark " + mark);
-            parser.OnMethod(this, new ArraySegment<byte>(data, mark, fpc - mark));
-        }
-
-        action leave_method {
-            //Console.WriteLine("leave_method fpc " + fpc + " mark " + mark);
-            parser.OnMethod(this, new ArraySegment<byte>(data, mark, fpc - mark));
-        }
         
 		action on_request_uri {
-			parser.OnRequestUri(this, new ArraySegment<byte>(Encoding.ASCII.GetBytes(sb.ToString())));
+			parser.OnRequestUri(this, sb.ToString());
 		}
-
-        action enter_request_uri {
-            //Console.WriteLine("enter_request_uri fpc " + fpc);
-            mark = fpc;
-        }
-        
-        action eof_leave_request_uri {
-            //Console.WriteLine("eof_leave_request_uri!! fpc " + fpc + " mark " + mark);
-            parser.OnRequestUri(this, new ArraySegment<byte>(data, mark, fpc - mark));
-        }
-
-        action leave_request_uri {
-            //Console.WriteLine("leave_request_uri fpc " + fpc + " mark " + mark);
-            parser.OnRequestUri(this, new ArraySegment<byte>(data, mark, fpc - mark));
-        }
         
 		action on_query_string
 		{
-			parser.OnQueryString(this, new ArraySegment<byte>(Encoding.ASCII.GetBytes(sb2.ToString())));
+			parser.OnQueryString(this, sb2.ToString());
 		}
 
         action enter_query_string {
@@ -168,7 +127,7 @@ namespace HttpMachine
 
 		action on_fragment
 		{
-			parser.OnFragment(this, new ArraySegment<byte>(Encoding.ASCII.GetBytes(sb2.ToString())));
+			parser.OnFragment(this, sb2.ToString());
 		}
 
         action enter_fragment {
@@ -228,7 +187,7 @@ namespace HttpMachine
 		}
 
 		action on_header_name {
-			parser.OnHeaderName(this, new ArraySegment<byte>(Encoding.ASCII.GetBytes(sb.ToString())));
+			parser.OnHeaderName(this, sb.ToString());
 		}
 
 		action on_header_value {
@@ -240,7 +199,7 @@ namespace HttpMachine
 
 			inConnectionHeader = inTransferEncodingHeader = inContentLengthHeader = false;
 			
-			parser.OnHeaderValue(this, new ArraySegment<byte>(Encoding.ASCII.GetBytes(str)));
+			parser.OnHeaderValue(this, str);
 		}
 
         action leave_headers {
@@ -366,8 +325,6 @@ namespace HttpMachine
             int eof = buf.Count == 0 ? buf.Offset : -1;
             //int eof = pe;
             mark = 0;
-            qsMark = 0;
-            fragMark = 0;
             
 			//if (p == pe)
 			//	Console.WriteLine("Parser executing on p == pe (EOF)");
