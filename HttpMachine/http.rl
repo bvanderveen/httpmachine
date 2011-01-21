@@ -59,11 +59,7 @@ http_request_headers = http_request_line (http_header)* http_crlf %/leave_header
 main := http_request_headers >message_begin;
 
 body_identity := any+ @body_identity;
-<<<<<<< HEAD
 body_identity_eof := any* @body_identity_eof %/body_identity_eof;
-=======
-body_identity_eof := any* $in_body_identity_eof %/eof_leave_body_identity_eof;
->>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 # body_chunked := ...
 
 dead := any <*enter_dead;
