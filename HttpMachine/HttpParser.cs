@@ -1,6 +1,7 @@
 
 #line 1 "HttpParser.cs.rl"
 using System;
+using System.Text;
 
 namespace HttpMachine
 {
@@ -12,8 +13,12 @@ namespace HttpMachine
         int fragMark;
         IHttpParserHandler parser;
 
-		int versionMajor = 0;
-		int versionMinor = 9;
+		// ew!
+		StringBuilder sb;
+		StringBuilder sb2;
+
+		int versionMajor;
+		int versionMinor;
 
 		public int MajorVersion { get { return versionMajor; } }
 		public int MinorVersion { get { return versionMinor; } }
@@ -43,28 +48,28 @@ namespace HttpMachine
 
 
         
-#line 317 "HttpParser.cs.rl"
+#line 372 "HttpParser.cs.rl"
 
         
         
-#line 51 "HttpParser.cs"
+#line 56 "HttpParser.cs"
 static readonly sbyte[] _http_parser_actions =  new sbyte [] {
-	0, 1, 7, 1, 8, 1, 9, 1, 
-	10, 1, 11, 1, 14, 1, 15, 1, 
-	16, 1, 17, 1, 18, 1, 20, 1, 
-	21, 1, 22, 1, 23, 1, 32, 1, 
-	33, 1, 34, 1, 35, 1, 36, 1, 
-	37, 1, 38, 2, 0, 7, 2, 0, 
-	10, 2, 6, 14, 2, 12, 4, 2, 
-	16, 17, 2, 17, 14, 2, 17, 15, 
-	2, 19, 14, 2, 19, 15, 2, 24, 
-	23, 2, 25, 23, 2, 28, 23, 2, 
-	30, 23, 2, 31, 32, 2, 33, 9, 
-	3, 5, 13, 2, 3, 5, 13, 3, 
-	3, 16, 17, 15, 3, 18, 19, 15, 
-	3, 26, 33, 9, 3, 27, 33, 9, 
-	3, 29, 33, 9, 4, 5, 13, 1, 
-	3, 4, 5, 13, 3, 15
+	0, 1, 0, 1, 10, 1, 11, 1, 
+	12, 1, 13, 1, 15, 1, 18, 1, 
+	19, 1, 20, 1, 21, 1, 30, 1, 
+	31, 1, 32, 1, 33, 1, 34, 1, 
+	35, 1, 36, 2, 1, 0, 2, 2, 
+	0, 2, 4, 11, 2, 14, 8, 2, 
+	16, 0, 2, 16, 15, 2, 17, 15, 
+	2, 22, 21, 2, 23, 21, 2, 26, 
+	21, 2, 28, 21, 2, 29, 30, 2, 
+	31, 13, 3, 3, 2, 0, 3, 3, 
+	16, 0, 3, 3, 16, 15, 3, 3, 
+	17, 15, 3, 4, 1, 0, 3, 24, 
+	31, 13, 3, 25, 31, 13, 3, 27, 
+	31, 13, 4, 9, 1, 6, 0, 4, 
+	9, 1, 7, 0, 4, 9, 1, 7, 
+	15, 5, 9, 1, 5, 7, 0
 };
 
 static readonly short[] _http_parser_key_offsets =  new short [] {
@@ -768,256 +773,256 @@ static readonly byte[] _http_parser_trans_targs =  new byte [] {
 };
 
 static readonly sbyte[] _http_parser_trans_actions =  new sbyte [] {
-	43, 46, 46, 0, 1, 0, 7, 7, 
-	0, 52, 0, 0, 0, 121, 121, 92, 
-	92, 88, 92, 92, 92, 92, 92, 92, 
-	92, 116, 116, 0, 0, 0, 3, 25, 
-	25, 25, 25, 25, 25, 25, 25, 25, 
-	25, 25, 25, 25, 25, 25, 0, 3, 
-	0, 0, 27, 0, 0, 0, 0, 0, 
+	41, 90, 90, 0, 5, 0, 35, 35, 
+	0, 44, 1, 1, 0, 116, 116, 111, 
+	111, 106, 111, 111, 111, 111, 111, 111, 
+	111, 121, 121, 0, 0, 0, 7, 17, 
+	17, 17, 17, 17, 17, 17, 17, 17, 
+	17, 17, 17, 17, 17, 17, 0, 7, 
+	0, 0, 19, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
-	82, 82, 82, 82, 82, 0, 85, 29, 
-	5, 0, 0, 85, 29, 29, 29, 29, 
-	29, 0, 85, 29, 29, 29, 0, 85, 
-	29, 29, 29, 0, 85, 29, 29, 29, 
-	0, 85, 29, 29, 29, 0, 85, 29, 
-	29, 29, 0, 112, 29, 0, 85, 29, 
-	29, 29, 0, 85, 29, 29, 29, 0, 
-	85, 29, 29, 29, 0, 104, 29, 0, 
-	85, 29, 29, 29, 0, 85, 29, 29, 
-	29, 0, 85, 29, 29, 29, 0, 85, 
-	29, 29, 0, 85, 29, 29, 29, 0, 
-	85, 29, 29, 29, 0, 85, 29, 29, 
-	29, 0, 85, 29, 29, 29, 0, 85, 
-	29, 29, 29, 0, 108, 29, 0, 27, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 27, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 27, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	27, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 27, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 27, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 27, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 27, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 27, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 73, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 27, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 27, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 27, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 27, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 27, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 27, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 27, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 27, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	27, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 27, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 70, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 27, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 27, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 27, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 27, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 27, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 27, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 27, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 27, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 27, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 27, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 27, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 27, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	27, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 27, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 27, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 27, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 76, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 27, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 27, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 27, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 27, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 27, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	27, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 79, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 21, 0, 0, 0, 23, 0, 0, 
-	0, 13, 13, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 13, 13, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 13, 13, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 13, 13, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 13, 13, 0, 0, 13, 13, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	13, 13, 0, 0, 0, 13, 13, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	13, 13, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	13, 13, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 13, 
-	13, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 13, 13, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 13, 13, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 13, 13, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 13, 13, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 13, 13, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 100, 100, 19, 19, 
-	19, 19, 19, 19, 19, 19, 19, 0, 
-	67, 67, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 96, 96, 15, 55, 
-	15, 15, 15, 15, 15, 15, 15, 15, 
-	0, 61, 61, 0, 17, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 13, 13, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 13, 
-	13, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 13, 13, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 13, 13, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 13, 13, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 13, 13, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 13, 13, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 13, 13, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 13, 13, 0, 0, 
-	0, 0, 13, 13, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 13, 13, 
-	0, 0, 0, 0, 0, 13, 13, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 13, 13, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 13, 13, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 13, 13, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 13, 13, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 13, 
-	13, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 13, 13, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 13, 13, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	13, 13, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 13, 13, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 13, 13, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 13, 13, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 13, 13, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 13, 13, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 13, 13, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 13, 13, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 13, 13, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 13, 13, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 13, 13, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 13, 13, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 13, 13, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 13, 13, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 13, 
-	13, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 13, 13, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 13, 13, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	13, 13, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 13, 13, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 13, 13, 0, 0, 0, 
-	0, 0, 0, 0, 13, 13, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 13, 13, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 13, 13, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 13, 13, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 13, 
-	13, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 13, 13, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 13, 13, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 52, 0, 0, 0, 52, 0, 
-	0, 0, 52, 0, 0, 0, 52, 0, 
-	0, 0, 52, 0, 0, 0, 52, 0, 
-	0, 0, 52, 0, 0, 0, 52, 0, 
-	0, 0, 52, 0, 0, 0, 52, 0, 
-	0, 0, 52, 0, 0, 0, 52, 0, 
-	0, 0, 52, 0, 0, 0, 52, 0, 
-	0, 0, 52, 0, 0, 0, 52, 0, 
-	0, 0, 52, 0, 0, 0, 52, 0, 
-	0, 0, 52, 0, 0, 0, 52, 0, 
-	0, 0, 52, 0, 0, 0, 52, 0, 
-	0, 0, 52, 0, 35, 0, 0, 0, 
-	41, 0, 0
+	68, 68, 68, 68, 68, 0, 71, 21, 
+	9, 0, 0, 71, 21, 21, 21, 21, 
+	21, 0, 71, 21, 21, 21, 0, 71, 
+	21, 21, 21, 0, 71, 21, 21, 21, 
+	0, 71, 21, 21, 21, 0, 71, 21, 
+	21, 21, 0, 102, 21, 0, 71, 21, 
+	21, 21, 0, 71, 21, 21, 21, 0, 
+	71, 21, 21, 21, 0, 94, 21, 0, 
+	71, 21, 21, 21, 0, 71, 21, 21, 
+	21, 0, 71, 21, 21, 21, 0, 71, 
+	21, 21, 0, 71, 21, 21, 21, 0, 
+	71, 21, 21, 21, 0, 71, 21, 21, 
+	21, 0, 71, 21, 21, 21, 0, 71, 
+	21, 21, 21, 0, 98, 21, 0, 19, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 19, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 19, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	19, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 19, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 19, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 19, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 19, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 19, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 59, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 19, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 19, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 19, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 19, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 19, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 19, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 19, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 19, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	19, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 19, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 56, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 19, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 19, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 19, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 19, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 19, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 19, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 19, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 19, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 19, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 19, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 19, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 19, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	19, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 19, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 19, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 19, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 62, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 19, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 19, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 19, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 19, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 19, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	19, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 65, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 13, 0, 0, 0, 15, 0, 0, 
+	0, 11, 11, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 0, 1, 1, 
+	1, 0, 1, 1, 1, 0, 11, 11, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 0, 11, 11, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 0, 
+	1, 1, 1, 0, 1, 1, 1, 0, 
+	1, 1, 1, 1, 1, 0, 1, 1, 
+	1, 1, 0, 1, 1, 1, 1, 1, 
+	0, 1, 1, 0, 11, 11, 1, 1, 
+	1, 1, 1, 1, 0, 1, 1, 1, 
+	1, 0, 11, 11, 1, 0, 11, 11, 
+	1, 0, 1, 1, 1, 0, 1, 1, 
+	0, 1, 0, 1, 1, 0, 1, 0, 
+	11, 11, 1, 1, 0, 11, 11, 1, 
+	1, 0, 1, 1, 0, 1, 0, 1, 
+	1, 0, 1, 0, 1, 1, 1, 1, 
+	1, 0, 1, 1, 1, 1, 1, 0, 
+	11, 11, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 0, 
+	11, 11, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 0, 11, 
+	11, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 0, 11, 11, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 0, 11, 11, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 0, 11, 11, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	0, 11, 11, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 0, 11, 11, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 0, 86, 86, 74, 74, 
+	74, 74, 74, 74, 74, 74, 74, 0, 
+	53, 53, 38, 38, 38, 38, 38, 38, 
+	38, 38, 38, 0, 38, 38, 38, 0, 
+	38, 38, 38, 0, 1, 1, 1, 0, 
+	1, 1, 1, 0, 82, 82, 74, 78, 
+	74, 74, 74, 74, 74, 74, 74, 74, 
+	0, 50, 50, 38, 47, 38, 38, 38, 
+	38, 38, 38, 38, 38, 0, 38, 38, 
+	38, 0, 38, 38, 38, 0, 11, 11, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 0, 11, 
+	11, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 0, 
+	1, 1, 1, 1, 1, 1, 0, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 0, 11, 11, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 0, 1, 1, 
+	1, 0, 1, 1, 1, 0, 11, 11, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 0, 11, 11, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 0, 11, 11, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 0, 1, 1, 1, 0, 1, 1, 
+	1, 0, 11, 11, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 0, 
+	1, 1, 1, 1, 1, 0, 1, 1, 
+	1, 1, 0, 1, 1, 1, 1, 1, 
+	0, 1, 1, 0, 11, 11, 1, 1, 
+	1, 1, 1, 1, 1, 1, 0, 1, 
+	1, 1, 1, 0, 11, 11, 1, 1, 
+	1, 0, 11, 11, 1, 1, 1, 0, 
+	1, 1, 1, 0, 1, 1, 0, 1, 
+	0, 1, 1, 0, 1, 0, 11, 11, 
+	1, 1, 1, 1, 0, 11, 11, 1, 
+	1, 1, 1, 0, 1, 1, 0, 1, 
+	0, 1, 1, 0, 1, 0, 1, 1, 
+	1, 1, 1, 0, 1, 1, 1, 1, 
+	1, 0, 11, 11, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 0, 11, 11, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	0, 11, 11, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 0, 11, 11, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 0, 11, 
+	11, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 0, 11, 11, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 0, 11, 11, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 0, 
+	11, 11, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 0, 11, 11, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 0, 11, 11, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 0, 11, 11, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 0, 11, 11, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 0, 11, 11, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 0, 11, 11, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 0, 11, 11, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 0, 11, 11, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 0, 1, 1, 1, 0, 
+	1, 1, 1, 0, 11, 11, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 0, 11, 11, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 0, 11, 11, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	0, 11, 11, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 0, 11, 11, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 0, 11, 
+	11, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 0, 11, 11, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 0, 11, 11, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 0, 
+	11, 11, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 0, 1, 1, 1, 1, 1, 1, 
+	1, 0, 1, 1, 1, 1, 1, 1, 
+	1, 0, 1, 1, 1, 1, 1, 1, 
+	0, 11, 11, 1, 1, 1, 1, 1, 
+	1, 1, 0, 1, 1, 1, 1, 1, 
+	1, 1, 0, 11, 11, 1, 1, 1, 
+	1, 1, 1, 0, 11, 11, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 0, 11, 11, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 0, 11, 11, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 0, 11, 11, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 0, 11, 
+	11, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	0, 11, 11, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 0, 11, 11, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 0, 44, 1, 1, 0, 44, 1, 
+	1, 0, 44, 1, 1, 0, 44, 1, 
+	1, 0, 44, 1, 1, 0, 44, 1, 
+	1, 0, 44, 1, 1, 0, 44, 1, 
+	1, 0, 44, 1, 1, 0, 44, 1, 
+	1, 0, 44, 1, 1, 0, 44, 1, 
+	1, 0, 44, 1, 1, 0, 44, 1, 
+	1, 0, 44, 1, 1, 0, 44, 1, 
+	1, 0, 44, 1, 1, 0, 44, 1, 
+	1, 0, 44, 1, 1, 0, 44, 1, 
+	1, 0, 44, 1, 1, 0, 44, 1, 
+	1, 0, 44, 0, 27, 0, 0, 27, 
+	33, 0, 0
 };
 
 static readonly sbyte[] _http_parser_from_state_actions =  new sbyte [] {
@@ -1050,40 +1055,40 @@ static readonly sbyte[] _http_parser_from_state_actions =  new sbyte [] {
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 33, 0, 0, 39
+	0, 25, 0, 0, 31
 };
 
 static readonly sbyte[] _http_parser_eof_actions =  new sbyte [] {
-	0, 0, 0, 0, 9, 49, 0, 0, 
-	0, 27, 0, 31, 0, 31, 31, 31, 
-	31, 31, 31, 31, 31, 31, 31, 31, 
-	31, 31, 31, 31, 31, 31, 31, 31, 
-	31, 31, 27, 27, 27, 27, 27, 27, 
-	27, 27, 27, 27, 27, 27, 27, 27, 
-	27, 27, 27, 27, 27, 27, 27, 27, 
-	27, 27, 27, 27, 27, 27, 27, 27, 
-	27, 27, 27, 27, 27, 27, 27, 27, 
-	27, 27, 27, 27, 27, 27, 27, 0, 
+	0, 0, 0, 0, 0, 3, 0, 0, 
+	0, 19, 0, 23, 0, 23, 23, 23, 
+	23, 23, 23, 23, 23, 23, 23, 23, 
+	23, 23, 23, 23, 23, 23, 23, 23, 
+	23, 23, 19, 19, 19, 19, 19, 19, 
+	19, 19, 19, 19, 19, 19, 19, 19, 
+	19, 19, 19, 19, 19, 19, 19, 19, 
+	19, 19, 19, 19, 19, 19, 19, 19, 
+	19, 19, 19, 19, 19, 19, 19, 19, 
+	19, 19, 19, 19, 19, 19, 19, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
-	11, 0, 0, 11, 11, 0, 0, 0, 
-	0, 0, 0, 11, 0, 11, 11, 0, 
-	0, 0, 0, 0, 11, 11, 0, 0, 
-	0, 0, 0, 0, 11, 11, 11, 11, 
-	11, 11, 11, 11, 64, 64, 0, 0, 
-	0, 0, 58, 58, 0, 0, 11, 11, 
-	0, 0, 11, 0, 0, 11, 11, 11, 
-	0, 0, 11, 0, 0, 0, 0, 11, 
-	0, 11, 11, 0, 0, 0, 0, 0, 
-	11, 11, 0, 0, 0, 0, 0, 0, 
-	11, 11, 11, 11, 11, 11, 11, 11, 
-	11, 11, 11, 11, 11, 11, 11, 11, 
-	0, 0, 11, 11, 11, 11, 11, 11, 
-	11, 11, 11, 0, 0, 0, 11, 0, 
-	11, 11, 11, 11, 11, 11, 11, 11, 
-	9, 9, 9, 9, 9, 9, 9, 9, 
-	9, 9, 9, 9, 9, 9, 9, 9, 
-	9, 9, 9, 9, 9, 9, 9, 0, 
-	0, 33, 0, 37, 0
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 25, 0, 29, 0
 };
 
 const int http_parser_start = 1;
@@ -1096,18 +1101,19 @@ const int http_parser_en_body_identity_eof = 235;
 const int http_parser_en_dead = 232;
 
 
-#line 320 "HttpParser.cs.rl"
+#line 375 "HttpParser.cs.rl"
         
         public HttpParser(IHttpParserHandler parser)
         {
             this.parser = parser;
+			sb = new StringBuilder();
             
-#line 1106 "HttpParser.cs"
+#line 1112 "HttpParser.cs"
 	{
 	cs = http_parser_start;
 	}
 
-#line 325 "HttpParser.cs.rl"
+#line 381 "HttpParser.cs.rl"
         }
 
         public int Execute(ArraySegment<byte> buf)
@@ -1121,11 +1127,11 @@ const int http_parser_en_dead = 232;
             qsMark = 0;
             fragMark = 0;
             
-			if (p == pe)
-				Console.WriteLine("Parser executing on p == pe (EOF)");
+			//if (p == pe)
+			//	Console.WriteLine("Parser executing on p == pe (EOF)");
 
             
-#line 1129 "HttpParser.cs"
+#line 1135 "HttpParser.cs"
 	{
 	sbyte _klen;
 	short _trans;
@@ -1142,10 +1148,10 @@ _resume:
 	_nacts = _http_parser_actions[_acts++];
 	while ( _nacts-- > 0 ) {
 		switch ( _http_parser_actions[_acts++] ) {
-	case 34:
-#line 216 "HttpParser.cs.rl"
+	case 32:
+#line 266 "HttpParser.cs.rl"
 	{
-			Console.WriteLine("leave_headers contentLength = " + contentLength);
+			//Console.WriteLine("leave_headers contentLength = " + contentLength);
             parser.OnHeadersEnd(this);
 
 			// if chunked transfer, ignore content length and parse chunked (but we can't yet so bail)
@@ -1168,30 +1174,30 @@ _resume:
 			}
 			else
 			{
-				Console.WriteLine("Request had no content length.");
+				//Console.WriteLine("Request had no content length.");
 				if (ShouldKeepAlive)
 				{
 					parser.OnMessageEnd(this);
-					Console.WriteLine("Should keep alive, will read next message.");
+					//Console.WriteLine("Should keep alive, will read next message.");
 					p--;
 					{cs = 1; if (true) goto _again;}
 				}
 				else
 				{
-					Console.WriteLine("Not keeping alive, will read until eof. Will hold, but currently fpc = " + p);
+					//Console.WriteLine("Not keeping alive, will read until eof. Will hold, but currently fpc = " + fpc);
 					p--;
 					{cs = 235; if (true) goto _again;}
 				}
 			}
         }
 	break;
-	case 37:
-#line 307 "HttpParser.cs.rl"
+	case 35:
+#line 362 "HttpParser.cs.rl"
 	{
 			throw new Exception("Parser is dead; there shouldn't be more data. Client is bogus? fpc =" + p);
 		}
 	break;
-#line 1195 "HttpParser.cs"
+#line 1201 "HttpParser.cs"
 		default: break;
 		}
 	}
@@ -1257,202 +1263,204 @@ _match:
 		switch ( _http_parser_actions[_acts++] )
 		{
 	case 0:
-#line 48 "HttpParser.cs.rl"
+#line 53 "HttpParser.cs.rl"
 	{
-			Console.WriteLine("message_begin");
-			parser.OnMessageBegin(this);
+			sb.Append((char)data[p]);
 		}
 	break;
 	case 1:
-#line 53 "HttpParser.cs.rl"
+#line 57 "HttpParser.cs.rl"
 	{
-            Console.WriteLine("matched absolute_uri");
-        }
+			sb.Length = 0;
+		}
 	break;
 	case 2:
-#line 56 "HttpParser.cs.rl"
+#line 61 "HttpParser.cs.rl"
 	{
-            Console.WriteLine("matched abs_path");
-        }
+			sb2.Append((char)data[p]);
+		}
 	break;
 	case 3:
-#line 59 "HttpParser.cs.rl"
-	{
-            Console.WriteLine("matched authority");
-        }
-	break;
-	case 4:
-#line 62 "HttpParser.cs.rl"
-	{
-            Console.WriteLine("matched first space");
-        }
-	break;
-	case 5:
 #line 65 "HttpParser.cs.rl"
 	{
-            Console.WriteLine("leave_first_space");
+			if (sb2 == null)
+				sb2 = new StringBuilder();
+			sb2.Length = 0;
+		}
+	break;
+	case 4:
+#line 71 "HttpParser.cs.rl"
+	{
+			//Console.WriteLine("message_begin");
+			versionMajor = 0;
+			versionMinor = 9;
+			gotConnectionHeader = false;
+			gotTransferEncodingHeader = false;
+			gotConnectionClose = false;
+			gotConnectionKeepAlive = false;
+			gotTransferEncodingChunked = false;
+			gotUpgradeValue = false;
+			parser.OnMessageBegin(this);
+		}
+	break;
+	case 5:
+#line 84 "HttpParser.cs.rl"
+	{
+            //Console.WriteLine("matched absolute_uri");
+        }
+	break;
+	case 6:
+#line 87 "HttpParser.cs.rl"
+	{
+            //Console.WriteLine("matched abs_path");
         }
 	break;
 	case 7:
-#line 74 "HttpParser.cs.rl"
+#line 90 "HttpParser.cs.rl"
 	{
-			Console.WriteLine("matched_leading_crlf");
-		}
+            //Console.WriteLine("matched authority");
+        }
 	break;
 	case 8:
-#line 77 "HttpParser.cs.rl"
+#line 93 "HttpParser.cs.rl"
 	{
-			Console.WriteLine("matched_last_crlf_before_body");
-		}
+            //Console.WriteLine("matched first space");
+        }
 	break;
 	case 9:
-#line 80 "HttpParser.cs.rl"
+#line 96 "HttpParser.cs.rl"
 	{
-			Console.WriteLine("matched_header_crlf");
+            //Console.WriteLine("leave_first_space");
+        }
+	break;
+	case 11:
+#line 105 "HttpParser.cs.rl"
+	{
+			//Console.WriteLine("matched_leading_crlf");
 		}
 	break;
-	case 10:
-#line 84 "HttpParser.cs.rl"
-	{
-			Console.WriteLine("enter_method");
-            mark = p;
-        }
-	break;
 	case 12:
-#line 94 "HttpParser.cs.rl"
+#line 108 "HttpParser.cs.rl"
 	{
-            Console.WriteLine("leave_method fpc " + p + " mark " + mark);
-            parser.OnMethod(this, new ArraySegment<byte>(data, mark, p - mark));
-        }
+			//Console.WriteLine("matched_last_crlf_before_body");
+		}
 	break;
 	case 13:
-#line 99 "HttpParser.cs.rl"
+#line 111 "HttpParser.cs.rl"
 	{
-            Console.WriteLine("enter_request_uri fpc " + p);
-            mark = p;
-        }
+			//Console.WriteLine("matched_header_crlf");
+		}
+	break;
+	case 14:
+#line 115 "HttpParser.cs.rl"
+	{
+			parser.OnMethod(this, new ArraySegment<byte>(Encoding.ASCII.GetBytes(sb.ToString())));
+		}
 	break;
 	case 15:
-#line 109 "HttpParser.cs.rl"
+#line 134 "HttpParser.cs.rl"
 	{
-            Console.WriteLine("leave_request_uri fpc " + p + " mark " + mark);
-            parser.OnRequestUri(this, new ArraySegment<byte>(data, mark, p - mark));
-        }
+			parser.OnRequestUri(this, new ArraySegment<byte>(Encoding.ASCII.GetBytes(sb.ToString())));
+		}
 	break;
 	case 16:
-#line 114 "HttpParser.cs.rl"
+#line 154 "HttpParser.cs.rl"
 	{
-            //Console.WriteLine("enter_query_string fpc " + fpc);
-            qsMark = p;
-        }
+			parser.OnQueryString(this, new ArraySegment<byte>(Encoding.ASCII.GetBytes(sb2.ToString())));
+		}
 	break;
 	case 17:
-#line 119 "HttpParser.cs.rl"
+#line 169 "HttpParser.cs.rl"
 	{
-            //Console.WriteLine("leave_query_string fpc " + fpc + " qsMark " + qsMark);
-            parser.OnQueryString(this, new ArraySegment<byte>(data, qsMark, p - qsMark));
-        }
+			parser.OnFragment(this, new ArraySegment<byte>(Encoding.ASCII.GetBytes(sb2.ToString())));
+		}
 	break;
 	case 18:
-#line 123 "HttpParser.cs.rl"
-	{
-            //Console.WriteLine("enter_fragment fpc " + fpc);
-            fragMark = p;
-        }
-	break;
-	case 19:
-#line 128 "HttpParser.cs.rl"
-	{
-            //Console.WriteLine("leave_fragment fpc " + fpc + " fragMark " + fragMark);
-            parser.OnFragment(this, new ArraySegment<byte>(data, fragMark, p - fragMark));
-        }
-	break;
-	case 20:
-#line 133 "HttpParser.cs.rl"
+#line 183 "HttpParser.cs.rl"
 	{
 			versionMajor = (char)data[p] - '0';
 		}
 	break;
-	case 21:
-#line 137 "HttpParser.cs.rl"
+	case 19:
+#line 187 "HttpParser.cs.rl"
 	{
 			versionMinor = (char)data[p] - '0';
 		}
 	break;
-	case 22:
-#line 141 "HttpParser.cs.rl"
+	case 20:
+#line 191 "HttpParser.cs.rl"
 	{
             //Console.WriteLine("enter_header_name fpc " + fpc + " fc " + (char)fc);
             mark = p;
         }
 	break;
-	case 23:
-#line 146 "HttpParser.cs.rl"
+	case 21:
+#line 196 "HttpParser.cs.rl"
 	{
             //Console.WriteLine("leave_header_name fpc " + fpc + " fc " + (char)fc);
             parser.OnHeaderName(this, new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
-	case 24:
-#line 151 "HttpParser.cs.rl"
+	case 22:
+#line 201 "HttpParser.cs.rl"
 	{
             if (contentLength != -1) throw new Exception("Already got Content-Length. Possible attack?");
-			Console.WriteLine("Saw content length");
+			//Console.WriteLine("Saw content length");
 			contentLength = 0;
         }
 	break;
-	case 25:
-#line 157 "HttpParser.cs.rl"
+	case 23:
+#line 207 "HttpParser.cs.rl"
 	{
-			Console.WriteLine("header_connection");
+			//Console.WriteLine("header_connection");
 			gotConnectionHeader = true;
 		}
 	break;
-	case 26:
-#line 162 "HttpParser.cs.rl"
+	case 24:
+#line 212 "HttpParser.cs.rl"
 	{
-			Console.WriteLine("header_connection_close");
+			//Console.WriteLine("header_connection_close");
 			if (gotConnectionHeader)
 				gotConnectionClose = true;
 		}
 	break;
-	case 27:
-#line 168 "HttpParser.cs.rl"
+	case 25:
+#line 218 "HttpParser.cs.rl"
 	{
-			Console.WriteLine("header_connection_keepalive");
+			//Console.WriteLine("header_connection_keepalive");
 			if (gotConnectionHeader)
 				gotConnectionKeepAlive = true;
 		}
 	break;
-	case 28:
-#line 174 "HttpParser.cs.rl"
+	case 26:
+#line 224 "HttpParser.cs.rl"
 	{
-			Console.WriteLine("Saw transfer encoding");
+			//Console.WriteLine("Saw transfer encoding");
 			gotTransferEncodingHeader = true;
 		}
 	break;
-	case 29:
-#line 179 "HttpParser.cs.rl"
+	case 27:
+#line 229 "HttpParser.cs.rl"
 	{
 			if (gotTransferEncodingHeader)
 				gotTransferEncodingChunked = true;
 		}
 	break;
-	case 30:
-#line 184 "HttpParser.cs.rl"
+	case 28:
+#line 234 "HttpParser.cs.rl"
 	{
 			gotUpgradeHeader = true;
 		}
 	break;
-	case 31:
-#line 188 "HttpParser.cs.rl"
+	case 29:
+#line 238 "HttpParser.cs.rl"
 	{
             //Console.WriteLine("enter_header_value fpc " + fpc + " fc " + (char)fc);
             mark = p;
         }
 	break;
-	case 32:
-#line 193 "HttpParser.cs.rl"
+	case 30:
+#line 243 "HttpParser.cs.rl"
 	{
             //Console.WriteLine("header_value_char fpc " + fpc + " fc '" + (char)fc + "'");
             if (contentLength > -1)
@@ -1464,12 +1472,12 @@ _match:
 
                 contentLength *= 10;
                 contentLength += (int)data[p] - (int)'0';
-				Console.WriteLine("Content length is looking like " + contentLength);
+				//Console.WriteLine("Content length is looking like " + contentLength);
             }
         }
 	break;
-	case 33:
-#line 208 "HttpParser.cs.rl"
+	case 31:
+#line 258 "HttpParser.cs.rl"
 	{
             //Console.WriteLine("leave_header_value fpc " + fpc + " fc " + (char)fc);
 			var count = p - mark;
@@ -1478,16 +1486,17 @@ _match:
             parser.OnHeaderValue(this, new ArraySegment<byte>(data, mark, count));
         }
 	break;
-	case 35:
-#line 257 "HttpParser.cs.rl"
+	case 33:
+#line 307 "HttpParser.cs.rl"
 	{
 			var toRead = Math.Min(pe - p, contentLength);
-			Console.WriteLine("Reading " + toRead + " bytes from body.");
+			//Console.WriteLine("Reading " + toRead + " bytes from body.");
 			if (toRead > 0)
 			{
 				parser.OnBody(this, new ArraySegment<byte>(data, p, toRead));
-				p += toRead;
+				p += toRead - 1;
 				contentLength -= toRead;
+				//Console.WriteLine("content length is now " + contentLength);
 
 				if (contentLength == 0)
 				{
@@ -1495,26 +1504,30 @@ _match:
 
 					if (ShouldKeepAlive)
 					{
-						Console.WriteLine("Transitioning from identity body to next message.");
-						p--;
+						//Console.WriteLine("Transitioning from identity body to next message.");
+						//fhold;
 						{cs = 1; if (true) goto _again;}
 					}
 					else
 					{
-						p--;
+						//fhold;
 						{cs = 232; if (true) goto _again;}
 					}
+				}
+				else
+				{
+					{p++; if (true) goto _out; }
 				}
 			}
 		}
 	break;
-	case 38:
-#line 311 "HttpParser.cs.rl"
+	case 36:
+#line 366 "HttpParser.cs.rl"
 	{
 			Console.WriteLine("in_body_identity_eof");
 		}
 	break;
-#line 1518 "HttpParser.cs"
+#line 1531 "HttpParser.cs"
 		default: break;
 		}
 	}
@@ -1531,49 +1544,21 @@ _again:
 	sbyte __nacts = _http_parser_actions[__acts++];
 	while ( __nacts-- > 0 ) {
 		switch ( _http_parser_actions[__acts++] ) {
-	case 6:
-#line 68 "HttpParser.cs.rl"
+	case 10:
+#line 99 "HttpParser.cs.rl"
 	{
-            Console.WriteLine("eof_leave_first_space");
+            //Console.WriteLine("eof_leave_first_space");
         }
 	break;
-	case 11:
-#line 89 "HttpParser.cs.rl"
-	{
-            Console.WriteLine("eof_leave_method fpc " + p + " mark " + mark);
-            parser.OnMethod(this, new ArraySegment<byte>(data, mark, p - mark));
-        }
-	break;
-	case 14:
-#line 104 "HttpParser.cs.rl"
-	{
-            Console.WriteLine("eof_leave_request_uri!! fpc " + p + " mark " + mark);
-            parser.OnRequestUri(this, new ArraySegment<byte>(data, mark, p - mark));
-        }
-	break;
-	case 17:
-#line 119 "HttpParser.cs.rl"
-	{
-            //Console.WriteLine("leave_query_string fpc " + fpc + " qsMark " + qsMark);
-            parser.OnQueryString(this, new ArraySegment<byte>(data, qsMark, p - qsMark));
-        }
-	break;
-	case 19:
-#line 128 "HttpParser.cs.rl"
-	{
-            //Console.WriteLine("leave_fragment fpc " + fpc + " fragMark " + fragMark);
-            parser.OnFragment(this, new ArraySegment<byte>(data, fragMark, p - fragMark));
-        }
-	break;
-	case 23:
-#line 146 "HttpParser.cs.rl"
+	case 21:
+#line 196 "HttpParser.cs.rl"
 	{
             //Console.WriteLine("leave_header_name fpc " + fpc + " fc " + (char)fc);
             parser.OnHeaderName(this, new ArraySegment<byte>(data, mark, p - mark));
         }
 	break;
-	case 33:
-#line 208 "HttpParser.cs.rl"
+	case 31:
+#line 258 "HttpParser.cs.rl"
 	{
             //Console.WriteLine("leave_header_value fpc " + fpc + " fc " + (char)fc);
 			var count = p - mark;
@@ -1582,10 +1567,10 @@ _again:
             parser.OnHeaderValue(this, new ArraySegment<byte>(data, mark, count));
         }
 	break;
-	case 34:
-#line 216 "HttpParser.cs.rl"
+	case 32:
+#line 266 "HttpParser.cs.rl"
 	{
-			Console.WriteLine("leave_headers contentLength = " + contentLength);
+			//Console.WriteLine("leave_headers contentLength = " + contentLength);
             parser.OnHeadersEnd(this);
 
 			// if chunked transfer, ignore content length and parse chunked (but we can't yet so bail)
@@ -1608,27 +1593,27 @@ _again:
 			}
 			else
 			{
-				Console.WriteLine("Request had no content length.");
+				//Console.WriteLine("Request had no content length.");
 				if (ShouldKeepAlive)
 				{
 					parser.OnMessageEnd(this);
-					Console.WriteLine("Should keep alive, will read next message.");
+					//Console.WriteLine("Should keep alive, will read next message.");
 					p--;
 					{cs = 1; if (true) goto _again;}
 				}
 				else
 				{
-					Console.WriteLine("Not keeping alive, will read until eof. Will hold, but currently fpc = " + p);
+					//Console.WriteLine("Not keeping alive, will read until eof. Will hold, but currently fpc = " + fpc);
 					p--;
 					{cs = 235; if (true) goto _again;}
 				}
 			}
         }
 	break;
-	case 36:
-#line 285 "HttpParser.cs.rl"
+	case 34:
+#line 340 "HttpParser.cs.rl"
 	{
-			Console.WriteLine("eof_leave_body_identity_eof");
+			//Console.WriteLine("eof_leave_body_identity_eof");
 			var toRead = pe - p;
 			if (toRead > 0)
 			{
@@ -1649,7 +1634,7 @@ _again:
 			}
 		}
 	break;
-#line 1653 "HttpParser.cs"
+#line 1638 "HttpParser.cs"
 		default: break;
 		}
 	}
@@ -1658,7 +1643,7 @@ _again:
 	_out: {}
 	}
 
-#line 342 "HttpParser.cs.rl"
+#line 398 "HttpParser.cs.rl"
             
             var result = p - buf.Offset;
 

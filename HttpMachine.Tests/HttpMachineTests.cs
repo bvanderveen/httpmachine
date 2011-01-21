@@ -41,7 +41,7 @@ namespace HttpMachine.Tests
 
         public void OnMessageBegin(HttpParser parser)
         {
-            Console.WriteLine("OnMessageBegin");
+            //Console.WriteLine("OnMessageBegin");
 
             // defer creation of buffers until message is created so 
             // NullRef will be thrown if OnMessageBegin is not called.
@@ -58,7 +58,7 @@ namespace HttpMachine.Tests
 
         public void OnMessageEnd(HttpParser parser)
         {
-            Console.WriteLine("OnMessageEnd");
+            //Console.WriteLine("OnMessageEnd");
 
             Assert.AreEqual(shouldKeepAlive, parser.ShouldKeepAlive, 
                 "Differing values for parser.ShouldKeepAlive between OnHeadersEnd and OnMessageEnd");
@@ -102,14 +102,14 @@ namespace HttpMachine.Tests
         public void OnMethod(HttpParser parser, ArraySegment<byte> data)
         {
             var str = Encoding.ASCII.GetString(data.Array, data.Offset, data.Count);
-            Console.WriteLine("OnMethod: '" + str + "'");
+            //Console.WriteLine("OnMethod: '" + str + "'");
             method.Append(str);
         }
 
         public void OnRequestUri(HttpParser parser, ArraySegment<byte> data)
         {
             var str = Encoding.ASCII.GetString(data.Array, data.Offset, data.Count);
-            Console.WriteLine("OnRequestUri:  '" + str + "'");
+            //Console.WriteLine("OnRequestUri:  '" + str + "'");
             requestUri.Append(str);
         }
 
@@ -130,7 +130,7 @@ namespace HttpMachine.Tests
         public void OnHeaderName(HttpParser parser, ArraySegment<byte> data)
         {
             var str = Encoding.ASCII.GetString(data.Array, data.Offset, data.Count);
-            Console.WriteLine("OnHeaderName:  '" + str + "'");
+            //Console.WriteLine("OnHeaderName:  '" + str + "'");
 
             if (headerValue.Length != 0)
                 CommitHeader();
@@ -141,7 +141,7 @@ namespace HttpMachine.Tests
         public void OnHeaderValue(HttpParser parser, ArraySegment<byte> data)
         {
             var str = Encoding.ASCII.GetString(data.Array, data.Offset, data.Count);
-            Console.WriteLine("OnHeaderValue:  '" + str + "'");
+            //Console.WriteLine("OnHeaderValue:  '" + str + "'");
 
             if (headerName.Length == 0)
                 throw new Exception("Got header value without name.");
@@ -151,7 +151,7 @@ namespace HttpMachine.Tests
 
         public void OnHeadersEnd(HttpParser parser)
         {
-            Console.WriteLine("OnHeadersEnd");
+            //Console.WriteLine("OnHeadersEnd");
             onHeadersEndCalled = true;
 
             if (headerValue.Length != 0)
@@ -172,7 +172,7 @@ namespace HttpMachine.Tests
         public void OnBody(HttpParser parser, ArraySegment<byte> data)
         {
             var str = Encoding.ASCII.GetString(data.Array, data.Offset, data.Count);
-            Console.WriteLine("OnBody:  '" + str + "'");
+            //Console.WriteLine("OnBody:  '" + str + "'");
             body.Add(data);
         }
     }
@@ -188,7 +188,7 @@ namespace HttpMachine.Tests
 
                 var expectedRequest = expected[i];
                 var actualRequest = actual[i];
-                Console.WriteLine("Asserting request " + expectedRequest.Name);
+                //Console.WriteLine("Asserting request " + expectedRequest.Name);
                 Assert.AreEqual(expectedRequest.Method, actualRequest.Method, "Unexpected method.");
                 Assert.AreEqual(expectedRequest.RequestUri, actualRequest.RequestUri, "Unexpected request URI.");
                 Assert.AreEqual(expectedRequest.VersionMajor, actualRequest.VersionMajor, "Unexpected major version.");
@@ -257,7 +257,7 @@ namespace HttpMachine.Tests
         [Test]
         public void RequestsPipelined()
         {
-            ThreeChunkScan(TestRequest.Requests.Where(r => r.ShouldKeepAlive = true).Take(3));
+            ThreeChunkScan(TestRequest.Requests.Where(r => r.ShouldKeepAlive == true).Take(3));
         }
 
         void ThreeChunkScan(IEnumerable<TestRequest> requests)
@@ -293,23 +293,25 @@ namespace HttpMachine.Tests
                         Console.WriteLine("  " + (100.0 * ((float)operationsCompleted / (float)totalOperations)));
 
                     operationsCompleted++;
+                    //Console.WriteLine(operationsCompleted + " / " + totalOperations);
 
                     var handler = new Handler();
                     var parser = new HttpParser(handler);
 
                     var buffer1Length = i;
                     Buffer.BlockCopy(raw, 0, buffer1, 0, buffer1Length);
-                    Console.WriteLine("Parsing buffer 1.");
-                    Assert.AreEqual(buffer1Length, parser.Execute(new ArraySegment<byte>(buffer1, 0, buffer1Length)), "Error parsing buffer 1.");
-
                     var buffer2Length = j - i;
                     Buffer.BlockCopy(raw, i, buffer2, 0, buffer2Length);
-                    Console.WriteLine("Parsing buffer 2.");
-                    Assert.AreEqual(buffer2Length, parser.Execute(new ArraySegment<byte>(buffer2, 0, buffer2Length)), "Error parsing buffer 2.");
-
                     var buffer3Length = raw.Length - j;
                     Buffer.BlockCopy(raw, j, buffer3, 0, buffer3Length);
-                    Console.WriteLine("Parsing buffer 3.");
+
+                    //Console.WriteLine("Parsing buffer 1.");
+                    Assert.AreEqual(buffer1Length, parser.Execute(new ArraySegment<byte>(buffer1, 0, buffer1Length)), "Error parsing buffer 1.");
+
+                    //Console.WriteLine("Parsing buffer 2.");
+                    Assert.AreEqual(buffer2Length, parser.Execute(new ArraySegment<byte>(buffer2, 0, buffer2Length)), "Error parsing buffer 2.");
+
+                    //Console.WriteLine("Parsing buffer 3.");
                     Assert.AreEqual(buffer3Length, parser.Execute(new ArraySegment<byte>(buffer3, 0, buffer3Length)), "Error parsing buffer 3.");
 
                     parser.Execute(default(ArraySegment<byte>));

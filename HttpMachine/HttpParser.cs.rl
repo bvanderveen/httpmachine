@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace HttpMachine
 {
@@ -10,8 +11,12 @@ namespace HttpMachine
         int fragMark;
         IHttpParserHandler parser;
 
-		int versionMajor = 0;
-		int versionMinor = 9;
+		// ew!
+		StringBuilder sb;
+		StringBuilder sb2;
+
+		int versionMajor;
+		int versionMinor;
 
 		public int MajorVersion { get { return versionMajor; } }
 		public int MinorVersion { get { return versionMinor; } }
@@ -45,40 +50,70 @@ namespace HttpMachine
         # define actions
         machine http_parser;
 
+		action buf {
+			sb.Append((char)fc);
+		}
+
+		action clear {
+			sb.Length = 0;
+		}
+
+		action buf2 {
+			sb2.Append((char)fc);
+		}
+
+		action clear2 {
+			if (sb2 == null)
+				sb2 = new StringBuilder();
+			sb2.Length = 0;
+		}
+
 		action message_begin {
-			Console.WriteLine("message_begin");
+			//Console.WriteLine("message_begin");
+			versionMajor = 0;
+			versionMinor = 9;
+			gotConnectionHeader = false;
+			gotTransferEncodingHeader = false;
+			gotConnectionClose = false;
+			gotConnectionKeepAlive = false;
+			gotTransferEncodingChunked = false;
+			gotUpgradeValue = false;
 			parser.OnMessageBegin(this);
 		}
         
         action matched_absolute_uri {
-            Console.WriteLine("matched absolute_uri");
+            //Console.WriteLine("matched absolute_uri");
         }
         action matched_abs_path {
-            Console.WriteLine("matched abs_path");
+            //Console.WriteLine("matched abs_path");
         }
         action matched_authority {
-            Console.WriteLine("matched authority");
+            //Console.WriteLine("matched authority");
         }
         action matched_first_space {
-            Console.WriteLine("matched first space");
+            //Console.WriteLine("matched first space");
         }
         action leave_first_space {
-            Console.WriteLine("leave_first_space");
+            //Console.WriteLine("leave_first_space");
         }
         action eof_leave_first_space {
-            Console.WriteLine("eof_leave_first_space");
+            //Console.WriteLine("eof_leave_first_space");
         }
 		action matched_header { 
-			Console.WriteLine("matched header");
+			//Console.WriteLine("matched header");
 		}
 		action matched_leading_crlf {
-			Console.WriteLine("matched_leading_crlf");
+			//Console.WriteLine("matched_leading_crlf");
 		}
 		action matched_last_crlf_before_body {
-			Console.WriteLine("matched_last_crlf_before_body");
+			//Console.WriteLine("matched_last_crlf_before_body");
 		}
 		action matched_header_crlf {
-			Console.WriteLine("matched_header_crlf");
+			//Console.WriteLine("matched_header_crlf");
+		}
+
+		action on_method {
+			parser.OnMethod(this, new ArraySegment<byte>(Encoding.ASCII.GetBytes(sb.ToString())));
 		}
 
         action enter_method {
@@ -87,30 +122,39 @@ namespace HttpMachine
         }
         
         action eof_leave_method {
-            Console.WriteLine("eof_leave_method fpc " + fpc + " mark " + mark);
+            //Console.WriteLine("eof_leave_method fpc " + fpc + " mark " + mark);
             parser.OnMethod(this, new ArraySegment<byte>(data, mark, fpc - mark));
         }
 
         action leave_method {
-            Console.WriteLine("leave_method fpc " + fpc + " mark " + mark);
+            //Console.WriteLine("leave_method fpc " + fpc + " mark " + mark);
             parser.OnMethod(this, new ArraySegment<byte>(data, mark, fpc - mark));
         }
         
+		action on_request_uri {
+			parser.OnRequestUri(this, new ArraySegment<byte>(Encoding.ASCII.GetBytes(sb.ToString())));
+		}
+
         action enter_request_uri {
-            Console.WriteLine("enter_request_uri fpc " + fpc);
+            //Console.WriteLine("enter_request_uri fpc " + fpc);
             mark = fpc;
         }
         
         action eof_leave_request_uri {
-            Console.WriteLine("eof_leave_request_uri!! fpc " + fpc + " mark " + mark);
+            //Console.WriteLine("eof_leave_request_uri!! fpc " + fpc + " mark " + mark);
             parser.OnRequestUri(this, new ArraySegment<byte>(data, mark, fpc - mark));
         }
 
         action leave_request_uri {
-            Console.WriteLine("leave_request_uri fpc " + fpc + " mark " + mark);
+            //Console.WriteLine("leave_request_uri fpc " + fpc + " mark " + mark);
             parser.OnRequestUri(this, new ArraySegment<byte>(data, mark, fpc - mark));
         }
         
+		action on_query_string
+		{
+			parser.OnQueryString(this, new ArraySegment<byte>(Encoding.ASCII.GetBytes(sb2.ToString())));
+		}
+
         action enter_query_string {
             //Console.WriteLine("enter_query_string fpc " + fpc);
             qsMark = fpc;
@@ -120,6 +164,12 @@ namespace HttpMachine
             //Console.WriteLine("leave_query_string fpc " + fpc + " qsMark " + qsMark);
             parser.OnQueryString(this, new ArraySegment<byte>(data, qsMark, fpc - qsMark));
         }
+
+		action on_fragment
+		{
+			parser.OnFragment(this, new ArraySegment<byte>(Encoding.ASCII.GetBytes(sb2.ToString())));
+		}
+
         action enter_fragment {
             //Console.WriteLine("enter_fragment fpc " + fpc);
             fragMark = fpc;
@@ -150,29 +200,29 @@ namespace HttpMachine
 
         action header_content_length {
             if (contentLength != -1) throw new Exception("Already got Content-Length. Possible attack?");
-			Console.WriteLine("Saw content length");
+			//Console.WriteLine("Saw content length");
 			contentLength = 0;
         }
 
 		action header_connection {
-			Console.WriteLine("header_connection");
+			//Console.WriteLine("header_connection");
 			gotConnectionHeader = true;
 		}
 
 		action header_connection_close {
-			Console.WriteLine("header_connection_close");
+			//Console.WriteLine("header_connection_close");
 			if (gotConnectionHeader)
 				gotConnectionClose = true;
 		}
 
 		action header_connection_keepalive {
-			Console.WriteLine("header_connection_keepalive");
+			//Console.WriteLine("header_connection_keepalive");
 			if (gotConnectionHeader)
 				gotConnectionKeepAlive = true;
 		}
 		
 		action header_transfer_encoding {
-			Console.WriteLine("Saw transfer encoding");
+			//Console.WriteLine("Saw transfer encoding");
 			gotTransferEncodingHeader = true;
 		}
 
@@ -201,7 +251,7 @@ namespace HttpMachine
 
                 contentLength *= 10;
                 contentLength += (int)fc - (int)'0';
-				Console.WriteLine("Content length is looking like " + contentLength);
+				//Console.WriteLine("Content length is looking like " + contentLength);
             }
         }
         
@@ -214,7 +264,7 @@ namespace HttpMachine
         }
 
         action leave_headers {
-			Console.WriteLine("leave_headers contentLength = " + contentLength);
+			//Console.WriteLine("leave_headers contentLength = " + contentLength);
             parser.OnHeadersEnd(this);
 
 			// if chunked transfer, ignore content length and parse chunked (but we can't yet so bail)
@@ -237,17 +287,17 @@ namespace HttpMachine
 			}
 			else
 			{
-				Console.WriteLine("Request had no content length.");
+				//Console.WriteLine("Request had no content length.");
 				if (ShouldKeepAlive)
 				{
 					parser.OnMessageEnd(this);
-					Console.WriteLine("Should keep alive, will read next message.");
+					//Console.WriteLine("Should keep alive, will read next message.");
 					fhold;
 					fgoto main;
 				}
 				else
 				{
-					Console.WriteLine("Not keeping alive, will read until eof. Will hold, but currently fpc = " + fpc);
+					//Console.WriteLine("Not keeping alive, will read until eof. Will hold, but currently fpc = " + fpc);
 					fhold;
 					fgoto body_identity_eof;
 				}
@@ -256,12 +306,13 @@ namespace HttpMachine
 
 		action body_identity {
 			var toRead = Math.Min(pe - p, contentLength);
-			Console.WriteLine("Reading " + toRead + " bytes from body.");
+			//Console.WriteLine("Reading " + toRead + " bytes from body.");
 			if (toRead > 0)
 			{
 				parser.OnBody(this, new ArraySegment<byte>(data, p, toRead));
-				p += toRead;
+				p += toRead - 1;
 				contentLength -= toRead;
+				//Console.WriteLine("content length is now " + contentLength);
 
 				if (contentLength == 0)
 				{
@@ -269,21 +320,25 @@ namespace HttpMachine
 
 					if (ShouldKeepAlive)
 					{
-						Console.WriteLine("Transitioning from identity body to next message.");
-						fhold;
+						//Console.WriteLine("Transitioning from identity body to next message.");
+						//fhold;
 						fgoto main;
 					}
 					else
 					{
-						fhold;
+						//fhold;
 						fgoto dead;
 					}
+				}
+				else
+				{
+					fbreak;
 				}
 			}
 		}
 		
 		action eof_leave_body_identity_eof {
-			Console.WriteLine("eof_leave_body_identity_eof");
+			//Console.WriteLine("eof_leave_body_identity_eof");
 			var toRead = pe - p;
 			if (toRead > 0)
 			{
@@ -321,6 +376,7 @@ namespace HttpMachine
         public HttpParser(IHttpParserHandler parser)
         {
             this.parser = parser;
+			sb = new StringBuilder();
             %% write init;
         }
 
@@ -335,8 +391,8 @@ namespace HttpMachine
             qsMark = 0;
             fragMark = 0;
             
-			if (p == pe)
-				Console.WriteLine("Parser executing on p == pe (EOF)");
+			//if (p == pe)
+			//	Console.WriteLine("Parser executing on p == pe (EOF)");
 
             %% write exec;
             

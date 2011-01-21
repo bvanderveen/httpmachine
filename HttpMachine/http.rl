@@ -11,16 +11,20 @@ http_token = (ascii -- (http_cntrl | http_separators))+;
 
 
 # not as picky as the spec at the moment, accept any method name less than 24 chars
-http_request_method = (alpha {1,24} >enter_method %/eof_leave_method %leave_method);
+http_request_method = (alpha {1,24} >clear $buf %on_method);
+#http_request_method = (alpha {1,24} >enter_method %/eof_leave_method %leave_method);
 
-query_string = (uri_query >enter_query_string %/leave_query_string %leave_query_string);
-fragment = (uri_fragment >enter_fragment %/leave_fragment %leave_fragment);
+query_string = (uri_query >clear2 $buf2 %on_query_string);
+#query_string = (uri_query >enter_query_string %/leave_query_string %leave_query_string);
+fragment = (uri_fragment >clear2 $buf2 %on_fragment);
+#fragment = (uri_fragment >enter_fragment %/leave_fragment %leave_fragment);
 
 absolute_uri = uri_absolute_uri >matched_absolute_uri;
 abs_path = (uri_abs_path ("?" query_string)? ("#" fragment?)?) >matched_abs_path;
 authority = uri_authority >matched_authority;
 
-http_request_uri = ("*" | absolute_uri | abs_path | authority) >enter_request_uri %/eof_leave_request_uri %leave_request_uri;
+http_request_uri = ("*" | absolute_uri | abs_path | authority) >clear $buf %on_request_uri;
+#http_request_uri = ("*" | absolute_uri | abs_path | authority) >enter_request_uri %/eof_leave_request_uri %leave_request_uri;
 #http_request_uri = ("*" | ((any -- (" " | "#" | "?" | http_crlf))+ ("?" ((any -- (" " | "#" | http_crlf))+ >enter_query_string %/leave_query_string %leave_query_string)?)? ("#" ((any -- (" " | http_crlf))+ >enter_fragment %/leave_fragment %leave_fragment)?)?)) >enter_request_uri %/eof_leave_request_uri %leave_request_uri;
 
 http_version = "HTTP/" (digit{1} $version_major) "." (digit{1} $version_minor);
@@ -54,7 +58,7 @@ http_request_headers = http_request_line (http_header)* http_crlf $matched_last_
 
 main := http_request_headers >message_begin;
 
-body_identity := any+ >body_identity;
+body_identity := any+ @body_identity;
 body_identity_eof := any* $in_body_identity_eof %/eof_leave_body_identity_eof;
 # body_chunked := ...
 
