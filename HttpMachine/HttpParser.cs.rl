@@ -72,13 +72,21 @@ namespace HttpMachine
 			//Console.WriteLine("message_begin");
 			versionMajor = 0;
 			versionMinor = 9;
+<<<<<<< HEAD
 			inConnectionHeader = false;
 			inTransferEncodingHeader = false;
+=======
+			gotConnectionHeader = false;
+			gotTransferEncodingHeader = false;
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 			gotConnectionClose = false;
 			gotConnectionKeepAlive = false;
 			gotTransferEncodingChunked = false;
 			gotUpgradeValue = false;
+<<<<<<< HEAD
 			contentLength = -1;
+=======
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 			parser.OnMessageBegin(this);
 		}
         
@@ -198,24 +206,40 @@ namespace HttpMachine
 
 		action header_connection {
 			//Console.WriteLine("header_connection");
+<<<<<<< HEAD
 			inConnectionHeader = true;
+=======
+			gotConnectionHeader = true;
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 		}
 
 		action header_connection_close {
 			//Console.WriteLine("header_connection_close");
+<<<<<<< HEAD
 			if (inConnectionHeader)
+=======
+			if (gotConnectionHeader)
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 				gotConnectionClose = true;
 		}
 
 		action header_connection_keepalive {
 			//Console.WriteLine("header_connection_keepalive");
+<<<<<<< HEAD
 			if (inConnectionHeader)
+=======
+			if (gotConnectionHeader)
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 				gotConnectionKeepAlive = true;
 		}
 		
 		action header_transfer_encoding {
 			//Console.WriteLine("Saw transfer encoding");
+<<<<<<< HEAD
 			inTransferEncodingHeader = true;
+=======
+			gotTransferEncodingHeader = true;
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 		}
 
 		action header_transfer_encoding_chunked {
@@ -238,10 +262,26 @@ namespace HttpMachine
 			if (inContentLengthHeader)
 				contentLength = int.Parse(str);
 
+<<<<<<< HEAD
 			inConnectionHeader = inTransferEncodingHeader = inContentLengthHeader = false;
 			
 			parser.OnHeaderValue(this, new ArraySegment<byte>(Encoding.ASCII.GetBytes(str)));
 		}
+=======
+                contentLength *= 10;
+                contentLength += (int)fc - (int)'0';
+				//Console.WriteLine("Content length is looking like " + contentLength);
+            }
+        }
+        
+        action leave_header_value {
+            //Console.WriteLine("leave_header_value fpc " + fpc + " fc " + (char)fc);
+			var count = fpc - mark;
+			if (count > 0 && gotUpgradeHeader)
+				gotUpgradeValue = true;
+            parser.OnHeaderValue(this, new ArraySegment<byte>(data, mark, count));
+        }
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 
         action leave_headers {
 			//Console.WriteLine("leave_headers contentLength = " + contentLength);
@@ -286,7 +326,11 @@ namespace HttpMachine
 
 		action body_identity {
 			var toRead = Math.Min(pe - p, contentLength);
+<<<<<<< HEAD
 			//Console.WriteLine("body_identity: reading " + toRead + " bytes from body.");
+=======
+			//Console.WriteLine("Reading " + toRead + " bytes from body.");
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 			if (toRead > 0)
 			{
 				parser.OnBody(this, new ArraySegment<byte>(data, p, toRead));
@@ -317,7 +361,12 @@ namespace HttpMachine
 			}
 		}
 		
+<<<<<<< HEAD
 		action body_identity_eof {
+=======
+		action eof_leave_body_identity_eof {
+			//Console.WriteLine("eof_leave_body_identity_eof");
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 			var toRead = pe - p;
 			//Console.WriteLine("body_identity_eof: reading " + toRead + " bytes from body.");
 			if (toRead > 0)

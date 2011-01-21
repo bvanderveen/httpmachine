@@ -48,13 +48,18 @@ namespace HttpMachine
 
 
         
+<<<<<<< HEAD
 #line 350 "HttpParser.cs.rl"
+=======
+#line 372 "HttpParser.cs.rl"
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 
         
         
 #line 56 "HttpParser.cs"
 static readonly sbyte[] _http_parser_actions =  new sbyte [] {
 	0, 1, 0, 1, 10, 1, 11, 1, 
+<<<<<<< HEAD
 	13, 1, 16, 1, 17, 1, 25, 1, 
 	26, 1, 27, 1, 28, 1, 29, 1, 
 	30, 2, 1, 0, 2, 2, 0, 2, 
@@ -68,6 +73,23 @@ static readonly sbyte[] _http_parser_actions =  new sbyte [] {
 	9, 1, 6, 0, 4, 9, 1, 7, 
 	0, 4, 9, 1, 7, 13, 5, 9, 
 	1, 5, 7, 0
+=======
+	12, 1, 13, 1, 15, 1, 18, 1, 
+	19, 1, 20, 1, 21, 1, 30, 1, 
+	31, 1, 32, 1, 33, 1, 34, 1, 
+	35, 1, 36, 2, 1, 0, 2, 2, 
+	0, 2, 4, 11, 2, 14, 8, 2, 
+	16, 0, 2, 16, 15, 2, 17, 15, 
+	2, 22, 21, 2, 23, 21, 2, 26, 
+	21, 2, 28, 21, 2, 29, 30, 2, 
+	31, 13, 3, 3, 2, 0, 3, 3, 
+	16, 0, 3, 3, 16, 15, 3, 3, 
+	17, 15, 3, 4, 1, 0, 3, 24, 
+	31, 13, 3, 25, 31, 13, 3, 27, 
+	31, 13, 4, 9, 1, 6, 0, 4, 
+	9, 1, 7, 0, 4, 9, 1, 7, 
+	15, 5, 9, 1, 5, 7, 0
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 };
 
 static readonly short[] _http_parser_key_offsets =  new short [] {
@@ -771,6 +793,7 @@ static readonly byte[] _http_parser_trans_targs =  new byte [] {
 };
 
 static readonly sbyte[] _http_parser_trans_actions =  new sbyte [] {
+<<<<<<< HEAD
 	31, 83, 83, 0, 5, 0, 25, 25, 
 	0, 34, 1, 1, 0, 97, 97, 92, 
 	92, 87, 92, 92, 92, 92, 92, 92, 
@@ -1021,6 +1044,258 @@ static readonly sbyte[] _http_parser_trans_actions =  new sbyte [] {
 	34, 1, 1, 0, 34, 1, 1, 0, 
 	34, 0, 19, 0, 0, 19, 21, 0, 
 	0
+=======
+	41, 90, 90, 0, 5, 0, 35, 35, 
+	0, 44, 1, 1, 0, 116, 116, 111, 
+	111, 106, 111, 111, 111, 111, 111, 111, 
+	111, 121, 121, 0, 0, 0, 7, 17, 
+	17, 17, 17, 17, 17, 17, 17, 17, 
+	17, 17, 17, 17, 17, 17, 0, 7, 
+	0, 0, 19, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	68, 68, 68, 68, 68, 0, 71, 21, 
+	9, 0, 0, 71, 21, 21, 21, 21, 
+	21, 0, 71, 21, 21, 21, 0, 71, 
+	21, 21, 21, 0, 71, 21, 21, 21, 
+	0, 71, 21, 21, 21, 0, 71, 21, 
+	21, 21, 0, 102, 21, 0, 71, 21, 
+	21, 21, 0, 71, 21, 21, 21, 0, 
+	71, 21, 21, 21, 0, 94, 21, 0, 
+	71, 21, 21, 21, 0, 71, 21, 21, 
+	21, 0, 71, 21, 21, 21, 0, 71, 
+	21, 21, 0, 71, 21, 21, 21, 0, 
+	71, 21, 21, 21, 0, 71, 21, 21, 
+	21, 0, 71, 21, 21, 21, 0, 71, 
+	21, 21, 21, 0, 98, 21, 0, 19, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 19, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 19, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	19, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 19, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 19, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 19, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 19, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 19, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 59, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 19, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 19, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 19, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 19, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 19, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 19, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 19, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 19, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	19, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 19, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 56, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 19, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 19, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 19, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 19, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 19, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 19, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 19, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 19, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 19, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 19, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 19, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 19, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	19, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 19, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 19, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 19, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 62, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 19, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 19, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 19, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 19, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 19, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	19, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 65, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 13, 0, 0, 0, 15, 0, 0, 
+	0, 11, 11, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 0, 1, 1, 
+	1, 0, 1, 1, 1, 0, 11, 11, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 0, 11, 11, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 0, 
+	1, 1, 1, 0, 1, 1, 1, 0, 
+	1, 1, 1, 1, 1, 0, 1, 1, 
+	1, 1, 0, 1, 1, 1, 1, 1, 
+	0, 1, 1, 0, 11, 11, 1, 1, 
+	1, 1, 1, 1, 0, 1, 1, 1, 
+	1, 0, 11, 11, 1, 0, 11, 11, 
+	1, 0, 1, 1, 1, 0, 1, 1, 
+	0, 1, 0, 1, 1, 0, 1, 0, 
+	11, 11, 1, 1, 0, 11, 11, 1, 
+	1, 0, 1, 1, 0, 1, 0, 1, 
+	1, 0, 1, 0, 1, 1, 1, 1, 
+	1, 0, 1, 1, 1, 1, 1, 0, 
+	11, 11, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 0, 
+	11, 11, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 0, 11, 
+	11, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 0, 11, 11, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 0, 11, 11, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 0, 11, 11, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	0, 11, 11, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 0, 11, 11, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 0, 86, 86, 74, 74, 
+	74, 74, 74, 74, 74, 74, 74, 0, 
+	53, 53, 38, 38, 38, 38, 38, 38, 
+	38, 38, 38, 0, 38, 38, 38, 0, 
+	38, 38, 38, 0, 1, 1, 1, 0, 
+	1, 1, 1, 0, 82, 82, 74, 78, 
+	74, 74, 74, 74, 74, 74, 74, 74, 
+	0, 50, 50, 38, 47, 38, 38, 38, 
+	38, 38, 38, 38, 38, 0, 38, 38, 
+	38, 0, 38, 38, 38, 0, 11, 11, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 0, 11, 
+	11, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 0, 
+	1, 1, 1, 1, 1, 1, 0, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 0, 11, 11, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 0, 1, 1, 
+	1, 0, 1, 1, 1, 0, 11, 11, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 0, 11, 11, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 0, 11, 11, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 0, 1, 1, 1, 0, 1, 1, 
+	1, 0, 11, 11, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 0, 
+	1, 1, 1, 1, 1, 0, 1, 1, 
+	1, 1, 0, 1, 1, 1, 1, 1, 
+	0, 1, 1, 0, 11, 11, 1, 1, 
+	1, 1, 1, 1, 1, 1, 0, 1, 
+	1, 1, 1, 0, 11, 11, 1, 1, 
+	1, 0, 11, 11, 1, 1, 1, 0, 
+	1, 1, 1, 0, 1, 1, 0, 1, 
+	0, 1, 1, 0, 1, 0, 11, 11, 
+	1, 1, 1, 1, 0, 11, 11, 1, 
+	1, 1, 1, 0, 1, 1, 0, 1, 
+	0, 1, 1, 0, 1, 0, 1, 1, 
+	1, 1, 1, 0, 1, 1, 1, 1, 
+	1, 0, 11, 11, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 0, 11, 11, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	0, 11, 11, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 0, 11, 11, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 0, 11, 
+	11, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 0, 11, 11, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 0, 11, 11, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 0, 
+	11, 11, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 0, 11, 11, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 0, 11, 11, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 0, 11, 11, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 0, 11, 11, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 0, 11, 11, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 0, 11, 11, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 0, 11, 11, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 0, 11, 11, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 0, 1, 1, 1, 0, 
+	1, 1, 1, 0, 11, 11, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 0, 11, 11, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 0, 11, 11, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	0, 11, 11, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 0, 11, 11, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 0, 11, 
+	11, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 0, 11, 11, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 0, 11, 11, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 0, 
+	11, 11, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 0, 1, 1, 1, 1, 1, 1, 
+	1, 0, 1, 1, 1, 1, 1, 1, 
+	1, 0, 1, 1, 1, 1, 1, 1, 
+	0, 11, 11, 1, 1, 1, 1, 1, 
+	1, 1, 0, 1, 1, 1, 1, 1, 
+	1, 1, 0, 11, 11, 1, 1, 1, 
+	1, 1, 1, 0, 11, 11, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 0, 11, 11, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 0, 11, 11, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 0, 11, 11, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 0, 11, 
+	11, 1, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	0, 11, 11, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 0, 11, 11, 1, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 1, 
+	1, 0, 44, 1, 1, 0, 44, 1, 
+	1, 0, 44, 1, 1, 0, 44, 1, 
+	1, 0, 44, 1, 1, 0, 44, 1, 
+	1, 0, 44, 1, 1, 0, 44, 1, 
+	1, 0, 44, 1, 1, 0, 44, 1, 
+	1, 0, 44, 1, 1, 0, 44, 1, 
+	1, 0, 44, 1, 1, 0, 44, 1, 
+	1, 0, 44, 1, 1, 0, 44, 1, 
+	1, 0, 44, 1, 1, 0, 44, 1, 
+	1, 0, 44, 1, 1, 0, 44, 1, 
+	1, 0, 44, 1, 1, 0, 44, 1, 
+	1, 0, 44, 0, 27, 0, 0, 27, 
+	33, 0, 0
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 };
 
 static readonly sbyte[] _http_parser_from_state_actions =  new sbyte [] {
@@ -1053,11 +1328,36 @@ static readonly sbyte[] _http_parser_from_state_actions =  new sbyte [] {
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
+<<<<<<< HEAD
 	17, 0, 0, 23
+=======
+	0, 25, 0, 0, 31
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 };
 
 static readonly sbyte[] _http_parser_eof_actions =  new sbyte [] {
 	0, 0, 0, 0, 0, 3, 0, 0, 
+<<<<<<< HEAD
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 0, 
+=======
+	0, 19, 0, 23, 0, 23, 23, 23, 
+	23, 23, 23, 23, 23, 23, 23, 23, 
+	23, 23, 23, 23, 23, 23, 23, 23, 
+	23, 23, 19, 19, 19, 19, 19, 19, 
+	19, 19, 19, 19, 19, 19, 19, 19, 
+	19, 19, 19, 19, 19, 19, 19, 19, 
+	19, 19, 19, 19, 19, 19, 19, 19, 
+	19, 19, 19, 19, 19, 19, 19, 19, 
+	19, 19, 19, 19, 19, 19, 19, 0, 
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
@@ -1077,16 +1377,11 @@ static readonly sbyte[] _http_parser_eof_actions =  new sbyte [] {
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 
+<<<<<<< HEAD
 	17, 0, 21, 0
+=======
+	0, 25, 0, 29, 0
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 };
 
 const int http_parser_start = 1;
@@ -1099,19 +1394,31 @@ const int http_parser_en_body_identity_eof = 234;
 const int http_parser_en_dead = 231;
 
 
+<<<<<<< HEAD
 #line 353 "HttpParser.cs.rl"
+=======
+#line 375 "HttpParser.cs.rl"
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
         
         public HttpParser(IHttpParserHandler parser)
         {
             this.parser = parser;
 			sb = new StringBuilder();
             
+<<<<<<< HEAD
 #line 1110 "HttpParser.cs"
+=======
+#line 1112 "HttpParser.cs"
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 	{
 	cs = http_parser_start;
 	}
 
+<<<<<<< HEAD
 #line 359 "HttpParser.cs.rl"
+=======
+#line 381 "HttpParser.cs.rl"
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
         }
 
         public int Execute(ArraySegment<byte> buf)
@@ -1129,7 +1436,11 @@ const int http_parser_en_dead = 231;
 			//	Console.WriteLine("Parser executing on p == pe (EOF)");
 
             
+<<<<<<< HEAD
 #line 1133 "HttpParser.cs"
+=======
+#line 1135 "HttpParser.cs"
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 	{
 	sbyte _klen;
 	short _trans;
@@ -1146,8 +1457,13 @@ _resume:
 	_nacts = _http_parser_actions[_acts++];
 	while ( _nacts-- > 0 ) {
 		switch ( _http_parser_actions[_acts++] ) {
+<<<<<<< HEAD
 	case 27:
 #line 246 "HttpParser.cs.rl"
+=======
+	case 32:
+#line 266 "HttpParser.cs.rl"
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 	{
 			//Console.WriteLine("leave_headers contentLength = " + contentLength);
             parser.OnHeadersEnd(this);
@@ -1189,13 +1505,22 @@ _resume:
 			}
         }
 	break;
+<<<<<<< HEAD
 	case 30:
 #line 344 "HttpParser.cs.rl"
+=======
+	case 35:
+#line 362 "HttpParser.cs.rl"
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 	{
 			throw new Exception("Parser is dead; there shouldn't be more data. Client is bogus? fpc =" + p);
 		}
 	break;
+<<<<<<< HEAD
 #line 1199 "HttpParser.cs"
+=======
+#line 1201 "HttpParser.cs"
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 		default: break;
 		}
 	}
@@ -1292,17 +1617,26 @@ _match:
 			//Console.WriteLine("message_begin");
 			versionMajor = 0;
 			versionMinor = 9;
+<<<<<<< HEAD
 			inConnectionHeader = false;
 			inTransferEncodingHeader = false;
+=======
+			gotConnectionHeader = false;
+			gotTransferEncodingHeader = false;
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 			gotConnectionClose = false;
 			gotConnectionKeepAlive = false;
 			gotTransferEncodingChunked = false;
 			gotUpgradeValue = false;
+<<<<<<< HEAD
 			contentLength = -1;
+=======
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 			parser.OnMessageBegin(this);
 		}
 	break;
 	case 5:
+<<<<<<< HEAD
 #line 85 "HttpParser.cs.rl"
 	{
             //Console.WriteLine("matched absolute_uri");
@@ -1364,18 +1698,117 @@ _match:
 	break;
 	case 16:
 #line 184 "HttpParser.cs.rl"
+=======
+#line 84 "HttpParser.cs.rl"
+	{
+            //Console.WriteLine("matched absolute_uri");
+        }
+	break;
+	case 6:
+#line 87 "HttpParser.cs.rl"
+	{
+            //Console.WriteLine("matched abs_path");
+        }
+	break;
+	case 7:
+#line 90 "HttpParser.cs.rl"
+	{
+            //Console.WriteLine("matched authority");
+        }
+	break;
+	case 8:
+#line 93 "HttpParser.cs.rl"
+	{
+            //Console.WriteLine("matched first space");
+        }
+	break;
+	case 9:
+#line 96 "HttpParser.cs.rl"
+	{
+            //Console.WriteLine("leave_first_space");
+        }
+	break;
+	case 11:
+#line 105 "HttpParser.cs.rl"
+	{
+			//Console.WriteLine("matched_leading_crlf");
+		}
+	break;
+	case 12:
+#line 108 "HttpParser.cs.rl"
+	{
+			//Console.WriteLine("matched_last_crlf_before_body");
+		}
+	break;
+	case 13:
+#line 111 "HttpParser.cs.rl"
+	{
+			//Console.WriteLine("matched_header_crlf");
+		}
+	break;
+	case 14:
+#line 115 "HttpParser.cs.rl"
+	{
+			parser.OnMethod(this, new ArraySegment<byte>(Encoding.ASCII.GetBytes(sb.ToString())));
+		}
+	break;
+	case 15:
+#line 134 "HttpParser.cs.rl"
+	{
+			parser.OnRequestUri(this, new ArraySegment<byte>(Encoding.ASCII.GetBytes(sb.ToString())));
+		}
+	break;
+	case 16:
+#line 154 "HttpParser.cs.rl"
+	{
+			parser.OnQueryString(this, new ArraySegment<byte>(Encoding.ASCII.GetBytes(sb2.ToString())));
+		}
+	break;
+	case 17:
+#line 169 "HttpParser.cs.rl"
+	{
+			parser.OnFragment(this, new ArraySegment<byte>(Encoding.ASCII.GetBytes(sb2.ToString())));
+		}
+	break;
+	case 18:
+#line 183 "HttpParser.cs.rl"
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 	{
 			versionMajor = (char)data[p] - '0';
 		}
 	break;
+<<<<<<< HEAD
 	case 17:
 #line 188 "HttpParser.cs.rl"
+=======
+	case 19:
+#line 187 "HttpParser.cs.rl"
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 	{
 			versionMinor = (char)data[p] - '0';
 		}
 	break;
+<<<<<<< HEAD
 	case 18:
 #line 192 "HttpParser.cs.rl"
+=======
+	case 20:
+#line 191 "HttpParser.cs.rl"
+	{
+            //Console.WriteLine("enter_header_name fpc " + fpc + " fc " + (char)fc);
+            mark = p;
+        }
+	break;
+	case 21:
+#line 196 "HttpParser.cs.rl"
+	{
+            //Console.WriteLine("leave_header_name fpc " + fpc + " fc " + (char)fc);
+            parser.OnHeaderName(this, new ArraySegment<byte>(data, mark, p - mark));
+        }
+	break;
+	case 22:
+#line 201 "HttpParser.cs.rl"
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 	{
             if (contentLength != -1) throw new Exception("Already got Content-Length. Possible attack?");
 			//Console.WriteLine("Saw content length");
@@ -1383,6 +1816,7 @@ _match:
 			inContentLengthHeader = true;
         }
 	break;
+<<<<<<< HEAD
 	case 19:
 #line 199 "HttpParser.cs.rl"
 	{
@@ -1415,25 +1849,74 @@ _match:
 	break;
 	case 23:
 #line 221 "HttpParser.cs.rl"
+=======
+	case 23:
+#line 207 "HttpParser.cs.rl"
+	{
+			//Console.WriteLine("header_connection");
+			gotConnectionHeader = true;
+		}
+	break;
+	case 24:
+#line 212 "HttpParser.cs.rl"
+	{
+			//Console.WriteLine("header_connection_close");
+			if (gotConnectionHeader)
+				gotConnectionClose = true;
+		}
+	break;
+	case 25:
+#line 218 "HttpParser.cs.rl"
+	{
+			//Console.WriteLine("header_connection_keepalive");
+			if (gotConnectionHeader)
+				gotConnectionKeepAlive = true;
+		}
+	break;
+	case 26:
+#line 224 "HttpParser.cs.rl"
+	{
+			//Console.WriteLine("Saw transfer encoding");
+			gotTransferEncodingHeader = true;
+		}
+	break;
+	case 27:
+#line 229 "HttpParser.cs.rl"
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 	{
 			if (inTransferEncodingHeader)
 				gotTransferEncodingChunked = true;
 		}
 	break;
+<<<<<<< HEAD
 	case 24:
 #line 226 "HttpParser.cs.rl"
+=======
+	case 28:
+#line 234 "HttpParser.cs.rl"
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 	{
 			inUpgradeHeader = true;
 		}
 	break;
+<<<<<<< HEAD
 	case 25:
 #line 230 "HttpParser.cs.rl"
+=======
+	case 29:
+#line 238 "HttpParser.cs.rl"
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 	{
 			parser.OnHeaderName(this, new ArraySegment<byte>(Encoding.ASCII.GetBytes(sb.ToString())));
 		}
 	break;
+<<<<<<< HEAD
 	case 26:
 #line 234 "HttpParser.cs.rl"
+=======
+	case 30:
+#line 243 "HttpParser.cs.rl"
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 	{
 			var str = sb.ToString();
 			//Console.WriteLine("on_header_value '" + str + "'");
@@ -1441,6 +1924,7 @@ _match:
 			if (inContentLengthHeader)
 				contentLength = int.Parse(str);
 
+<<<<<<< HEAD
 			inConnectionHeader = inTransferEncodingHeader = inContentLengthHeader = false;
 			
 			parser.OnHeaderValue(this, new ArraySegment<byte>(Encoding.ASCII.GetBytes(str)));
@@ -1451,6 +1935,32 @@ _match:
 	{
 			var toRead = Math.Min(pe - p, contentLength);
 			//Console.WriteLine("body_identity: reading " + toRead + " bytes from body.");
+=======
+                if (cfc < '0' || cfc > '9')
+                    throw new Exception("Bogus content length");
+
+                contentLength *= 10;
+                contentLength += (int)data[p] - (int)'0';
+				//Console.WriteLine("Content length is looking like " + contentLength);
+            }
+        }
+	break;
+	case 31:
+#line 258 "HttpParser.cs.rl"
+	{
+            //Console.WriteLine("leave_header_value fpc " + fpc + " fc " + (char)fc);
+			var count = p - mark;
+			if (count > 0 && gotUpgradeHeader)
+				gotUpgradeValue = true;
+            parser.OnHeaderValue(this, new ArraySegment<byte>(data, mark, count));
+        }
+	break;
+	case 33:
+#line 307 "HttpParser.cs.rl"
+	{
+			var toRead = Math.Min(pe - p, contentLength);
+			//Console.WriteLine("Reading " + toRead + " bytes from body.");
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 			if (toRead > 0)
 			{
 				parser.OnBody(this, new ArraySegment<byte>(data, p, toRead));
@@ -1471,7 +1981,11 @@ _match:
 					else
 					{
 						//fhold;
+<<<<<<< HEAD
 						{cs = 231; if (true) goto _again;}
+=======
+						{cs = 232; if (true) goto _again;}
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 					}
 				}
 				else
@@ -1481,8 +1995,13 @@ _match:
 			}
 		}
 	break;
+<<<<<<< HEAD
 	case 29:
 #line 320 "HttpParser.cs.rl"
+=======
+	case 36:
+#line 366 "HttpParser.cs.rl"
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 	{
 			var toRead = pe - p;
 			//Console.WriteLine("body_identity_eof: reading " + toRead + " bytes from body.");
@@ -1507,7 +2026,11 @@ _match:
 			}
 		}
 	break;
+<<<<<<< HEAD
 #line 1511 "HttpParser.cs"
+=======
+#line 1531 "HttpParser.cs"
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 		default: break;
 		}
 	}
@@ -1525,13 +2048,35 @@ _again:
 	while ( __nacts-- > 0 ) {
 		switch ( _http_parser_actions[__acts++] ) {
 	case 10:
+<<<<<<< HEAD
 #line 100 "HttpParser.cs.rl"
+=======
+#line 99 "HttpParser.cs.rl"
 	{
             //Console.WriteLine("eof_leave_first_space");
         }
 	break;
+	case 21:
+#line 196 "HttpParser.cs.rl"
+	{
+            //Console.WriteLine("leave_header_name fpc " + fpc + " fc " + (char)fc);
+            parser.OnHeaderName(this, new ArraySegment<byte>(data, mark, p - mark));
+        }
+	break;
+	case 31:
+#line 258 "HttpParser.cs.rl"
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
+	{
+            //Console.WriteLine("eof_leave_first_space");
+        }
+	break;
+<<<<<<< HEAD
 	case 27:
 #line 246 "HttpParser.cs.rl"
+=======
+	case 32:
+#line 266 "HttpParser.cs.rl"
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 	{
 			//Console.WriteLine("leave_headers contentLength = " + contentLength);
             parser.OnHeadersEnd(this);
@@ -1573,9 +2118,16 @@ _again:
 			}
         }
 	break;
+<<<<<<< HEAD
 	case 29:
 #line 320 "HttpParser.cs.rl"
 	{
+=======
+	case 34:
+#line 340 "HttpParser.cs.rl"
+	{
+			//Console.WriteLine("eof_leave_body_identity_eof");
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 			var toRead = pe - p;
 			//Console.WriteLine("body_identity_eof: reading " + toRead + " bytes from body.");
 			if (toRead > 0)
@@ -1599,7 +2151,11 @@ _again:
 			}
 		}
 	break;
+<<<<<<< HEAD
 #line 1603 "HttpParser.cs"
+=======
+#line 1638 "HttpParser.cs"
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
 		default: break;
 		}
 	}
@@ -1608,7 +2164,11 @@ _again:
 	_out: {}
 	}
 
+<<<<<<< HEAD
 #line 376 "HttpParser.cs.rl"
+=======
+#line 398 "HttpParser.cs.rl"
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
             
             var result = p - buf.Offset;
 

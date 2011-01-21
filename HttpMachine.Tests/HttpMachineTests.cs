@@ -380,7 +380,11 @@ namespace HttpMachine.Tests
 
         static void PipelineAndScan(params string[] requests)
         {
+<<<<<<< HEAD
             ThreeChunkScan(MakePipelined(requests));
+=======
+            ThreeChunkScan(TestRequest.Requests.Where(r => r.ShouldKeepAlive == true).Take(3));
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
         }
 
         static IEnumerable<TestRequest> MakePipelined(string[] requestNames)
@@ -415,6 +419,7 @@ namespace HttpMachine.Tests
                 requests.Aggregate("", (s, r) => s + "; " + r.Name).TrimStart(';', ' ') +
                 " (" + totalOperations + " ops) -----");
 
+<<<<<<< HEAD
             int lastI = 0;
             int lastJ = 0;
 
@@ -422,6 +427,40 @@ namespace HttpMachine.Tests
             {
                 for (int j = 2; j < raw.Length; j++)
                     for (int i = 1; i < j; i++)
+=======
+            for (int j = 2; j < raw.Length; j++)
+                for (int i = 1; i < j; i++)
+                {
+                    //Console.WriteLine();
+                    if (operationsCompleted % 1000 == 0)
+                        Console.WriteLine("  " + (100.0 * ((float)operationsCompleted / (float)totalOperations)));
+
+                    operationsCompleted++;
+                    //Console.WriteLine(operationsCompleted + " / " + totalOperations);
+
+                    var handler = new Handler();
+                    var parser = new HttpParser(handler);
+
+                    var buffer1Length = i;
+                    Buffer.BlockCopy(raw, 0, buffer1, 0, buffer1Length);
+                    var buffer2Length = j - i;
+                    Buffer.BlockCopy(raw, i, buffer2, 0, buffer2Length);
+                    var buffer3Length = raw.Length - j;
+                    Buffer.BlockCopy(raw, j, buffer3, 0, buffer3Length);
+
+                    //Console.WriteLine("Parsing buffer 1.");
+                    Assert.AreEqual(buffer1Length, parser.Execute(new ArraySegment<byte>(buffer1, 0, buffer1Length)), "Error parsing buffer 1.");
+
+                    //Console.WriteLine("Parsing buffer 2.");
+                    Assert.AreEqual(buffer2Length, parser.Execute(new ArraySegment<byte>(buffer2, 0, buffer2Length)), "Error parsing buffer 2.");
+
+                    //Console.WriteLine("Parsing buffer 3.");
+                    Assert.AreEqual(buffer3Length, parser.Execute(new ArraySegment<byte>(buffer3, 0, buffer3Length)), "Error parsing buffer 3.");
+
+                    parser.Execute(default(ArraySegment<byte>));
+
+                    try
+>>>>>>> 81ad15800054bf746424984fbc30832f5bd56819
                     {
                         lastI = i; lastJ = j;
                         //Console.WriteLine();
