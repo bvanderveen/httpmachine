@@ -10,7 +10,7 @@ namespace HttpMachine
 		// necessary evil?
 		StringBuilder sb;
 		StringBuilder sb2;
-		Uri uri;
+		// Uri uri;
 
 		int versionMajor;
 		int versionMinor;
@@ -28,7 +28,7 @@ namespace HttpMachine
 		bool gotUpgradeValue;
 
         int cs;
-        int mark;
+        // int mark;
 
         %%{
 
@@ -324,7 +324,7 @@ namespace HttpMachine
             int pe = buf.Offset + buf.Count;
             int eof = buf.Count == 0 ? buf.Offset : -1;
             //int eof = pe;
-            mark = 0;
+            // mark = 0;
             
 			//if (p == pe)
 			//	Console.WriteLine("Parser executing on p == pe (EOF)");

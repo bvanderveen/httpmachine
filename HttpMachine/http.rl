@@ -2,7 +2,7 @@
 
 machine http;
 
-include uri "uri.rl"; # query, fragment
+include uri "uri.rl"; # absulote_uri, authority, abs_path, query, fragment
 
 http_crlf = "\r\n";
 http_cntrl = (cntrl | 127);

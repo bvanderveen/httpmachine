@@ -140,7 +140,7 @@ namespace HttpMachine.Tests
             //Console.WriteLine("OnHeadersEnd");
             onHeadersEndCalled = true;
 
-            if (headerValue.Length != 0)
+            if (string.IsNullOrEmpty(headerValue))
                 CommitHeader();
 
             versionMajor = parser.MajorVersion;
