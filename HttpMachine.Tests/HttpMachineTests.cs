@@ -119,7 +119,7 @@ namespace HttpMachine.Tests
         {
             //Console.WriteLine("OnHeaderName:  '" + str + "'");
 
-            if (headerValue.Length != 0)
+            if (!string.IsNullOrEmpty(headerValue))
                 CommitHeader();
 
             headerName = str;
@@ -129,7 +129,7 @@ namespace HttpMachine.Tests
         {
             //Console.WriteLine("OnHeaderValue:  '" + str + "'");
 
-            if (headerName.Length == 0)
+            if (string.IsNullOrEmpty(headerName))
                 throw new Exception("Got header value without name.");
 
             headerValue = str;
@@ -140,7 +140,7 @@ namespace HttpMachine.Tests
             //Console.WriteLine("OnHeadersEnd");
             onHeadersEndCalled = true;
 
-            if (string.IsNullOrEmpty(headerValue))
+            if (!string.IsNullOrEmpty(headerValue))
                 CommitHeader();
 
             versionMajor = parser.MajorVersion;
@@ -152,6 +152,7 @@ namespace HttpMachine.Tests
         {
             //Console.WriteLine("Committing header '" + headerName + "' : '" + headerValue + "'");
             headers[headerName] = headerValue;
+            headerName = headerValue = null;
         }
 
         public void OnBody(HttpParser parser, ArraySegment<byte> data)
