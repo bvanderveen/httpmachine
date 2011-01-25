@@ -1,6 +1,6 @@
 # HttpMachine
 
-HttpMachine is a C# HTTP request parser. It implements a state machine with [Adrian Thurston](http://www.complang.org/thurston/)'s excellent state machine compiler, [Ragel](http://http://www.complang.org/ragel/). Because Ragel supports C, D, Java, Ruby, it wouldn't be hard to port this library to those languages.
+HttpMachine is a C# HTTP request parser. It implements a state machine with [Adrian Thurston](http://www.complang.org/thurston/)'s excellent state machine compiler, [Ragel](http://www.complang.org/ragel/). Because Ragel supports C, D, Java, Ruby, it wouldn't be hard to port this library to those languages.
 
 HttpMachine is Copyright (c) 2011 [Benjamin van der Veen](http://bvanderveen.com). HttpMachine is licensed under the 
 MIT License. See LICENSE.txt.
