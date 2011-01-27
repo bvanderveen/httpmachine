@@ -7,6 +7,7 @@ namespace HttpMachine
 {
     public partial class HttpParser
     {
+        public object UserContext { get; set; }
         public int MajorVersion { get { return versionMajor; } }
         public int MinorVersion { get { return versionMinor; } }
 
