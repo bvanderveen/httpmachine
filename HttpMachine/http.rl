@@ -54,7 +54,7 @@ http_header_separator = (":" (" " | "\t")*);
 http_header_value = (http_header_value_text | http_interesting_header_values) >clear $buf %on_header_value;
 http_header = http_header_name http_header_separator <: http_header_value http_crlf;
 
-http_request_headers = http_request_line (http_header)* http_crlf %/leave_headers %*leave_headers;
+http_request_headers = http_request_line (http_header)* http_crlf @last_crlf; # %/leave_headers %*leave_headers;
 
 main := http_request_headers >message_begin;
 

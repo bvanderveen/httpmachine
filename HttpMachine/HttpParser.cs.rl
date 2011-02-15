@@ -202,43 +202,47 @@ namespace HttpMachine
 			parser.OnHeaderValue(this, str);
 		}
 
-        action leave_headers {
-			//Console.WriteLine("leave_headers contentLength = " + contentLength);
-            parser.OnHeadersEnd(this);
+        action last_crlf {
+			
+			if (fc == 10)
+			{
+				//Console.WriteLine("leave_headers contentLength = " + contentLength);
+				parser.OnHeadersEnd(this);
 
-			// if chunked transfer, ignore content length and parse chunked (but we can't yet so bail)
-			// if content length given but zero, read next request
-			// if content length is given and non-zero, we should read that many bytes
-			// if content length is not given
-			//   if should keep alive, assume next request is coming and read it
-			//   else read body until EOF
+				// if chunked transfer, ignore content length and parse chunked (but we can't yet so bail)
+				// if content length given but zero, read next request
+				// if content length is given and non-zero, we should read that many bytes
+				// if content length is not given
+				//   if should keep alive, assume next request is coming and read it
+				//   else read body until EOF
 
-			if (contentLength == 0)
-			{
-				parser.OnMessageEnd(this);
-				fhold;
-				fgoto main;
-			}
-			else if (contentLength > 0)
-			{
-				fhold;
-				fgoto body_identity;
-			}
-			else
-			{
-				//Console.WriteLine("Request had no content length.");
-				if (ShouldKeepAlive)
+				if (contentLength == 0)
 				{
 					parser.OnMessageEnd(this);
-					//Console.WriteLine("Should keep alive, will read next message.");
-					fhold;
+					//fhold;
 					fgoto main;
+				}
+				else if (contentLength > 0)
+				{
+					//fhold;
+					fgoto body_identity;
 				}
 				else
 				{
-					//Console.WriteLine("Not keeping alive, will read until eof. Will hold, but currently fpc = " + fpc);
-					fhold;
-					fgoto body_identity_eof;
+					//Console.WriteLine("Request had no content length.");
+					if (ShouldKeepAlive)
+					{
+						parser.OnMessageEnd(this);
+						//Console.WriteLine("Should keep alive, will read next message.");
+						//fhold;
+						fgoto main;
+					}
+					else
+					{
+						//Console.WriteLine("Not keeping alive, will read until eof. Will hold, but currently fpc = " + fpc);
+						//fhold;
+						fgoto body_identity_eof;
+					}
 				}
 			}
         }

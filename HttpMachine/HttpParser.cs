@@ -33,7 +33,7 @@ namespace HttpMachine
         // int mark;
 
         
-#line 309 "HttpParser.cs.rl"
+#line 312 "HttpParser.cs.rl"
 
         
         
@@ -761,7 +761,7 @@ static readonly sbyte[] _http_parser_trans_actions =  new sbyte [] {
 	92, 87, 92, 92, 92, 92, 92, 92, 
 	92, 102, 102, 0, 0, 0, 0, 25, 
 	25, 25, 25, 25, 25, 25, 25, 25, 
-	25, 25, 25, 25, 25, 25, 0, 0, 
+	25, 25, 25, 25, 25, 25, 0, 17, 
 	0, 1, 13, 1, 1, 1, 1, 1, 
 	1, 1, 1, 0, 0, 0, 0, 0, 
 	25, 25, 25, 25, 25, 0, 15, 1, 
@@ -1038,7 +1038,7 @@ static readonly sbyte[] _http_parser_from_state_actions =  new sbyte [] {
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
-	17, 0, 0, 23
+	0, 0, 0, 23
 };
 
 static readonly sbyte[] _http_parser_eof_actions =  new sbyte [] {
@@ -1071,7 +1071,7 @@ static readonly sbyte[] _http_parser_eof_actions =  new sbyte [] {
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
-	17, 0, 21, 0
+	0, 0, 21, 0
 };
 
 const int http_parser_start = 1;
@@ -1084,7 +1084,7 @@ const int http_parser_en_body_identity_eof = 234;
 const int http_parser_en_dead = 231;
 
 
-#line 312 "HttpParser.cs.rl"
+#line 315 "HttpParser.cs.rl"
         
         public HttpParser(IHttpParserHandler parser)
         {
@@ -1096,7 +1096,7 @@ const int http_parser_en_dead = 231;
 	cs = http_parser_start;
 	}
 
-#line 318 "HttpParser.cs.rl"
+#line 321 "HttpParser.cs.rl"
         }
 
         public int Execute(ArraySegment<byte> buf)
@@ -1129,56 +1129,13 @@ _resume:
 	_nacts = _http_parser_actions[_acts++];
 	while ( _nacts-- > 0 ) {
 		switch ( _http_parser_actions[_acts++] ) {
-	case 27:
-#line 205 "HttpParser.cs.rl"
-	{
-			//Console.WriteLine("leave_headers contentLength = " + contentLength);
-            parser.OnHeadersEnd(this);
-
-			// if chunked transfer, ignore content length and parse chunked (but we can't yet so bail)
-			// if content length given but zero, read next request
-			// if content length is given and non-zero, we should read that many bytes
-			// if content length is not given
-			//   if should keep alive, assume next request is coming and read it
-			//   else read body until EOF
-
-			if (contentLength == 0)
-			{
-				parser.OnMessageEnd(this);
-				p--;
-				{cs = 1; if (true) goto _again;}
-			}
-			else if (contentLength > 0)
-			{
-				p--;
-				{cs = 230; if (true) goto _again;}
-			}
-			else
-			{
-				//Console.WriteLine("Request had no content length.");
-				if (ShouldKeepAlive)
-				{
-					parser.OnMessageEnd(this);
-					//Console.WriteLine("Should keep alive, will read next message.");
-					p--;
-					{cs = 1; if (true) goto _again;}
-				}
-				else
-				{
-					//Console.WriteLine("Not keeping alive, will read until eof. Will hold, but currently fpc = " + fpc);
-					p--;
-					{cs = 234; if (true) goto _again;}
-				}
-			}
-        }
-	break;
 	case 30:
-#line 303 "HttpParser.cs.rl"
+#line 306 "HttpParser.cs.rl"
 	{
 			throw new Exception("Parser is dead; there shouldn't be more data. Client is bogus? fpc =" + p);
 		}
 	break;
-#line 1182 "HttpParser.cs"
+#line 1139 "HttpParser.cs"
 		default: break;
 		}
 	}
@@ -1433,8 +1390,54 @@ _match:
 			parser.OnHeaderValue(this, str);
 		}
 	break;
+	case 27:
+#line 205 "HttpParser.cs.rl"
+	{
+			if (data[p] == 10)
+			{
+				//Console.WriteLine("leave_headers contentLength = " + contentLength);
+				parser.OnHeadersEnd(this);
+
+				// if chunked transfer, ignore content length and parse chunked (but we can't yet so bail)
+				// if content length given but zero, read next request
+				// if content length is given and non-zero, we should read that many bytes
+				// if content length is not given
+				//   if should keep alive, assume next request is coming and read it
+				//   else read body until EOF
+
+				if (contentLength == 0)
+				{
+					parser.OnMessageEnd(this);
+					//fhold;
+					{cs = 1; if (true) goto _again;}
+				}
+				else if (contentLength > 0)
+				{
+					//fhold;
+					{cs = 230; if (true) goto _again;}
+				}
+				else
+				{
+					//Console.WriteLine("Request had no content length.");
+					if (ShouldKeepAlive)
+					{
+						parser.OnMessageEnd(this);
+						//Console.WriteLine("Should keep alive, will read next message.");
+						//fhold;
+						{cs = 1; if (true) goto _again;}
+					}
+					else
+					{
+						//Console.WriteLine("Not keeping alive, will read until eof. Will hold, but currently fpc = " + fpc);
+						//fhold;
+						{cs = 234; if (true) goto _again;}
+					}
+				}
+			}
+        }
+	break;
 	case 28:
-#line 246 "HttpParser.cs.rl"
+#line 249 "HttpParser.cs.rl"
 	{
 			var toRead = Math.Min(pe - p, contentLength);
 			//Console.WriteLine("body_identity: reading " + toRead + " bytes from body.");
@@ -1469,7 +1472,7 @@ _match:
 		}
 	break;
 	case 29:
-#line 279 "HttpParser.cs.rl"
+#line 282 "HttpParser.cs.rl"
 	{
 			var toRead = pe - p;
 			//Console.WriteLine("body_identity_eof: reading " + toRead + " bytes from body.");
@@ -1494,7 +1497,7 @@ _match:
 			}
 		}
 	break;
-#line 1498 "HttpParser.cs"
+#line 1501 "HttpParser.cs"
 		default: break;
 		}
 	}
@@ -1517,51 +1520,8 @@ _again:
             //Console.WriteLine("eof_leave_first_space");
         }
 	break;
-	case 27:
-#line 205 "HttpParser.cs.rl"
-	{
-			//Console.WriteLine("leave_headers contentLength = " + contentLength);
-            parser.OnHeadersEnd(this);
-
-			// if chunked transfer, ignore content length and parse chunked (but we can't yet so bail)
-			// if content length given but zero, read next request
-			// if content length is given and non-zero, we should read that many bytes
-			// if content length is not given
-			//   if should keep alive, assume next request is coming and read it
-			//   else read body until EOF
-
-			if (contentLength == 0)
-			{
-				parser.OnMessageEnd(this);
-				p--;
-				{cs = 1; if (true) goto _again;}
-			}
-			else if (contentLength > 0)
-			{
-				p--;
-				{cs = 230; if (true) goto _again;}
-			}
-			else
-			{
-				//Console.WriteLine("Request had no content length.");
-				if (ShouldKeepAlive)
-				{
-					parser.OnMessageEnd(this);
-					//Console.WriteLine("Should keep alive, will read next message.");
-					p--;
-					{cs = 1; if (true) goto _again;}
-				}
-				else
-				{
-					//Console.WriteLine("Not keeping alive, will read until eof. Will hold, but currently fpc = " + fpc);
-					p--;
-					{cs = 234; if (true) goto _again;}
-				}
-			}
-        }
-	break;
 	case 29:
-#line 279 "HttpParser.cs.rl"
+#line 282 "HttpParser.cs.rl"
 	{
 			var toRead = pe - p;
 			//Console.WriteLine("body_identity_eof: reading " + toRead + " bytes from body.");
@@ -1586,7 +1546,7 @@ _again:
 			}
 		}
 	break;
-#line 1590 "HttpParser.cs"
+#line 1550 "HttpParser.cs"
 		default: break;
 		}
 	}
@@ -1595,7 +1555,7 @@ _again:
 	_out: {}
 	}
 
-#line 333 "HttpParser.cs.rl"
+#line 336 "HttpParser.cs.rl"
             
             var result = p - buf.Offset;
 
