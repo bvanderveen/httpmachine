@@ -1,9 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMachine", "HttpMachine\HttpMachine.csproj", "{76FB25C5-15B1-4541-8D19-D78790257C95}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMachine", "src\HttpMachine\HttpMachine.csproj", "{76FB25C5-15B1-4541-8D19-D78790257C95}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMachine.Tests", "HttpMachine.Tests\HttpMachine.Tests.csproj", "{75BEA10B-761A-474F-9522-57E8974B52D6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpMachine.Tests", "src\HttpMachine.Tests\HttpMachine.Tests.csproj", "{75BEA10B-761A-474F-9522-57E8974B52D6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{53A0F2F3-7516-49F0-A6E6-FFB9FF0D9FD1}"
+	ProjectSection(SolutionItems) = preProject
+		build.bat = build.bat
+		build.fsx = build.fsx
+		LICENSE.txt = LICENSE.txt
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
