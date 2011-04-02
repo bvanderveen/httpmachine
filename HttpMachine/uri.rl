@@ -7,7 +7,7 @@ scheme = alpha (alpha | digit | "+" | "-" | ".")+;
 escaped = "%" xdigit xdigit;
 mark = "-" | "_" | "." | "!" | "~" | "*" | "'" | "(" | ")";
 reserved = ";" | "/" | "?" | ":" | "@" | "&" | "=" | "+" | "$" | ",";
-unreserved = alpha | mark;
+unreserved = alpha | digit | mark;
 pchar = unreserved | escaped | ":" | "@" | "&" | "=" | "+" | "$" | ",";
 uric = reserved | unreserved | escaped;
 uric_no_slash = unreserved | escaped | ";" | "?" | ":" | "@" | "&" | "=" | "+" | "$" | ",";
