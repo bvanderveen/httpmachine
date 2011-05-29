@@ -2,4 +2,4 @@
 *.suo
 bin
 obj
-packages
+.DS_Store

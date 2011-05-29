@@ -1,0 +1,13 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)'=='' ">Release</Configuration>
+        <OutputPath Condition=" '$(OutputPath)'=='' ">$(MSBuildProjectDirectory)\build\</OutputPath>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="$(MSBuildProjectDirectory)\HttpMachine\HttpMachine.csproj"/>
+        <Projects Include="$(MSBuildProjectDirectory)\HttpMachine.Tests\HttpMachine.Tests.csproj"/>
+    </ItemGroup>
+    <Target Name="Build">
+        <MSBuild Projects="@(Projects)"/>
+    </Target>
+</Project>
