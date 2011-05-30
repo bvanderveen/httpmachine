@@ -2,15 +2,17 @@
     <PropertyGroup>
         <Configuration Condition=" '$(Configuration)'=='' ">Release</Configuration>
         <OutputPath Condition=" '$(OutputPath)'=='' ">$(MSBuildProjectDirectory)\build\</OutputPath>
-        <FullOutputPath Condition= " '$(FullOutputPath)' == '' ">$(OutputPath)\$(Configuration)\</FullOutputPath>
-        <NupkgPath>$(FullOutputPath)\nupkg\</NupkgPath>
+        <ConfigurationOutputPath>$(OutputPath)\$(Configuration)\</ConfigurationOutputPath>
+        <CompileOutputPath>$(ConfigurationOutputPath)\out\</CompileOutputPath>
+        <NupkgPath>$(ConfigurationOutputPath)\nupkg\</NupkgPath>
         <NupkgLibPath>$(NupkgPath)\lib\</NupkgLibPath>
+        <NupkgSpecName>HttpMachine.nuspec</NupkgSpecName>
+        <NugetExeLocation>$(MSBuildProjectDirectory)\tools\nuget</NugetExeLocation>
     </PropertyGroup>
     <ItemGroup>
         <Projects Include="$(MSBuildProjectDirectory)\HttpMachine\HttpMachine.csproj"/>
         <Projects Include="$(MSBuildProjectDirectory)\HttpMachine.Tests\HttpMachine.Tests.csproj"/>
     </ItemGroup>
-    
     
     <!-- all of this for recursively deleting a directory. still doesn't work on any directory that doesn't contain
         files. what a load of crap. <\3 MSBuild. -->
@@ -35,26 +37,23 @@
         <RemoveDir Directories="@(FilteredCleanDirectories)"/>
         <RemoveDir Directories="$(OutputPath)" Condition="Exists('$(OutputPath)')"/>
     </Target>
+    
     <Target Name="Build">
-        <MakeDir Directories="$(FullOutputPath)"/>
-        <MSBuild Projects="@(Projects)" Properties="OutputPath=$(FullOutputPath)" />
+        <MakeDir Directories="$(CompileOutputPath)"/>
+        <MSBuild Projects="@(Projects)" Properties="OutputPath=$(CompileOutputPath);NugetExeLocation=$(NugetExeLocation)" />
     </Target>
     
     <Target Name="DistNuget" DependsOnTargets="Build">
         <MakeDir Directories="$(NupkgLibPath)"/>
-        <Copy SourceFiles="$(FullOutputPath)\HttpMachine.dll" DestinationFolder="$(NupkgLibPath)"/>
-        <Copy SourceFiles="HttpMachine.nuspec" DestinationFolder="$(NupkgPath)"/>
-        
-        <GetAssemblyIdentity AssemblyFiles="$(FullOutputPath)\HttpMachine.dll">
+        <Copy SourceFiles="$(CompileOutputPath)\HttpMachine.dll" DestinationFolder="$(NupkgLibPath)"/>
+        <Copy SourceFiles="$(NupkgSpecName)" DestinationFolder="$(NupkgPath)"/>
+        <GetAssemblyIdentity AssemblyFiles="$(CompileOutputPath)\HttpMachine.dll">
             <Output TaskParameter="Assemblies" ItemName="AssemblyInfo" />
         </GetAssemblyIdentity>
-        
-        <Message Text="Version is %(AssemblyInfo.Version)"/>
         <XmlPoke
-            XmlInputPath="$(NupkgPath)\HttpMachine.nuspec"
+            XmlInputPath="$(NupkgPath)\$(NupkgSpecName)"
             Query="//version"
             Value="%(AssemblyInfo.Version)"/>
-        
-        <Exec WorkingDirectory="$(NupkgPath)" Command="nuget pack HttpMachine.nuspec"/>
+        <Exec WorkingDirectory="$(NupkgPath)" Command="$(NugetExeLocation) pack $(NupkgSpecName)"/>
     </Target>
 </Project>
