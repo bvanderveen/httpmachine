@@ -1,3 +1,4 @@
+
 #line 1 "HttpParser.cs.rl"
 using System;
 using System.Text;
@@ -31,11 +32,12 @@ namespace HttpMachine
         int cs;
         // int mark;
 
-        #line 313 "HttpParser.cs.rl"
+        
+#line 313 "HttpParser.cs.rl"
 
         
         
-#line 37 "HttpParser.cs"
+#line 41 "HttpParser.cs"
 static readonly sbyte[] _http_parser_actions =  new sbyte [] {
 	0, 1, 0, 1, 10, 1, 11, 1, 
 	13, 1, 16, 1, 17, 1, 25, 1, 
@@ -525,6 +527,7 @@ const int http_parser_en_body_identity = 129;
 const int http_parser_en_body_identity_eof = 133;
 const int http_parser_en_dead = 130;
 
+
 #line 316 "HttpParser.cs.rl"
         
         public HttpParser(IHttpParserHandler parser)
@@ -532,10 +535,11 @@ const int http_parser_en_dead = 130;
             this.parser = parser;
 			sb = new StringBuilder();
             
-#line 532 "HttpParser.cs"
+#line 539 "HttpParser.cs"
 	{
 	cs = http_parser_start;
 	}
+
 #line 322 "HttpParser.cs.rl"
         }
 
@@ -552,12 +556,12 @@ const int http_parser_en_dead = 130;
 			//	Console.WriteLine("Parser executing on p == pe (EOF)");
 
             
-#line 550 "HttpParser.cs"
+#line 560 "HttpParser.cs"
 	{
 	sbyte _klen;
 	short _trans;
-	sbyte _acts;
-	sbyte _nacts;
+	int _acts;
+	int _nacts;
 	short _keys;
 
 	if ( p == pe )
@@ -575,7 +579,7 @@ _resume:
 			throw new Exception("Parser is dead; there shouldn't be more data. Client is bogus? fpc =" + p);
 		}
 	break;
-#line 571 "HttpParser.cs"
+#line 583 "HttpParser.cs"
 		default: break;
 		}
 	}
@@ -939,7 +943,7 @@ _match:
 			}
 		}
 	break;
-#line 905 "HttpParser.cs"
+#line 947 "HttpParser.cs"
 		default: break;
 		}
 	}
@@ -952,8 +956,8 @@ _again:
 	_test_eof: {}
 	if ( p == eof )
 	{
-	sbyte __acts = _http_parser_eof_actions[cs];
-	sbyte __nacts = _http_parser_actions[__acts++];
+	int __acts = _http_parser_eof_actions[cs];
+	int __nacts = _http_parser_actions[__acts++];
 	while ( __nacts-- > 0 ) {
 		switch ( _http_parser_actions[__acts++] ) {
 	case 10:
@@ -988,7 +992,7 @@ _again:
 			}
 		}
 	break;
-#line 951 "HttpParser.cs"
+#line 996 "HttpParser.cs"
 		default: break;
 		}
 	}
@@ -996,6 +1000,7 @@ _again:
 
 	_out: {}
 	}
+
 #line 337 "HttpParser.cs.rl"
             
             var result = p - buf.Offset;
