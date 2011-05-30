@@ -121,6 +121,51 @@ namespace HttpMachine.Tests
                 ShouldKeepAlive = true
             },
             new TestRequest() {
+                Name = "digits in path",
+                Raw = Encoding.ASCII.GetBytes("GET /foo/500.html HTTP/1.1\r\n\r\n"),
+                Method = "GET",
+                RequestUri = "/foo/500.html",
+                RequestPath = "/foo/500.html",
+                QueryString = null,
+                Fragment = null,
+                VersionMajor = 1,
+                VersionMinor = 1,
+                Headers = new Dictionary<string,string>() {
+                },
+                Body = null,
+                ShouldKeepAlive = true
+            },
+            new TestRequest() {
+                Name = "digits in query string",
+                Raw = Encoding.ASCII.GetBytes("GET /foo?123=abc&def=567 HTTP/1.1\r\n\r\n"),
+                Method = "GET",
+                RequestUri = "/foo?123=abc&def=567",
+                RequestPath = "/foo",
+                QueryString = "123=abc&def=567",
+                Fragment = null,
+                VersionMajor = 1,
+                VersionMinor = 1,
+                Headers = new Dictionary<string,string>() {
+                },
+                Body = null,
+                ShouldKeepAlive = true
+            },
+            new TestRequest() {
+                Name = "digits in path and query string",
+                Raw = Encoding.ASCII.GetBytes("GET /foo/500.html?123=abc&def=567 HTTP/1.1\r\n\r\n"),
+                Method = "GET",
+                RequestUri = "/foo/500.html?123=abc&def=567",
+                RequestPath = "/foo/500.html",
+                QueryString = "123=abc&def=567",
+                Fragment = null,
+                VersionMajor = 1,
+                VersionMinor = 1,
+                Headers = new Dictionary<string,string>() {
+                },
+                Body = null,
+                ShouldKeepAlive = true
+            },
+            new TestRequest() {
                 Name = "zero content length",
                 Raw = Encoding.ASCII.GetBytes("POST /foo HTTP/1.1\r\nFoo: Bar\r\nContent-Length: 0\r\n\r\n"),
                 Method = "POST",
