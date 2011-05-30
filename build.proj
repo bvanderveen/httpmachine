@@ -1,0 +1,60 @@
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)'=='' ">Release</Configuration>
+        <OutputPath Condition=" '$(OutputPath)'=='' ">$(MSBuildProjectDirectory)\build\</OutputPath>
+        <FullOutputPath Condition= " '$(FullOutputPath)' == '' ">$(OutputPath)\$(Configuration)\</FullOutputPath>
+        <NupkgPath>$(FullOutputPath)\nupkg\</NupkgPath>
+        <NupkgLibPath>$(NupkgPath)\lib\</NupkgLibPath>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="$(MSBuildProjectDirectory)\HttpMachine\HttpMachine.csproj"/>
+        <Projects Include="$(MSBuildProjectDirectory)\HttpMachine.Tests\HttpMachine.Tests.csproj"/>
+    </ItemGroup>
+    
+    
+    <!-- all of this for recursively deleting a directory. still doesn't work on any directory that doesn't contain
+        files. what a load of crap. <\3 MSBuild. -->
+        
+    <ItemGroup>
+        <!-- list all files under output path -->
+        <CleanFiles Include="$(OutputPath)\**\*"/>
+    </ItemGroup>
+    <ItemGroup>
+        <!-- list parent dirs of all files -->
+        <CleanDirectories Include="@(CleanFiles->'%(RelativeDir)')"/>
+    </ItemGroup>
+    <Target Name="RemoveDuplicateCleanDirectories">
+        <!-- remove duplicates (happens when dir contains more than one file) -->
+        <RemoveDuplicates Inputs="@(CleanDirectories)">
+            <Output TaskParameter="Filtered" ItemName="FilteredCleanDirectories"/>
+        </RemoveDuplicates>
+    </Target>
+    
+    <Target Name="Clean" DependsOnTargets="RemoveDuplicateCleanDirectories">
+        <Delete Files="@(CleanFiles)"/>
+        <RemoveDir Directories="@(FilteredCleanDirectories)"/>
+        <RemoveDir Directories="$(OutputPath)" Condition="Exists('$(OutputPath)')"/>
+    </Target>
+    <Target Name="Build">
+        <MakeDir Directories="$(FullOutputPath)"/>
+        <MSBuild Projects="@(Projects)" Properties="OutputPath=$(FullOutputPath)" />
+    </Target>
+    
+    <Target Name="DistNuget" DependsOnTargets="Build">
+        <MakeDir Directories="$(NupkgLibPath)"/>
+        <Copy SourceFiles="$(FullOutputPath)\HttpMachine.dll" DestinationFolder="$(NupkgLibPath)"/>
+        <Copy SourceFiles="HttpMachine.nuspec" DestinationFolder="$(NupkgPath)"/>
+        
+        <GetAssemblyIdentity AssemblyFiles="$(FullOutputPath)\HttpMachine.dll">
+            <Output TaskParameter="Assemblies" ItemName="AssemblyInfo" />
+        </GetAssemblyIdentity>
+        
+        <Message Text="Version is %(AssemblyInfo.Version)"/>
+        <XmlPoke
+            XmlInputPath="$(NupkgPath)\HttpMachine.nuspec"
+            Query="//version"
+            Value="%(AssemblyInfo.Version)"/>
+        
+        <Exec WorkingDirectory="$(NupkgPath)" Command="nuget pack HttpMachine.nuspec"/>
+    </Target>
+</Project>
