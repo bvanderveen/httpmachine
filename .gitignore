@@ -3,4 +3,5 @@
 bin
 obj
 build
+packages
 .DS_Store
