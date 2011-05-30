@@ -240,6 +240,22 @@ namespace HttpMachine.Tests
             }
         }
 
+        [Test]
+        public void RequestsWithDigits() {
+            foreach (var request in TestRequest.Requests.Where(r => r.Name.StartsWith("digits in "))) {
+                var handler = new Handler();
+                var parser = new HttpParser(handler);
+                Console.WriteLine("----- Testing request: '" + request.Name + "' -----");
+
+                var parsed = parser.Execute(new ArraySegment<byte>(request.Raw));
+
+                if (parsed != request.Raw.Length)
+                    Assert.Fail("Error while parsing.");
+
+                AssertRequest(new TestRequest[] { request }, handler.Requests.ToArray(), parser);
+            }
+        }
+
         [TestFixture]
         public class OneOhTests
         {
