@@ -5,7 +5,7 @@ using System.Text;
 
 namespace HttpMachine
 {
-    public interface IHttpParserHandler
+    public interface IHttpParserDelegate
     {
         void OnMessageBegin(HttpParser parser);
         void OnMethod(HttpParser parser, string method);

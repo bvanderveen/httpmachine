@@ -5,7 +5,7 @@ namespace HttpMachine
 {
     public partial class HttpParser
     {
-        IHttpParserHandler parser;
+        IHttpParserDelegate parser;
 
 		// necessary evil?
 		StringBuilder sb;
@@ -314,7 +314,7 @@ namespace HttpMachine
         
         %% write data;
         
-        public HttpParser(IHttpParserHandler parser)
+        public HttpParser(IHttpParserDelegate parser)
         {
             this.parser = parser;
 			sb = new StringBuilder();

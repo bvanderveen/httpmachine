@@ -26,7 +26,7 @@ using System.Diagnostics;
 
 namespace HttpMachine.Tests
 {
-    class Handler : IHttpParserHandler
+    class Handler : IHttpParserDelegate
     {
         public List<TestRequest> Requests = new List<TestRequest>();
 

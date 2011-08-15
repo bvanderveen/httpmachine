@@ -37,7 +37,7 @@
   <ItemGroup>
     <Compile Include="HttpParser.cs" />
     <Compile Include="HttpParserPublic.cs" />
-    <Compile Include="IHttpParserHandler.cs" />
+    <Compile Include="IHttpParserDelegate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
