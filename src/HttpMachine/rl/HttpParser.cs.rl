@@ -3,9 +3,26 @@ using System.Text;
 
 namespace HttpMachine
 {
-    public partial class HttpParser
+    public class HttpParser
     {
-        IHttpParserDelegate parser;
+        public object UserContext { get; set; }
+        public int MajorVersion { get { return versionMajor; } }
+        public int MinorVersion { get { return versionMinor; } }
+
+        public bool ShouldKeepAlive
+        {
+            get
+            {
+                if (versionMajor > 0 && versionMinor > 0)
+                    // HTTP/1.1
+                    return !gotConnectionClose;
+                else
+                    // < HTTP/1.1
+                    return gotConnectionKeepAlive;
+            }
+        }
+
+        IHttpParserDelegate del;
 
 		// necessary evil?
 		StringBuilder sb;
@@ -68,7 +85,7 @@ namespace HttpMachine
 			gotConnectionKeepAlive = false;
 			gotTransferEncodingChunked = false;
 			gotUpgradeValue = false;
-			parser.OnMessageBegin(this);
+			del.OnMessageBegin(this);
 		}
         
         action matched_absolute_uri {
@@ -103,16 +120,21 @@ namespace HttpMachine
 		}
 
 		action on_method {
-			parser.OnMethod(this, sb.ToString());
+			del.OnMethod(this, sb.ToString());
 		}
         
 		action on_request_uri {
-			parser.OnRequestUri(this, sb.ToString());
+			del.OnRequestUri(this, sb.ToString());
+		}
+
+		action on_abs_path
+		{
+			del.OnPath(this, sb2.ToString());
 		}
         
 		action on_query_string
 		{
-			parser.OnQueryString(this, sb2.ToString());
+			del.OnQueryString(this, sb2.ToString());
 		}
 
         action enter_query_string {
@@ -122,12 +144,12 @@ namespace HttpMachine
 
         action leave_query_string {
             //Console.WriteLine("leave_query_string fpc " + fpc + " qsMark " + qsMark);
-            parser.OnQueryString(this, new ArraySegment<byte>(data, qsMark, fpc - qsMark));
+            del.OnQueryString(this, new ArraySegment<byte>(data, qsMark, fpc - qsMark));
         }
 
 		action on_fragment
 		{
-			parser.OnFragment(this, sb2.ToString());
+			del.OnFragment(this, sb2.ToString());
 		}
 
         action enter_fragment {
@@ -137,7 +159,7 @@ namespace HttpMachine
 
         action leave_fragment {
             //Console.WriteLine("leave_fragment fpc " + fpc + " fragMark " + fragMark);
-            parser.OnFragment(this, new ArraySegment<byte>(data, fragMark, fpc - fragMark));
+            del.OnFragment(this, new ArraySegment<byte>(data, fragMark, fpc - fragMark));
         }
 
         action version_major {
@@ -187,7 +209,7 @@ namespace HttpMachine
 		}
 
 		action on_header_name {
-			parser.OnHeaderName(this, sb.ToString());
+			del.OnHeaderName(this, sb.ToString());
 		}
 
 		action on_header_value {
@@ -199,7 +221,7 @@ namespace HttpMachine
 
 			inConnectionHeader = inTransferEncodingHeader = inContentLengthHeader = false;
 			
-			parser.OnHeaderValue(this, str);
+			del.OnHeaderValue(this, str);
 		}
 
         action last_crlf {
@@ -207,7 +229,7 @@ namespace HttpMachine
 			if (fc == 10)
 			{
 				//Console.WriteLine("leave_headers contentLength = " + contentLength);
-				parser.OnHeadersEnd(this);
+				del.OnHeadersEnd(this);
 
 				// if chunked transfer, ignore content length and parse chunked (but we can't yet so bail)
 				// if content length given but zero, read next request
@@ -218,7 +240,7 @@ namespace HttpMachine
 
 				if (contentLength == 0)
 				{
-					parser.OnMessageEnd(this);
+					del.OnMessageEnd(this);
 					//fhold;
 					fgoto main;
 				}
@@ -232,7 +254,7 @@ namespace HttpMachine
 					//Console.WriteLine("Request had no content length.");
 					if (ShouldKeepAlive)
 					{
-						parser.OnMessageEnd(this);
+						del.OnMessageEnd(this);
 						//Console.WriteLine("Should keep alive, will read next message.");
 						//fhold;
 						fgoto main;
@@ -252,14 +274,14 @@ namespace HttpMachine
 			//Console.WriteLine("body_identity: reading " + toRead + " bytes from body.");
 			if (toRead > 0)
 			{
-				parser.OnBody(this, new ArraySegment<byte>(data, p, toRead));
+				del.OnBody(this, new ArraySegment<byte>(data, p, toRead));
 				p += toRead - 1;
 				contentLength -= toRead;
 				//Console.WriteLine("content length is now " + contentLength);
 
 				if (contentLength == 0)
 				{
-					parser.OnMessageEnd(this);
+					del.OnMessageEnd(this);
 
 					if (ShouldKeepAlive)
 					{
@@ -285,13 +307,13 @@ namespace HttpMachine
 			//Console.WriteLine("body_identity_eof: reading " + toRead + " bytes from body.");
 			if (toRead > 0)
 			{
-				parser.OnBody(this, new ArraySegment<byte>(data, p, toRead));
+				del.OnBody(this, new ArraySegment<byte>(data, p, toRead));
 				p += toRead - 1;
 				fbreak;
 			}
 			else
 			{
-				parser.OnMessageEnd(this);
+				del.OnMessageEnd(this);
 				
 				if (ShouldKeepAlive)
 					fgoto main;
@@ -314,9 +336,9 @@ namespace HttpMachine
         
         %% write data;
         
-        public HttpParser(IHttpParserDelegate parser)
+        public HttpParser(IHttpParserDelegate del)
         {
-            this.parser = parser;
+            this.del = del;
 			sb = new StringBuilder();
             %% write init;
         }

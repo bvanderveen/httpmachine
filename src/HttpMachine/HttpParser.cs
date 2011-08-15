@@ -5,9 +5,26 @@ using System.Text;
 
 namespace HttpMachine
 {
-    public partial class HttpParser
+    public class HttpParser
     {
-        IHttpParserDelegate parser;
+        public object UserContext { get; set; }
+        public int MajorVersion { get { return versionMajor; } }
+        public int MinorVersion { get { return versionMinor; } }
+
+        public bool ShouldKeepAlive
+        {
+            get
+            {
+                if (versionMajor > 0 && versionMinor > 0)
+                    // HTTP/1.1
+                    return !gotConnectionClose;
+                else
+                    // < HTTP/1.1
+                    return gotConnectionKeepAlive;
+            }
+        }
+
+        IHttpParserDelegate del;
 
 		// necessary evil?
 		StringBuilder sb;
@@ -33,26 +50,27 @@ namespace HttpMachine
         // int mark;
 
         
-#line 313 "rl/HttpParser.cs.rl"
+#line 335 "rl/HttpParser.cs.rl"
 
         
         
-#line 41 "HttpParser.cs"
+#line 58 "HttpParser.cs"
 static readonly sbyte[] _http_parser_actions =  new sbyte [] {
 	0, 1, 0, 1, 10, 1, 11, 1, 
-	13, 1, 16, 1, 17, 1, 25, 1, 
-	26, 1, 27, 1, 28, 1, 29, 1, 
-	30, 2, 1, 0, 2, 2, 0, 2, 
+	13, 1, 17, 1, 18, 1, 26, 1, 
+	27, 1, 28, 1, 29, 1, 30, 1, 
+	31, 2, 1, 0, 2, 2, 0, 2, 
 	4, 11, 2, 12, 8, 2, 14, 0, 
-	2, 14, 13, 2, 15, 13, 2, 18, 
-	25, 2, 19, 25, 2, 20, 26, 2, 
-	21, 26, 2, 22, 25, 2, 23, 26, 
-	2, 24, 25, 3, 3, 2, 0, 3, 
-	3, 14, 0, 3, 3, 14, 13, 3, 
-	3, 15, 13, 3, 4, 1, 0, 4, 
-	9, 1, 6, 0, 4, 9, 1, 7, 
-	0, 4, 9, 1, 7, 13, 5, 9, 
-	1, 5, 7, 0
+	2, 14, 13, 2, 15, 0, 2, 15, 
+	13, 2, 16, 13, 2, 19, 26, 2, 
+	20, 26, 2, 21, 27, 2, 22, 27, 
+	2, 23, 26, 2, 24, 27, 2, 25, 
+	26, 3, 3, 2, 0, 3, 3, 15, 
+	0, 3, 3, 15, 13, 3, 3, 16, 
+	13, 3, 4, 1, 0, 4, 9, 1, 
+	7, 0, 4, 9, 1, 7, 13, 5, 
+	9, 1, 5, 7, 0, 6, 9, 1, 
+	6, 3, 2, 0
 };
 
 static readonly short[] _http_parser_key_offsets =  new short [] {
@@ -398,24 +416,23 @@ static readonly byte[] _http_parser_indicies =  new byte [] {
 	1, 103, 1, 104, 1, 105, 106, 107, 
 	108, 107, 107, 107, 107, 107, 107, 107, 
 	1, 109, 109, 109, 1, 107, 107, 107, 
-	1, 105, 106, 110, 111, 112, 110, 113, 
-	110, 110, 110, 110, 110, 1, 114, 115, 
-	116, 117, 116, 116, 116, 116, 116, 116, 
-	1, 118, 119, 120, 121, 120, 120, 120, 
-	120, 120, 120, 1, 122, 122, 122, 1, 
-	120, 120, 120, 1, 123, 123, 123, 1, 
-	110, 110, 110, 1, 124, 125, 126, 127, 
-	128, 126, 126, 126, 126, 126, 126, 1, 
-	129, 130, 131, 132, 133, 131, 131, 131, 
-	131, 131, 131, 1, 134, 134, 134, 1, 
-	131, 131, 131, 1, 105, 106, 107, 108, 
-	135, 107, 107, 107, 107, 107, 135, 135, 
-	107, 135, 135, 1, 105, 106, 107, 108, 
-	135, 136, 107, 107, 107, 107, 107, 107, 
-	135, 135, 135, 135, 1, 105, 106, 136, 
-	137, 136, 136, 136, 136, 136, 136, 1, 
-	138, 138, 138, 1, 136, 136, 136, 1, 
-	5, 139, 139, 1, 5, 140, 140, 1, 
+	1, 110, 111, 112, 113, 114, 112, 115, 
+	112, 112, 112, 112, 112, 1, 116, 117, 
+	118, 119, 118, 118, 118, 118, 118, 118, 
+	1, 120, 121, 122, 123, 122, 122, 122, 
+	122, 122, 122, 1, 124, 124, 124, 1, 
+	122, 122, 122, 1, 125, 125, 125, 1, 
+	112, 112, 112, 1, 126, 127, 128, 129, 
+	130, 128, 128, 128, 128, 128, 128, 1, 
+	131, 132, 133, 134, 135, 133, 133, 133, 
+	133, 133, 133, 1, 136, 136, 136, 1, 
+	133, 133, 133, 1, 105, 106, 107, 108, 
+	137, 107, 107, 107, 107, 107, 137, 137, 
+	107, 137, 137, 1, 105, 106, 107, 108, 
+	137, 138, 107, 107, 107, 107, 107, 107, 
+	137, 137, 137, 137, 1, 105, 106, 138, 
+	139, 138, 138, 138, 138, 138, 138, 1, 
+	140, 140, 140, 1, 138, 138, 138, 1, 
 	5, 141, 141, 1, 5, 142, 142, 1, 
 	5, 143, 143, 1, 5, 144, 144, 1, 
 	5, 145, 145, 1, 5, 146, 146, 1, 
@@ -426,7 +443,8 @@ static readonly byte[] _http_parser_indicies =  new byte [] {
 	5, 155, 155, 1, 5, 156, 156, 1, 
 	5, 157, 157, 1, 5, 158, 158, 1, 
 	5, 159, 159, 1, 5, 160, 160, 1, 
-	5, 1, 161, 162, 1, 161, 163, 1, 
+	5, 161, 161, 1, 5, 162, 162, 1, 
+	5, 1, 163, 164, 1, 163, 165, 1, 
 	0
 };
 
@@ -444,38 +462,38 @@ static readonly byte[] _http_parser_trans_targs =  new byte [] {
 	63, 64, 65, 66, 67, 68, 69, 70, 
 	10, 72, 73, 74, 75, 76, 77, 10, 
 	79, 80, 81, 82, 83, 84, 85, 86, 
-	6, 6, 78, 87, 88, 89, 90, 91, 
-	95, 97, 6, 78, 92, 93, 6, 78, 
-	92, 93, 94, 96, 6, 78, 98, 91, 
-	99, 6, 78, 98, 91, 99, 100, 102, 
-	103, 104, 105, 107, 108, 109, 110, 111, 
-	112, 113, 114, 115, 116, 117, 118, 119, 
-	120, 121, 122, 123, 124, 125, 126, 127, 
-	128, 132, 134, 133
+	6, 6, 78, 87, 88, 89, 6, 78, 
+	90, 91, 95, 97, 6, 78, 92, 93, 
+	6, 78, 92, 93, 94, 96, 6, 78, 
+	98, 91, 99, 6, 78, 98, 91, 99, 
+	100, 102, 103, 104, 105, 107, 108, 109, 
+	110, 111, 112, 113, 114, 115, 116, 117, 
+	118, 119, 120, 121, 122, 123, 124, 125, 
+	126, 127, 128, 132, 134, 133
 };
 
 static readonly sbyte[] _http_parser_trans_actions =  new sbyte [] {
-	31, 0, 83, 5, 25, 34, 1, 97, 
-	97, 92, 92, 87, 102, 0, 0, 25, 
+	31, 0, 89, 5, 25, 34, 1, 98, 
+	98, 93, 93, 109, 103, 0, 0, 25, 
 	25, 25, 25, 17, 1, 13, 25, 0, 
 	25, 25, 1, 15, 1, 1, 1, 1, 
-	1, 1, 1, 61, 1, 1, 1, 52, 
+	1, 1, 1, 67, 1, 1, 1, 58, 
 	1, 1, 1, 1, 1, 1, 1, 1, 
-	1, 55, 1, 1, 1, 1, 1, 1, 
-	1, 1, 1, 1, 49, 1, 1, 1, 
-	1, 1, 1, 1, 1, 1, 1, 46, 
+	1, 61, 1, 1, 1, 1, 1, 1, 
+	1, 1, 1, 1, 55, 1, 1, 1, 
+	1, 1, 1, 1, 1, 1, 1, 52, 
 	1, 1, 1, 1, 1, 1, 1, 1, 
 	1, 1, 1, 1, 1, 1, 1, 1, 
-	58, 1, 1, 1, 1, 1, 1, 64, 
+	64, 1, 1, 1, 1, 1, 1, 70, 
 	0, 0, 0, 0, 0, 9, 0, 11, 
-	0, 7, 7, 1, 1, 1, 1, 1, 
-	1, 1, 79, 79, 67, 67, 43, 43, 
-	28, 28, 28, 1, 75, 75, 67, 71, 
-	67, 40, 40, 28, 37, 28, 28, 1, 
+	0, 7, 7, 1, 1, 1, 40, 40, 
+	28, 37, 28, 37, 85, 85, 73, 73, 
+	49, 49, 28, 28, 28, 28, 81, 81, 
+	73, 77, 73, 46, 46, 28, 43, 28, 
+	28, 1, 1, 1, 1, 1, 1, 1, 
 	1, 1, 1, 1, 1, 1, 1, 1, 
 	1, 1, 1, 1, 1, 1, 1, 1, 
-	1, 1, 1, 1, 1, 1, 1, 1, 
-	1, 19, 0, 21
+	1, 1, 1, 19, 0, 21
 };
 
 static readonly sbyte[] _http_parser_from_state_actions =  new sbyte [] {
@@ -528,19 +546,19 @@ const int http_parser_en_body_identity_eof = 133;
 const int http_parser_en_dead = 130;
 
 
-#line 316 "rl/HttpParser.cs.rl"
+#line 338 "rl/HttpParser.cs.rl"
         
-        public HttpParser(IHttpParserDelegate parser)
+        public HttpParser(IHttpParserDelegate del)
         {
-            this.parser = parser;
+            this.del = del;
 			sb = new StringBuilder();
             
-#line 539 "HttpParser.cs"
+#line 557 "HttpParser.cs"
 	{
 	cs = http_parser_start;
 	}
 
-#line 322 "rl/HttpParser.cs.rl"
+#line 344 "rl/HttpParser.cs.rl"
         }
 
         public int Execute(ArraySegment<byte> buf)
@@ -556,7 +574,7 @@ const int http_parser_en_dead = 130;
 			//	Console.WriteLine("Parser executing on p == pe (EOF)");
 
             
-#line 560 "HttpParser.cs"
+#line 578 "HttpParser.cs"
 	{
 	sbyte _klen;
 	short _trans;
@@ -573,13 +591,13 @@ _resume:
 	_nacts = _http_parser_actions[_acts++];
 	while ( _nacts-- > 0 ) {
 		switch ( _http_parser_actions[_acts++] ) {
-	case 30:
-#line 307 "rl/HttpParser.cs.rl"
+	case 31:
+#line 329 "rl/HttpParser.cs.rl"
 	{
 			throw new Exception("Parser is dead; there shouldn't be more data. Client is bogus? fpc =" + p);
 		}
 	break;
-#line 583 "HttpParser.cs"
+#line 601 "HttpParser.cs"
 		default: break;
 		}
 	}
@@ -646,25 +664,25 @@ _match:
 		switch ( _http_parser_actions[_acts++] )
 		{
 	case 0:
-#line 38 "rl/HttpParser.cs.rl"
+#line 55 "rl/HttpParser.cs.rl"
 	{
 			sb.Append((char)data[p]);
 		}
 	break;
 	case 1:
-#line 42 "rl/HttpParser.cs.rl"
+#line 59 "rl/HttpParser.cs.rl"
 	{
 			sb.Length = 0;
 		}
 	break;
 	case 2:
-#line 46 "rl/HttpParser.cs.rl"
+#line 63 "rl/HttpParser.cs.rl"
 	{
 			sb2.Append((char)data[p]);
 		}
 	break;
 	case 3:
-#line 50 "rl/HttpParser.cs.rl"
+#line 67 "rl/HttpParser.cs.rl"
 	{
 			if (sb2 == null)
 				sb2 = new StringBuilder();
@@ -672,7 +690,7 @@ _match:
 		}
 	break;
 	case 4:
-#line 56 "rl/HttpParser.cs.rl"
+#line 73 "rl/HttpParser.cs.rl"
 	{
 			//Console.WriteLine("message_begin");
 			versionMajor = 0;
@@ -688,83 +706,89 @@ _match:
 			gotConnectionKeepAlive = false;
 			gotTransferEncodingChunked = false;
 			gotUpgradeValue = false;
-			parser.OnMessageBegin(this);
+			del.OnMessageBegin(this);
 		}
 	break;
 	case 5:
-#line 74 "rl/HttpParser.cs.rl"
+#line 91 "rl/HttpParser.cs.rl"
 	{
             //Console.WriteLine("matched absolute_uri");
         }
 	break;
 	case 6:
-#line 77 "rl/HttpParser.cs.rl"
+#line 94 "rl/HttpParser.cs.rl"
 	{
             //Console.WriteLine("matched abs_path");
         }
 	break;
 	case 7:
-#line 80 "rl/HttpParser.cs.rl"
+#line 97 "rl/HttpParser.cs.rl"
 	{
             //Console.WriteLine("matched authority");
         }
 	break;
 	case 8:
-#line 83 "rl/HttpParser.cs.rl"
+#line 100 "rl/HttpParser.cs.rl"
 	{
             //Console.WriteLine("matched first space");
         }
 	break;
 	case 9:
-#line 86 "rl/HttpParser.cs.rl"
+#line 103 "rl/HttpParser.cs.rl"
 	{
             //Console.WriteLine("leave_first_space");
         }
 	break;
 	case 11:
-#line 95 "rl/HttpParser.cs.rl"
+#line 112 "rl/HttpParser.cs.rl"
 	{
 			//Console.WriteLine("matched_leading_crlf");
 		}
 	break;
 	case 12:
-#line 105 "rl/HttpParser.cs.rl"
+#line 122 "rl/HttpParser.cs.rl"
 	{
-			parser.OnMethod(this, sb.ToString());
+			del.OnMethod(this, sb.ToString());
 		}
 	break;
 	case 13:
-#line 109 "rl/HttpParser.cs.rl"
+#line 126 "rl/HttpParser.cs.rl"
 	{
-			parser.OnRequestUri(this, sb.ToString());
+			del.OnRequestUri(this, sb.ToString());
 		}
 	break;
 	case 14:
-#line 114 "rl/HttpParser.cs.rl"
+#line 131 "rl/HttpParser.cs.rl"
 	{
-			parser.OnQueryString(this, sb2.ToString());
+			del.OnPath(this, sb2.ToString());
 		}
 	break;
 	case 15:
-#line 129 "rl/HttpParser.cs.rl"
+#line 136 "rl/HttpParser.cs.rl"
 	{
-			parser.OnFragment(this, sb2.ToString());
+			del.OnQueryString(this, sb2.ToString());
 		}
 	break;
 	case 16:
-#line 143 "rl/HttpParser.cs.rl"
+#line 151 "rl/HttpParser.cs.rl"
+	{
+			del.OnFragment(this, sb2.ToString());
+		}
+	break;
+	case 17:
+#line 165 "rl/HttpParser.cs.rl"
 	{
 			versionMajor = (char)data[p] - '0';
 		}
 	break;
-	case 17:
-#line 147 "rl/HttpParser.cs.rl"
+	case 18:
+#line 169 "rl/HttpParser.cs.rl"
 	{
 			versionMinor = (char)data[p] - '0';
 		}
 	break;
-	case 18:
-#line 151 "rl/HttpParser.cs.rl"
+	case 19:
+#line 173 "rl/HttpParser.cs.rl"
 	{
             if (contentLength != -1) throw new Exception("Already got Content-Length. Possible attack?");
 			//Console.WriteLine("Saw content length");
@@ -772,57 +796,57 @@ _match:
 			inContentLengthHeader = true;
         }
 	break;
-	case 19:
-#line 158 "rl/HttpParser.cs.rl"
+	case 20:
+#line 180 "rl/HttpParser.cs.rl"
 	{
 			//Console.WriteLine("header_connection");
 			inConnectionHeader = true;
 		}
 	break;
-	case 20:
-#line 163 "rl/HttpParser.cs.rl"
+	case 21:
+#line 185 "rl/HttpParser.cs.rl"
 	{
 			//Console.WriteLine("header_connection_close");
 			if (inConnectionHeader)
 				gotConnectionClose = true;
 		}
 	break;
-	case 21:
-#line 169 "rl/HttpParser.cs.rl"
+	case 22:
+#line 191 "rl/HttpParser.cs.rl"
 	{
 			//Console.WriteLine("header_connection_keepalive");
 			if (inConnectionHeader)
 				gotConnectionKeepAlive = true;
 		}
 	break;
-	case 22:
-#line 175 "rl/HttpParser.cs.rl"
+	case 23:
+#line 197 "rl/HttpParser.cs.rl"
 	{
 			//Console.WriteLine("Saw transfer encoding");
 			inTransferEncodingHeader = true;
 		}
 	break;
-	case 23:
-#line 180 "rl/HttpParser.cs.rl"
+	case 24:
+#line 202 "rl/HttpParser.cs.rl"
 	{
 			if (inTransferEncodingHeader)
 				gotTransferEncodingChunked = true;
 		}
 	break;
-	case 24:
-#line 185 "rl/HttpParser.cs.rl"
+	case 25:
+#line 207 "rl/HttpParser.cs.rl"
 	{
 			inUpgradeHeader = true;
 		}
 	break;
-	case 25:
-#line 189 "rl/HttpParser.cs.rl"
+	case 26:
+#line 211 "rl/HttpParser.cs.rl"
 	{
-			parser.OnHeaderName(this, sb.ToString());
+			del.OnHeaderName(this, sb.ToString());
 		}
 	break;
-	case 26:
-#line 193 "rl/HttpParser.cs.rl"
+	case 27:
+#line 215 "rl/HttpParser.cs.rl"
 	{
 			var str = sb.ToString();
 			//Console.WriteLine("on_header_value '" + str + "'");
@@ -832,17 +856,17 @@ _match:
 
 			inConnectionHeader = inTransferEncodingHeader = inContentLengthHeader = false;
 			
-			parser.OnHeaderValue(this, str);
+			del.OnHeaderValue(this, str);
 		}
 	break;
-	case 27:
-#line 205 "rl/HttpParser.cs.rl"
+	case 28:
+#line 227 "rl/HttpParser.cs.rl"
 	{
 			
 			if (data[p] == 10)
 			{
 				//Console.WriteLine("leave_headers contentLength = " + contentLength);
-				parser.OnHeadersEnd(this);
+				del.OnHeadersEnd(this);
 
 				// if chunked transfer, ignore content length and parse chunked (but we can't yet so bail)
 				// if content length given but zero, read next request
@@ -853,7 +877,7 @@ _match:
 
 				if (contentLength == 0)
 				{
-					parser.OnMessageEnd(this);
+					del.OnMessageEnd(this);
 					//fhold;
 					{cs = 1; if (true) goto _again;}
 				}
@@ -867,7 +891,7 @@ _match:
 					//Console.WriteLine("Request had no content length.");
 					if (ShouldKeepAlive)
 					{
-						parser.OnMessageEnd(this);
+						del.OnMessageEnd(this);
 						//Console.WriteLine("Should keep alive, will read next message.");
 						//fhold;
 						{cs = 1; if (true) goto _again;}
@@ -882,21 +906,21 @@ _match:
 			}
         }
 	break;
-	case 28:
-#line 250 "rl/HttpParser.cs.rl"
+	case 29:
+#line 272 "rl/HttpParser.cs.rl"
 	{
 			var toRead = Math.Min(pe - p, contentLength);
 			//Console.WriteLine("body_identity: reading " + toRead + " bytes from body.");
 			if (toRead > 0)
 			{
-				parser.OnBody(this, new ArraySegment<byte>(data, p, toRead));
+				del.OnBody(this, new ArraySegment<byte>(data, p, toRead));
 				p += toRead - 1;
 				contentLength -= toRead;
 				//Console.WriteLine("content length is now " + contentLength);
 
 				if (contentLength == 0)
 				{
-					parser.OnMessageEnd(this);
+					del.OnMessageEnd(this);
 
 					if (ShouldKeepAlive)
 					{
@@ -917,20 +941,20 @@ _match:
 			}
 		}
 	break;
-	case 29:
-#line 283 "rl/HttpParser.cs.rl"
+	case 30:
+#line 305 "rl/HttpParser.cs.rl"
 	{
 			var toRead = pe - p;
 			//Console.WriteLine("body_identity_eof: reading " + toRead + " bytes from body.");
 			if (toRead > 0)
 			{
-				parser.OnBody(this, new ArraySegment<byte>(data, p, toRead));
+				del.OnBody(this, new ArraySegment<byte>(data, p, toRead));
 				p += toRead - 1;
 				{p++; if (true) goto _out; }
 			}
 			else
 			{
-				parser.OnMessageEnd(this);
+				del.OnMessageEnd(this);
 				
 				if (ShouldKeepAlive)
 					{cs = 1; if (true) goto _again;}
@@ -943,7 +967,7 @@ _match:
 			}
 		}
 	break;
-#line 947 "HttpParser.cs"
+#line 971 "HttpParser.cs"
 		default: break;
 		}
 	}
@@ -961,25 +985,25 @@ _again:
 	while ( __nacts-- > 0 ) {
 		switch ( _http_parser_actions[__acts++] ) {
 	case 10:
-#line 89 "rl/HttpParser.cs.rl"
+#line 106 "rl/HttpParser.cs.rl"
 	{
             //Console.WriteLine("eof_leave_first_space");
         }
 	break;
-	case 29:
-#line 283 "rl/HttpParser.cs.rl"
+	case 30:
+#line 305 "rl/HttpParser.cs.rl"
 	{
 			var toRead = pe - p;
 			//Console.WriteLine("body_identity_eof: reading " + toRead + " bytes from body.");
 			if (toRead > 0)
 			{
-				parser.OnBody(this, new ArraySegment<byte>(data, p, toRead));
+				del.OnBody(this, new ArraySegment<byte>(data, p, toRead));
 				p += toRead - 1;
 				{p++; if (true) goto _out; }
 			}
 			else
 			{
-				parser.OnMessageEnd(this);
+				del.OnMessageEnd(this);
 				
 				if (ShouldKeepAlive)
 					{cs = 1; if (true) goto _again;}
@@ -992,7 +1016,7 @@ _again:
 			}
 		}
 	break;
-#line 996 "HttpParser.cs"
+#line 1020 "HttpParser.cs"
 		default: break;
 		}
 	}
@@ -1001,7 +1025,7 @@ _again:
 	_out: {}
 	}
 
-#line 337 "rl/HttpParser.cs.rl"
+#line 359 "rl/HttpParser.cs.rl"
             
             var result = p - buf.Offset;
 

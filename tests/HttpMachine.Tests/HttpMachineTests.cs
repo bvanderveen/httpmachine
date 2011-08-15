@@ -30,7 +30,7 @@ namespace HttpMachine.Tests
     {
         public List<TestRequest> Requests = new List<TestRequest>();
 
-        string method, requestUri, queryString, fragment, headerName, headerValue;
+        string method, requestUri, path, queryString, fragment, headerName, headerValue;
         int versionMajor = -1, versionMinor = -1;
         Dictionary<string, string> headers;
         List<ArraySegment<byte>> body;
@@ -62,6 +62,7 @@ namespace HttpMachine.Tests
 
             request.Method = method;
             request.RequestUri = requestUri;
+            request.RequestPath = path;
             request.QueryString = queryString;
             request.Fragment = fragment;
             request.Headers = headers;
@@ -101,6 +102,12 @@ namespace HttpMachine.Tests
         {
             //Console.WriteLine("OnRequestUri:  '" + str + "'");
             requestUri = str;
+        }
+
+        public void OnPath(HttpParser parser, string str)
+        {
+            //Console.WriteLine("OnPath:  '" + str + "'");
+            path = str;
         }
 
         public void OnQueryString(HttpParser parser, string str)
@@ -179,6 +186,7 @@ namespace HttpMachine.Tests
                 Assert.AreEqual(expectedRequest.RequestUri, actualRequest.RequestUri, "Unexpected request URI.");
                 Assert.AreEqual(expectedRequest.VersionMajor, actualRequest.VersionMajor, "Unexpected major version.");
                 Assert.AreEqual(expectedRequest.VersionMinor, actualRequest.VersionMinor, "Unexpected minor version.");
+                Assert.AreEqual(expectedRequest.RequestPath, actualRequest.RequestPath, "Unexpected request path.");
                 Assert.AreEqual(expectedRequest.QueryString, actualRequest.QueryString, "Unexpected query string.");
                 Assert.AreEqual(expectedRequest.Fragment, actualRequest.Fragment, "Unexpected fragment.");
                 //Assert.AreEqual(expected.RequestPath, test.RequestPath, "Unexpected path.");
