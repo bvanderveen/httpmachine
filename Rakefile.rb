@@ -118,7 +118,7 @@ def ragel()
     sh "cd src/HttpMachine; ragel rl/HttpParser.cs.rl -A -o HttpParser.cs"
 end
 
-task :default => [:build, :test]
+task :default => [:build]
 
 msbuild :build_msbuild do |b|
   b.properties :configuration => CONFIGURATION, "OutputPath" => OUTPUT_DIR
