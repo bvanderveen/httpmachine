@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package>
   <metadata>
-    <id>HttpMachine</id>
-    <version>ass</version>
-    <authors>Benjamin van der Veen</authors>
-    <owners>Benjamin van der Veen</owners>
+    <id></id>
+    <version></version>
+    <authors>Benjamin van der Veen and contributors</authors>
+    <owners></owners>
     <description>An HTTP parser built with Ragel.</description>
     <language>en-US</language>
-    <projectUrl>https://github.com/bvanderveen/httpmachine</projectUrl>
-    <licenseUrl>https://github.com/bvanderveen/httpmachine/raw/HEAD/LICENSE</licenseUrl>
+    <projectUrl></projectUrl>
+    <licenseUrl></licenseUrl>
+    <tags></tags>
   </metadata>
 </package>

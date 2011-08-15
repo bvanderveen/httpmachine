@@ -51,7 +51,7 @@
     <Compile Include="TestRequest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HttpMachine\HttpMachine.csproj">
+    <ProjectReference Include="..\..\src\HttpMachine\HttpMachine.csproj">
       <Project>{76FB25C5-15B1-4541-8D19-D78790257C95}</Project>
       <Name>HttpMachine</Name>
     </ProjectReference>
@@ -60,11 +60,4 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="BeforeBuild">
-    <Exec Command="&quot;$(ProjectDir)\..\tools\NuGet.exe&quot; install &quot;$(ProjectDir)packages.config&quot; -o &quot;$(ProjectDir)\..\packages&quot;"/>
-  </Target>
-  <!--
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
