@@ -236,7 +236,9 @@ namespace HttpMachine
 				// if content length is given and non-zero, we should read that many bytes
 				// if content length is not given
 				//   if should keep alive, assume next request is coming and read it
-				//   else read body until EOF
+				//   else 
+				//		if chunked transfer read body until EOF
+				//   	else read next request
 
 				if (contentLength == 0)
 				{
@@ -261,9 +263,15 @@ namespace HttpMachine
 					}
 					else
 					{
-						//Console.WriteLine("Not keeping alive, will read until eof. Will hold, but currently fpc = " + fpc);
+						if (gotTransferEncodingChunked) {
+							//Console.WriteLine("Not keeping alive, will read until eof. Will hold, but currently fpc = " + fpc);
+							//fhold;
+							fgoto body_identity_eof;
+						}
+		
+						del.OnMessageEnd(this);
 						//fhold;
-						fgoto body_identity_eof;
+						fgoto main;
 					}
 				}
 			}

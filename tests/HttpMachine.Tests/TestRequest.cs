@@ -336,7 +336,7 @@ namespace HttpMachine.Tests
                 Headers = new Dictionary<string,string>(StringComparer.InvariantCultureIgnoreCase) {
                     { "Foo", "Bar" }
                 },
-                Body = Encoding.UTF8.GetBytes("helloworldhello"),
+                Body = null,
                 ShouldKeepAlive = false
             },
             new TestRequest() {
