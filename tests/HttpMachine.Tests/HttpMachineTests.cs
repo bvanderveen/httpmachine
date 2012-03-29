@@ -286,6 +286,12 @@ namespace HttpMachine.Tests
             }
 
             [Test]
+            public void PostNoContentLength()
+            {
+                PipelineAndScan("1.0 post no content length");
+            }
+
+			[Test]
             public void Get()
             {
                 PipelineAndScan("1.0 get");
