@@ -469,10 +469,7 @@ namespace HttpMachine.Tests
 
                         //Console.WriteLine("Parsing buffer 3.");
                         Assert.AreEqual(buffer3Length, parser.Execute(new ArraySegment<byte>(buffer3, 0, buffer3Length)), "Error parsing buffer 3.");
-                        
-                        //Console.WriteLine("Parsing EOF");
-                        Assert.AreEqual(parser.Execute(default(ArraySegment<byte>)), 0, "Error parsing EOF chunk.");
-                        
+                                               
                         AssertRequest(requests.ToArray(), handler.Requests.ToArray(), parser);
                     }
             }
