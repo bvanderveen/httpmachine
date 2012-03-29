@@ -50,7 +50,7 @@ namespace HttpMachine
         // int mark;
 
         
-#line 335 "rl/HttpParser.cs.rl"
+#line 343 "rl/HttpParser.cs.rl"
 
         
         
@@ -546,7 +546,7 @@ const int http_parser_en_body_identity_eof = 133;
 const int http_parser_en_dead = 130;
 
 
-#line 338 "rl/HttpParser.cs.rl"
+#line 346 "rl/HttpParser.cs.rl"
         
         public HttpParser(IHttpParserDelegate del)
         {
@@ -558,7 +558,7 @@ const int http_parser_en_dead = 130;
 	cs = http_parser_start;
 	}
 
-#line 344 "rl/HttpParser.cs.rl"
+#line 352 "rl/HttpParser.cs.rl"
         }
 
         public int Execute(ArraySegment<byte> buf)
@@ -592,7 +592,7 @@ _resume:
 	while ( _nacts-- > 0 ) {
 		switch ( _http_parser_actions[_acts++] ) {
 	case 31:
-#line 329 "rl/HttpParser.cs.rl"
+#line 337 "rl/HttpParser.cs.rl"
 	{
 			throw new Exception("Parser is dead; there shouldn't be more data. Client is bogus? fpc =" + p);
 		}
@@ -873,7 +873,9 @@ _match:
 				// if content length is given and non-zero, we should read that many bytes
 				// if content length is not given
 				//   if should keep alive, assume next request is coming and read it
-				//   else read body until EOF
+				//   else 
+				//		if chunked transfer read body until EOF
+				//   	else read next request
 
 				if (contentLength == 0)
 				{
@@ -898,16 +900,22 @@ _match:
 					}
 					else
 					{
-						//Console.WriteLine("Not keeping alive, will read until eof. Will hold, but currently fpc = " + fpc);
+						if (gotTransferEncodingChunked) {
+							//Console.WriteLine("Not keeping alive, will read until eof. Will hold, but currently fpc = " + fpc);
+							//fhold;
+							{cs = 133; if (true) goto _again;}
+						}
+		
+						del.OnMessageEnd(this);
 						//fhold;
-						{cs = 133; if (true) goto _again;}
+						{cs = 1; if (true) goto _again;}
 					}
 				}
 			}
         }
 	break;
 	case 29:
-#line 272 "rl/HttpParser.cs.rl"
+#line 280 "rl/HttpParser.cs.rl"
 	{
 			var toRead = Math.Min(pe - p, contentLength);
 			//Console.WriteLine("body_identity: reading " + toRead + " bytes from body.");
@@ -942,7 +950,7 @@ _match:
 		}
 	break;
 	case 30:
-#line 305 "rl/HttpParser.cs.rl"
+#line 313 "rl/HttpParser.cs.rl"
 	{
 			var toRead = pe - p;
 			//Console.WriteLine("body_identity_eof: reading " + toRead + " bytes from body.");
@@ -967,7 +975,7 @@ _match:
 			}
 		}
 	break;
-#line 971 "HttpParser.cs"
+#line 979 "HttpParser.cs"
 		default: break;
 		}
 	}
@@ -991,7 +999,7 @@ _again:
         }
 	break;
 	case 30:
-#line 305 "rl/HttpParser.cs.rl"
+#line 313 "rl/HttpParser.cs.rl"
 	{
 			var toRead = pe - p;
 			//Console.WriteLine("body_identity_eof: reading " + toRead + " bytes from body.");
@@ -1016,7 +1024,7 @@ _again:
 			}
 		}
 	break;
-#line 1020 "HttpParser.cs"
+#line 1028 "HttpParser.cs"
 		default: break;
 		}
 	}
@@ -1025,7 +1033,7 @@ _again:
 	_out: {}
 	}
 
-#line 359 "rl/HttpParser.cs.rl"
+#line 367 "rl/HttpParser.cs.rl"
             
             var result = p - buf.Offset;
 
