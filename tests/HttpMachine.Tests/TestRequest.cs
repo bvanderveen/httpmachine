@@ -325,6 +325,23 @@ namespace HttpMachine.Tests
             },
             new TestRequest() {
                 Name = "1.0 post",
+                Raw = Encoding.ASCII.GetBytes("POST /foo HTTP/1.0\r\nContent-Length: 15\r\nFoo: Bar\r\n\r\nhelloworldhello"),
+                Method = "POST",
+                RequestUri = "/foo",
+                RequestPath = "/foo",
+                QueryString = null,
+                Fragment = null,
+                VersionMajor = 1,
+                VersionMinor = 0,
+                Headers = new Dictionary<string,string>(StringComparer.InvariantCultureIgnoreCase) {
+                    { "Content-Length", "15" },
+                    { "Foo", "Bar" }
+                },
+                Body = Encoding.UTF8.GetBytes("helloworldhello"),
+                ShouldKeepAlive = false
+            },
+            new TestRequest() {
+                Name = "1.0 post no content length",
                 Raw = Encoding.ASCII.GetBytes("POST /foo HTTP/1.0\r\nFoo: Bar\r\n\r\nhelloworldhello"),
                 Method = "POST",
                 RequestUri = "/foo",
@@ -336,10 +353,10 @@ namespace HttpMachine.Tests
                 Headers = new Dictionary<string,string>(StringComparer.InvariantCultureIgnoreCase) {
                     { "Foo", "Bar" }
                 },
-                Body = Encoding.UTF8.GetBytes("helloworldhello"),
+                Body = null,
                 ShouldKeepAlive = false
             },
-            new TestRequest() {
+			new TestRequest() {
                 Name = "1.0 post keep-alive with content length",
                 Raw = Encoding.ASCII.GetBytes("POST /foo HTTP/1.0\r\nContent-Length: 15\r\nFoo: Bar\r\nConnection: keep-alive\r\n\r\nhelloworldhello"),
                 Method = "POST",
