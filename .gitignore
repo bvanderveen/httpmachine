@@ -3,7 +3,6 @@
 bin
 obj
 build
-packages
 *.pidb
 TestResult.xml
 .DS_Store

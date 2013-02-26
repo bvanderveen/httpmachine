@@ -374,42 +374,42 @@ namespace HttpMachine.Tests
                 Body = Encoding.UTF8.GetBytes("helloworldhello"),
                 ShouldKeepAlive = true
             },
-//
-//            // i know you're not supposed to comment out tests, but this just takes to long to run
-//
-//            new TestRequest() {
-//                Name = "safari",
-//                Raw = Encoding.ASCII.GetBytes(@"GET /portfolio HTTP/1.1
-//Host: bvanderveen.com
-//User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_5; en-us) AppleWebKit/533.18.1 (KHTML, like Gecko) Version/5.0.2 Safari/533.18.5
-//Accept: application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5
-//Referer: http://bvanderveen.com/
-//Accept-Language: en-us
-//Accept-Encoding: gzip, deflate
-//Cookie:  __utma=7373..111.99; __utmz=.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=fooobnn%20ittszz
-//Connection: keep-alive
-//
-//"),
-//                Method = "GET",
-//                RequestUri = "/portfolio",
-//                RequestPath = "/portfolio",
-//                QueryString = null,
-//                Fragment = null,
-//                VersionMajor = 1,
-//                VersionMinor = 1,
-//                Headers = new Dictionary<string,string>(StringComparer.InvariantCultureIgnoreCase) {
-//                    { "Host", "bvanderveen.com" },
-//                    { "User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_5; en-us) AppleWebKit/533.18.1 (KHTML, like Gecko) Version/5.0.2 Safari/533.18.5" },
-//                    { "Accept", "application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5" },
-//                    { "Referer", "http://bvanderveen.com/" },
-//                    { "Accept-Language", "en-us" },
-//                    { "Accept-Encoding", "gzip, deflate" },
-//                    { "Cookie", "__utma=7373..111.99; __utmz=.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=fooobnn%20ittszz" },
-//                    { "Connection", "keep-alive" }
-//                },
-//                Body = null,
-//                ShouldKeepAlive = true
-//            },
+
+            // i know you're not supposed to comment out tests, but this just takes to long to run
+
+            new TestRequest() {
+                Name = "safari",
+                Raw = Encoding.ASCII.GetBytes(@"GET /portfolio HTTP/1.1
+Host: bvanderveen.com
+User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_5; en-us) AppleWebKit/533.18.1 (KHTML, like Gecko) Version/5.0.2 Safari/533.18.5
+Accept: application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5
+Referer: http://bvanderveen.com/
+Accept-Language: en-us
+Accept-Encoding: gzip, deflate
+Cookie:  __utma=7373..111.99; __utmz=.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=fooobnn%20ittszz
+Connection: keep-alive
+
+"),
+                Method = "GET",
+                RequestUri = "/portfolio",
+                RequestPath = "/portfolio",
+                QueryString = null,
+                Fragment = null,
+                VersionMajor = 1,
+                VersionMinor = 1,
+                Headers = new Dictionary<string,string>(StringComparer.InvariantCultureIgnoreCase) {
+                    { "Host", "bvanderveen.com" },
+                    { "User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_5; en-us) AppleWebKit/533.18.1 (KHTML, like Gecko) Version/5.0.2 Safari/533.18.5" },
+                    { "Accept", "application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5" },
+                    { "Referer", "http://bvanderveen.com/" },
+                    { "Accept-Language", "en-us" },
+                    { "Accept-Encoding", "gzip, deflate" },
+                    { "Cookie", "__utma=7373..111.99; __utmz=.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=fooobnn%20ittszz" },
+                    { "Connection", "keep-alive" }
+                },
+                Body = null,
+                ShouldKeepAlive = true
+            },
 
         };
     }
