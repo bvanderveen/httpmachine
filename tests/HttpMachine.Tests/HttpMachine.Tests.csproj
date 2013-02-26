@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HttpMachineTests.cs" />
+    <Compile Include="HttpMessageTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestRequest.cs" />
   </ItemGroup>

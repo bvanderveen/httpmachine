@@ -35,6 +35,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HttpMessage.cs" />
     <Compile Include="HttpParser.cs" />
     <Compile Include="IHttpParserDelegate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
