@@ -25,6 +25,7 @@ HttpMachine provides HTTP data through callbacks. To receive these callbacks, im
     public interface IHttpParserHandler
     {
         void OnMessageBegin(HttpParser parser);
+        void OnResponseCode(HttpParser parser, int statusCode, string statusReason);
         void OnMethod(HttpParser parser, string method);
         void OnRequestUri(HttpParser parser, string requestUri);
         void OnFragment(HttpParser parser, string fragment);
