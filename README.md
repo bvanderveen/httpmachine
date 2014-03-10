@@ -11,12 +11,12 @@ MIT License. See LICENSE.txt.
 - Supports pipelined requests
 - Tells your server if it should keep-alive
 - Extracts the length of the entity body 
+- Support for parsing responses.
 
 ## Eminently-possible future features
 
 - Support for decoding chunked transfers.
 - Support for protocol upgrade.
-- Support for parsing responses.
 
 ## Usage
 
