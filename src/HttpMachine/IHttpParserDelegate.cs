@@ -8,6 +8,7 @@ namespace HttpMachine
     public interface IHttpParserDelegate
     {
         void OnMessageBegin(HttpParser parser);
+        void OnResponseCode(HttpParser parser, int statusCode, string statusReason);
         void OnMethod(HttpParser parser, string method);
         void OnRequestUri(HttpParser parser, string requestUri);
         void OnPath(HttpParser parser, string path);
