@@ -25,6 +25,9 @@ namespace HttpMachine.Tests
         public int? StatusCode;
         public string StatusReason;
 
+        // based on this variable we will create needed ParserDelegate
+        public bool IsRequest = true;
+
         public static TestRequest[] Requests = new TestRequest[] {
             
             new TestRequest() {
@@ -391,7 +394,8 @@ namespace HttpMachine.Tests
                 StatusReason = "OK",
                 Headers = new Dictionary<string,string>(StringComparer.InvariantCultureIgnoreCase),
                 Body = null,
-                ShouldKeepAlive = false
+                ShouldKeepAlive = false,
+                IsRequest = false
             },
             new TestRequest() {
                 Name = "Response 1.1 simple",
@@ -410,7 +414,8 @@ namespace HttpMachine.Tests
                     { "Content-Length", "3" },
                     { "Connection", "keep-alive"}
                 },
-                ShouldKeepAlive = true
+                ShouldKeepAlive = true,
+                IsRequest = false
             },
             new TestRequest() {
                 Name = "Response 1.1 headers",
@@ -430,7 +435,8 @@ namespace HttpMachine.Tests
                     { "Connection", "keep-alive" },
                     { "Content-Length", "15" }
                 },
-                ShouldKeepAlive = true
+                ShouldKeepAlive = true,
+                IsRequest = false
             },
             new TestRequest() {
                 Name = "Response 1.1 redirect",
@@ -448,7 +454,8 @@ namespace HttpMachine.Tests
                 },
                 StatusCode = 302,
                 StatusReason = "Found",
-                ShouldKeepAlive = true
+                ShouldKeepAlive = true,
+                IsRequest = false
             },
             new TestRequest() {
                 Name = "Response 1.1 redirect body",
@@ -468,7 +475,8 @@ namespace HttpMachine.Tests
                 },
                 StatusCode = 302,
                 StatusReason = "Found",
-                ShouldKeepAlive = true
+                ShouldKeepAlive = true,
+                IsRequest = false
             },
 
 //

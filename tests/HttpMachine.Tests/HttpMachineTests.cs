@@ -30,12 +30,12 @@ namespace HttpMachine.Tests
     {
         public List<TestRequest> Requests = new List<TestRequest>();
 
-        string method, requestUri, path, queryString, fragment, headerName, headerValue, statusReason;
-        int versionMajor = -1, versionMinor = -1;
-        int? statusCode;
-        Dictionary<string, string> headers;
-        List<ArraySegment<byte>> body;
-        bool onHeadersEndCalled, shouldKeepAlive;
+        protected string method, requestUri, path, queryString, fragment, headerName, headerValue, statusReason;
+        protected int versionMajor = -1, versionMinor = -1;
+        protected int? statusCode;
+        protected Dictionary<string, string> headers;
+        protected List<ArraySegment<byte>> body;
+        protected bool onHeadersEndCalled, shouldKeepAlive;
 
         public void OnMessageBegin(HttpParser parser)
         {
@@ -95,36 +95,6 @@ namespace HttpMachine.Tests
             onHeadersEndCalled = false;
         }
 
-        public void OnMethod(HttpParser parser, string str)
-        {
-            //Console.WriteLine("OnMethod: '" + str + "'");
-            method = str;
-        }
-
-        public void OnRequestUri(HttpParser parser, string str)
-        {
-            //Console.WriteLine("OnRequestUri:  '" + str + "'");
-            requestUri = str;
-        }
-
-        public void OnPath(HttpParser parser, string str)
-        {
-            //Console.WriteLine("OnPath:  '" + str + "'");
-            path = str;
-        }
-
-        public void OnQueryString(HttpParser parser, string str)
-        {
-            //Console.WriteLine("OnQueryString:  '" + str + "'");
-            queryString = str;
-        }
-
-        public void OnFragment(HttpParser parser, string str)
-        {
-            //Console.WriteLine("OnFragment:  '" + str + "'");
-            fragment = str;
-        }
-
         public void OnHeaderName(HttpParser parser, string str)
         {
             //Console.WriteLine("OnHeaderName:  '" + str + "'");
@@ -171,7 +141,44 @@ namespace HttpMachine.Tests
             //Console.WriteLine("OnBody:  '" + str + "'");
             body.Add(data);
         }
+    }
 
+    class RequestHandler : Handler, IHttpRequestParserDelegate
+    {
+
+        public void OnMethod(HttpParser parser, string str)
+        {
+            //Console.WriteLine("OnMethod: '" + str + "'");
+            method = str;
+        }
+
+        public void OnRequestUri(HttpParser parser, string str)
+        {
+            //Console.WriteLine("OnRequestUri:  '" + str + "'");
+            requestUri = str;
+        }
+
+        public void OnPath(HttpParser parser, string str)
+        {
+            //Console.WriteLine("OnPath:  '" + str + "'");
+            path = str;
+        }
+
+        public void OnQueryString(HttpParser parser, string str)
+        {
+            //Console.WriteLine("OnQueryString:  '" + str + "'");
+            queryString = str;
+        }
+
+        public void OnFragment(HttpParser parser, string str)
+        {
+            //Console.WriteLine("OnFragment:  '" + str + "'");
+            fragment = str;
+        }
+    }
+
+    class ResponseHandler : Handler, IHttpResponseParserDelegate
+    {
         public void OnResponseCode(HttpParser parser, int code, string reason)
         {
             statusCode = code;
@@ -229,13 +236,51 @@ namespace HttpMachine.Tests
         }
 
         [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void InvalidRequest()
+        {
+            // verify that Parser will throw exception when we create ResponseDelegate but passes Request
+            PipelineAndScan(false, "1.1 post");
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void InvalidResponse()
+        {
+            // verify that Parser will throw exception when we create RequestDelegate but passes Response
+            PipelineAndScan(true, "Response 1.0 simple");
+        }
+
+        [Test]
         public void SingleChunk()
         {
             // read each request as a single block and parse
 
-            foreach (var request in TestRequest.Requests)
+            foreach (var request in TestRequest.Requests.Where(r => r.IsRequest))
             {
-                var handler = new Handler();
+                var handler = new RequestHandler();
+                var parser = new HttpParser(handler);
+                Console.WriteLine("----- Testing request: '" + request.Name + "' -----");
+
+                var parsed = parser.Execute(new ArraySegment<byte>(request.Raw));
+
+                if (parsed != request.Raw.Length)
+                    Assert.Fail("Error while parsing.");
+
+                parser.Execute(default(ArraySegment<byte>));
+
+                AssertRequest(new TestRequest[] { request }, handler.Requests.ToArray(), parser);
+            }
+        }
+
+        [Test]
+        public void ResponseSingleChunk()
+        {
+            // read each request as a single block and parse
+
+            foreach (var request in TestRequest.Requests.Where(r => !r.IsRequest))
+            {
+                var handler = new ResponseHandler();
                 var parser = new HttpParser(handler);
                 Console.WriteLine("----- Testing request: '" + request.Name + "' -----");
 
@@ -253,16 +298,25 @@ namespace HttpMachine.Tests
         [Test]
         public void RequestsSingle()
         {
-            foreach (var request in TestRequest.Requests/*.Where(r => r.Name == "1.0 post")*/)
+            foreach (var request in TestRequest.Requests.Where(r => r.IsRequest)/*.Where(r => r.Name == "1.0 post")*/)
             {
                 ThreeChunkScan(new TestRequest[] { request });
             }
         }
 
         [Test]
+        public void ResponseSingle()
+        {
+            foreach (var request in TestRequest.Requests.Where(r => !r.IsRequest)/*.Where(r => r.Name == "1.0 post")*/)
+            {
+                ThreeChunkScan(new TestRequest[] { request }, false);
+            }
+        }
+
+        [Test]
         public void RequestsWithDigits() {
             foreach (var request in TestRequest.Requests.Where(r => r.Name.StartsWith("digits in "))) {
-                var handler = new Handler();
+                var handler = new RequestHandler();
                 var parser = new HttpParser(handler);
                 Console.WriteLine("----- Testing request: '" + request.Name + "' -----");
 
@@ -281,61 +335,61 @@ namespace HttpMachine.Tests
             [Test]
             public void PostKeepAlivePostEof()
             {
-                PipelineAndScan("1.0 post keep-alive with content length", "1.0 post");
+                PipelineAndScan(true, "1.0 post keep-alive with content length", "1.0 post");
             }
 
             [Test]
             public void GetKeepAlivePostEof()
             {
-                PipelineAndScan("1.0 get keep-alive", "1.0 post");
+                PipelineAndScan(true, "1.0 get keep-alive", "1.0 post");
             }
 
             [Test]
             public void PostEof()
             {
-                PipelineAndScan("1.0 post");
+                PipelineAndScan(true, "1.0 post");
             }
 
             [Test]
             public void PostNoContentLength()
             {
-                PipelineAndScan("1.0 post no content length");
+                PipelineAndScan(true, "1.0 post no content length");
             }
 
 			[Test]
             public void Get()
             {
-                PipelineAndScan("1.0 get");
+                PipelineAndScan(true, "1.0 get");
             }
 
             [Test]
             public void GetKeepAlive()
             {
-                PipelineAndScan("1.0 get keep-alive");
+                PipelineAndScan(true, "1.0 get keep-alive");
             }
 
             [Test]
             public void PostKeepAliveGet()
             {
-                PipelineAndScan("1.0 post keep-alive with content length", "1.0 get");
+                PipelineAndScan(true, "1.0 post keep-alive with content length", "1.0 get");
             }
 
             [Test]
             public void GetKeepAliveGet()
             {
-                PipelineAndScan("1.0 get keep-alive", "1.0 get keep-alive", "1.0 get");
+                PipelineAndScan(true, "1.0 get keep-alive", "1.0 get keep-alive", "1.0 get");
             }
 
             [Test]
             public void OneOhPostKeepAlivePost()
             {
-                PipelineAndScan("1.0 post keep-alive with content length", "1.0 post");
+                PipelineAndScan(true, "1.0 post keep-alive with content length", "1.0 post");
             }
 
             [Test]
             public void GetKeepAlivePost()
             {
-                PipelineAndScan("1.0 get keep-alive", "1.0 post");
+                PipelineAndScan(true, "1.0 get keep-alive", "1.0 post");
             }
         }
 
@@ -345,86 +399,86 @@ namespace HttpMachine.Tests
             [Test]
             public void Get()
             {
-                PipelineAndScan("1.1 get");
+                PipelineAndScan(true, "1.1 get");
             }
 
             [Test]
             public void GetGet()
             {
-                PipelineAndScan("1.1 get", "1.1 get");
+                PipelineAndScan(true, "1.1 get", "1.1 get");
             }
 
             [Test]
             public void GetGetGetClose()
             {
-                PipelineAndScan("1.1 get", "1.1 get", "1.1 get close");
+                PipelineAndScan(true, "1.1 get", "1.1 get", "1.1 get close");
             }
 
             [Test]
             public void Post()
             {
-                PipelineAndScan("1.1 post");
+                PipelineAndScan(true, "1.1 post");
             }
 
             [Test]
             public void PostPost()
             {
-                PipelineAndScan("1.1 post", "1.1 post");
+                PipelineAndScan(true, "1.1 post", "1.1 post");
             }
 
             [Test]
             public void PostPostPostClose()
             {
-                PipelineAndScan("1.1 post", "1.1 post", "1.1 post close");
+                PipelineAndScan(true, "1.1 post", "1.1 post", "1.1 post close");
             }
 
             [Test]
             public void GetClose()
             {
-                PipelineAndScan("1.1 get close");
+                PipelineAndScan(true, "1.1 get close");
             }
 
             [Test]
             public void PostClose()
             {
-                PipelineAndScan("1.1 post close");
+                PipelineAndScan(true, "1.1 post close");
             }
 
             [Test]
             public void GetPost()
             {
-                PipelineAndScan("1.1 get", "1.1 post");
+                PipelineAndScan(true, "1.1 get", "1.1 post");
             }
 
             [Test]
             public void GetPostClose()
             {
-                PipelineAndScan("1.1 get", "1.1 post close");
+                PipelineAndScan(true, "1.1 get", "1.1 post close");
             }
 
             [Test]
             public void GetPostGetClose()
             {
-                PipelineAndScan("1.1 get", "1.1 post", "1.1 get close");
+                PipelineAndScan(true, "1.1 get", "1.1 post", "1.1 get close");
             }
 
             [Test]
             public void ResponseSuccess()
             {
-                PipelineAndScan("Response 1.0 simple", "Response 1.1 simple", "Response 1.1 headers");
+                PipelineAndScan(false, "Response 1.0 simple", "Response 1.1 simple", "Response 1.1 headers");
             }
 
             [Test]
             public void ResponseRedirect()
             {
-                PipelineAndScan("Response 1.1 redirect", "Response 1.1 redirect body");
+                PipelineAndScan(false, "Response 1.1 redirect", "Response 1.1 redirect body");
             }
 
         }
 
-        static void PipelineAndScan(params string[] requests)
+        static void PipelineAndScan(bool isRequest, params string[] requests)
         {
-            ThreeChunkScan(MakePipelined(requests));
+            ThreeChunkScan(MakePipelined(requests), isRequest);
         }
 
         static IEnumerable<TestRequest> MakePipelined(string[] requestNames)
@@ -435,7 +489,7 @@ namespace HttpMachine.Tests
             return result;
         }
 
-        static void ThreeChunkScan(IEnumerable<TestRequest> requests)
+        static void ThreeChunkScan(IEnumerable<TestRequest> requests, bool isRequest = true)
         {
             // read each sequence of requests as three blocks, with the breaks in every possible combination.
 
@@ -475,8 +529,18 @@ namespace HttpMachine.Tests
                         operationsCompleted++;
                         //Console.WriteLine(operationsCompleted + " / " + totalOperations);
 
-                        var handler = new Handler();
-                        var parser = new HttpParser(handler);
+                        Handler handler;
+                        HttpParser parser;
+                        if (isRequest)
+                        {
+                            handler = new RequestHandler();
+                            parser = new HttpParser((RequestHandler)handler);
+                        }
+                        else
+                        {
+                            handler = new ResponseHandler();;
+                            parser = new HttpParser((ResponseHandler)handler);
+                        }
 
                         buffer1Length = i;
                         Buffer.BlockCopy(raw, 0, buffer1, 0, buffer1Length);

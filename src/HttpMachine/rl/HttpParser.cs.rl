@@ -122,36 +122,43 @@ namespace HttpMachine
 		}
 
 		action on_method {
-			del.OnMethod(this, sb.ToString());
+			EnsureRequestParser();
+			((IHttpRequestParserDelegate)del).OnMethod(this, sb.ToString());
 		}
         
 		action on_request_uri {
-			del.OnRequestUri(this, sb.ToString());
+			EnsureRequestParser();
+			((IHttpRequestParserDelegate)del).OnRequestUri(this, sb.ToString());
 		}
 
 		action on_abs_path
 		{
-			del.OnPath(this, sb2.ToString());
+			EnsureRequestParser();
+			((IHttpRequestParserDelegate)del).OnPath(this, sb2.ToString());
 		}
         
 		action on_query_string
 		{
-			del.OnQueryString(this, sb2.ToString());
+			EnsureRequestParser();
+			((IHttpRequestParserDelegate)del).OnQueryString(this, sb2.ToString());
 		}
 
 		action status_code
 		{
+			EnsureResponseParser();
 			statusCode = int.Parse(sb.ToString());
 		}
 
 		action status_reason
 		{
+			EnsureResponseParser();
 			statusReason = sb.ToString();
 		}
 
 		action on_response_message
 		{
-			del.OnResponseCode(this, statusCode, statusReason);
+			EnsureResponseParser();
+			((IHttpResponseParserDelegate)del).OnResponseCode(this, statusCode, statusReason);
 			statusReason = null;
 			statusCode = 0;
 		}
@@ -163,12 +170,13 @@ namespace HttpMachine
 
         action leave_query_string {
             //Console.WriteLine("leave_query_string fpc " + fpc + " qsMark " + qsMark);
-            del.OnQueryString(this, new ArraySegment<byte>(data, qsMark, fpc - qsMark));
+            ((IHttpRequestParserDelegate)del).OnQueryString(this, new ArraySegment<byte>(data, qsMark, fpc - qsMark));
         }
 
 		action on_fragment
 		{
-			del.OnFragment(this, sb2.ToString());
+			EnsureRequestParser();
+			((IHttpRequestParserDelegate)del).OnFragment(this, sb2.ToString());
 		}
 
         action enter_fragment {
@@ -177,8 +185,9 @@ namespace HttpMachine
         }
 
         action leave_fragment {
+			EnsureRequestParser();
             //Console.WriteLine("leave_fragment fpc " + fpc + " fragMark " + fragMark);
-            del.OnFragment(this, new ArraySegment<byte>(data, fragMark, fpc - fragMark));
+            ((IHttpRequestParserDelegate)del).OnFragment(this, new ArraySegment<byte>(data, fragMark, fpc - fragMark));
         }
 
         action version_major {
@@ -363,11 +372,20 @@ namespace HttpMachine
         
         %% write data;
         
-        public HttpParser(IHttpParserDelegate del)
+        protected HttpParser()
+        {
+			sb = new StringBuilder();
+            %% write init;        
+        }
+
+        public HttpParser(IHttpRequestParserDelegate del) : this()
         {
             this.del = del;
-			sb = new StringBuilder();
-            %% write init;
+        }
+
+        public HttpParser(IHttpResponseParserDelegate del) : this()
+        {
+            this.del = del;
         }
 
         public int Execute(ArraySegment<byte> buf)
@@ -395,5 +413,18 @@ namespace HttpMachine
 
 			return p - buf.Offset;
         }
+
+        private void EnsureRequestParser()
+        {
+        	if (!(del is IHttpRequestParserDelegate))
+        		throw new InvalidOperationException("Processing Http request, but found response data.");
+        }
+
+        private void EnsureResponseParser()
+        {
+        	if (!(del is IHttpResponseParserDelegate))
+        		throw new InvalidOperationException("Processing Http response, but found request data.");
+        }
+
     }
 }

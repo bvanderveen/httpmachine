@@ -52,7 +52,7 @@ namespace HttpMachine
         string statusReason;
 
         
-#line 362 "HttpParser.cs.rl"
+#line 371 "HttpParser.cs.rl"
 
         
         
@@ -585,19 +585,28 @@ const int http_parser_en_body_identity_eof = 147;
 const int http_parser_en_dead = 144;
 
 
-#line 365 "HttpParser.cs.rl"
+#line 374 "HttpParser.cs.rl"
         
-        public HttpParser(IHttpParserDelegate del)
+        protected HttpParser()
         {
-            this.del = del;
 			sb = new StringBuilder();
             
-#line 587 "..\\HttpParser.cs"
+#line 586 "..\\HttpParser.cs"
 	{
 	cs = http_parser_start;
 	}
 
-#line 371 "HttpParser.cs.rl"
+#line 379 "HttpParser.cs.rl"
+        }
+
+        public HttpParser(IHttpRequestParserDelegate del) : this()
+        {
+            this.del = del;
+        }
+
+        public HttpParser(IHttpResponseParserDelegate del) : this()
+        {
+            this.del = del;
         }
 
         public int Execute(ArraySegment<byte> buf)
@@ -613,7 +622,7 @@ const int http_parser_en_dead = 144;
 			//	Console.WriteLine("Parser executing on p == pe (EOF)");
 
             
-#line 604 "..\\HttpParser.cs"
+#line 613 "..\\HttpParser.cs"
 	{
 	sbyte _klen;
 	short _trans;
@@ -631,12 +640,12 @@ _resume:
 	while ( _nacts-- > 0 ) {
 		switch ( _http_parser_actions[_acts++] ) {
 	case 34:
-#line 356 "HttpParser.cs.rl"
+#line 365 "HttpParser.cs.rl"
 	{
 			throw new Exception("Parser is dead; there shouldn't be more data. Client is bogus? fpc =" + p);
 		}
 	break;
-#line 625 "..\\HttpParser.cs"
+#line 634 "..\\HttpParser.cs"
 		default: break;
 		}
 	}
@@ -787,67 +796,75 @@ _match:
 	case 12:
 #line 124 "HttpParser.cs.rl"
 	{
-			del.OnMethod(this, sb.ToString());
+			EnsureRequestParser();
+			((IHttpRequestParserDelegate)del).OnMethod(this, sb.ToString());
 		}
 	break;
 	case 13:
-#line 128 "HttpParser.cs.rl"
+#line 129 "HttpParser.cs.rl"
 	{
-			del.OnRequestUri(this, sb.ToString());
+			EnsureRequestParser();
+			((IHttpRequestParserDelegate)del).OnRequestUri(this, sb.ToString());
 		}
 	break;
 	case 14:
-#line 133 "HttpParser.cs.rl"
+#line 135 "HttpParser.cs.rl"
 	{
-			del.OnPath(this, sb2.ToString());
+			EnsureRequestParser();
+			((IHttpRequestParserDelegate)del).OnPath(this, sb2.ToString());
 		}
 	break;
 	case 15:
-#line 138 "HttpParser.cs.rl"
+#line 141 "HttpParser.cs.rl"
 	{
-			del.OnQueryString(this, sb2.ToString());
+			EnsureRequestParser();
+			((IHttpRequestParserDelegate)del).OnQueryString(this, sb2.ToString());
 		}
 	break;
 	case 16:
-#line 143 "HttpParser.cs.rl"
+#line 147 "HttpParser.cs.rl"
 	{
+			EnsureResponseParser();
 			statusCode = int.Parse(sb.ToString());
 		}
 	break;
 	case 17:
-#line 148 "HttpParser.cs.rl"
+#line 153 "HttpParser.cs.rl"
 	{
+			EnsureResponseParser();
 			statusReason = sb.ToString();
 		}
 	break;
 	case 18:
-#line 153 "HttpParser.cs.rl"
+#line 159 "HttpParser.cs.rl"
 	{
-			del.OnResponseCode(this, statusCode, statusReason);
+			EnsureResponseParser();
+			((IHttpResponseParserDelegate)del).OnResponseCode(this, statusCode, statusReason);
 			statusReason = null;
 			statusCode = 0;
 		}
 	break;
 	case 19:
-#line 170 "HttpParser.cs.rl"
+#line 177 "HttpParser.cs.rl"
 	{
-			del.OnFragment(this, sb2.ToString());
+			EnsureRequestParser();
+			((IHttpRequestParserDelegate)del).OnFragment(this, sb2.ToString());
 		}
 	break;
 	case 20:
-#line 184 "HttpParser.cs.rl"
+#line 193 "HttpParser.cs.rl"
 	{
 			versionMajor = (char)data[p] - '0';
 		}
 	break;
 	case 21:
-#line 188 "HttpParser.cs.rl"
+#line 197 "HttpParser.cs.rl"
 	{
 			versionMinor = (char)data[p] - '0';
 		}
 	break;
 	case 22:
-#line 192 "HttpParser.cs.rl"
+#line 201 "HttpParser.cs.rl"
 	{
             if (contentLength != -1) throw new Exception("Already got Content-Length. Possible attack?");
 			//Console.WriteLine("Saw content length");
@@ -856,14 +873,14 @@ _match:
         }
 	break;
 	case 23:
-#line 199 "HttpParser.cs.rl"
+#line 208 "HttpParser.cs.rl"
 	{
 			//Console.WriteLine("header_connection");
 			inConnectionHeader = true;
 		}
 	break;
 	case 24:
-#line 204 "HttpParser.cs.rl"
+#line 213 "HttpParser.cs.rl"
 	{
 			//Console.WriteLine("header_connection_close");
 			if (inConnectionHeader)
@@ -871,7 +888,7 @@ _match:
 		}
 	break;
 	case 25:
-#line 210 "HttpParser.cs.rl"
+#line 219 "HttpParser.cs.rl"
 	{
 			//Console.WriteLine("header_connection_keepalive");
 			if (inConnectionHeader)
@@ -879,33 +896,33 @@ _match:
 		}
 	break;
 	case 26:
-#line 216 "HttpParser.cs.rl"
+#line 225 "HttpParser.cs.rl"
 	{
 			//Console.WriteLine("Saw transfer encoding");
 			inTransferEncodingHeader = true;
 		}
 	break;
 	case 27:
-#line 221 "HttpParser.cs.rl"
+#line 230 "HttpParser.cs.rl"
 	{
 			if (inTransferEncodingHeader)
 				gotTransferEncodingChunked = true;
 		}
 	break;
 	case 28:
-#line 226 "HttpParser.cs.rl"
+#line 235 "HttpParser.cs.rl"
 	{
 			inUpgradeHeader = true;
 		}
 	break;
 	case 29:
-#line 230 "HttpParser.cs.rl"
+#line 239 "HttpParser.cs.rl"
 	{
 			del.OnHeaderName(this, sb.ToString());
 		}
 	break;
 	case 30:
-#line 234 "HttpParser.cs.rl"
+#line 243 "HttpParser.cs.rl"
 	{
 			var str = sb.ToString();
 			//Console.WriteLine("on_header_value '" + str + "'");
@@ -919,7 +936,7 @@ _match:
 		}
 	break;
 	case 31:
-#line 246 "HttpParser.cs.rl"
+#line 255 "HttpParser.cs.rl"
 	{
 			
 			if (data[p] == 10)
@@ -974,7 +991,7 @@ _match:
         }
 	break;
 	case 32:
-#line 299 "HttpParser.cs.rl"
+#line 308 "HttpParser.cs.rl"
 	{
 			var toRead = Math.Min(pe - p, contentLength);
 			//Console.WriteLine("body_identity: reading " + toRead + " bytes from body.");
@@ -1009,7 +1026,7 @@ _match:
 		}
 	break;
 	case 33:
-#line 332 "HttpParser.cs.rl"
+#line 341 "HttpParser.cs.rl"
 	{
 			var toRead = pe - p;
 			//Console.WriteLine("body_identity_eof: reading " + toRead + " bytes from body.");
@@ -1034,7 +1051,7 @@ _match:
 			}
 		}
 	break;
-#line 989 "..\\HttpParser.cs"
+#line 1006 "..\\HttpParser.cs"
 		default: break;
 		}
 	}
@@ -1058,7 +1075,7 @@ _again:
         }
 	break;
 	case 33:
-#line 332 "HttpParser.cs.rl"
+#line 341 "HttpParser.cs.rl"
 	{
 			var toRead = pe - p;
 			//Console.WriteLine("body_identity_eof: reading " + toRead + " bytes from body.");
@@ -1083,7 +1100,7 @@ _again:
 			}
 		}
 	break;
-#line 1035 "..\\HttpParser.cs"
+#line 1052 "..\\HttpParser.cs"
 		default: break;
 		}
 	}
@@ -1092,7 +1109,7 @@ _again:
 	_out: {}
 	}
 
-#line 386 "HttpParser.cs.rl"
+#line 404 "HttpParser.cs.rl"
             
             var result = p - buf.Offset;
 
@@ -1105,5 +1122,18 @@ _again:
 
 			return p - buf.Offset;
         }
+
+        private void EnsureRequestParser()
+        {
+        	if (!(del is IHttpRequestParserDelegate))
+        		throw new InvalidOperationException("Processing Http request, but found response data.");
+        }
+
+        private void EnsureResponseParser()
+        {
+        	if (!(del is IHttpResponseParserDelegate))
+        		throw new InvalidOperationException("Processing Http response, but found request data.");
+        }
+
     }
 }
