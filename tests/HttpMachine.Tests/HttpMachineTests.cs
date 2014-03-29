@@ -30,8 +30,9 @@ namespace HttpMachine.Tests
     {
         public List<TestRequest> Requests = new List<TestRequest>();
 
-        string method, requestUri, path, queryString, fragment, headerName, headerValue;
+        string method, requestUri, path, queryString, fragment, headerName, headerValue, statusReason;
         int versionMajor = -1, versionMinor = -1;
+        int? statusCode;
         Dictionary<string, string> headers;
         List<ArraySegment<byte>> body;
         bool onHeadersEndCalled, shouldKeepAlive;
@@ -67,6 +68,8 @@ namespace HttpMachine.Tests
             request.Fragment = fragment;
             request.Headers = headers;
             request.OnHeadersEndCalled = onHeadersEndCalled;
+            request.StatusCode = statusCode;
+            request.StatusReason = statusReason;
 
             // aggregate body chunks into one big chunk
             var length = body.Aggregate(0, (s, b) => s + b.Count);
@@ -168,6 +171,12 @@ namespace HttpMachine.Tests
             //Console.WriteLine("OnBody:  '" + str + "'");
             body.Add(data);
         }
+
+        public void OnResponseCode(HttpParser parser, int code, string reason)
+        {
+            statusCode = code;
+            statusReason = reason;
+        }
     }
 
     public class HttpParserTests
@@ -191,6 +200,8 @@ namespace HttpMachine.Tests
                 Assert.AreEqual(expectedRequest.Fragment, actualRequest.Fragment, "Unexpected fragment.");
                 //Assert.AreEqual(expected.RequestPath, test.RequestPath, "Unexpected path.");
 
+                Assert.AreEqual(expectedRequest.StatusCode, actualRequest.StatusCode, "Unexpected status code.");
+                Assert.AreEqual(expectedRequest.StatusReason, actualRequest.StatusReason, "Unexpected status reason.");
                 Assert.IsTrue(actualRequest.OnHeadersEndCalled, "OnHeadersEnd was not called.");
                 Assert.AreEqual(expectedRequest.ShouldKeepAlive, actualRequest.ShouldKeepAlive, "Wrong value for ShouldKeepAlive");
 
@@ -396,6 +407,19 @@ namespace HttpMachine.Tests
             {
                 PipelineAndScan("1.1 get", "1.1 post", "1.1 get close");
             }
+
+            [Test]
+            public void ResponseSuccess()
+            {
+                PipelineAndScan("Response 1.0 simple", "Response 1.1 simple", "Response 1.1 headers");
+            }
+
+            [Test]
+            public void ResponseRedirect()
+            {
+                PipelineAndScan("Response 1.1 redirect", "Response 1.1 redirect body");
+            }
+
         }
 
         static void PipelineAndScan(params string[] requests)

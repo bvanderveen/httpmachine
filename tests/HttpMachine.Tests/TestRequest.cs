@@ -22,6 +22,9 @@ namespace HttpMachine.Tests
         public bool ShouldKeepAlive; // if the message is 1.1 and !Connection:close, or message is < 1.1 and Connection:keep-alive
         public bool OnHeadersEndCalled;
 
+        public int? StatusCode;
+        public string StatusReason;
+
         public static TestRequest[] Requests = new TestRequest[] {
             
             new TestRequest() {
@@ -374,6 +377,100 @@ namespace HttpMachine.Tests
                 Body = Encoding.UTF8.GetBytes("helloworldhello"),
                 ShouldKeepAlive = true
             },
+            new TestRequest() {
+                Name = "Response 1.0 simple",
+                Raw = Encoding.ASCII.GetBytes("HTTP/1.0 200 OK\r\n\r\n"),
+                Method = null,
+                RequestUri = null,
+                RequestPath = null,
+                QueryString = null,
+                Fragment = null,
+                VersionMajor = 1,
+                VersionMinor = 0,
+                StatusCode = 200,
+                StatusReason = "OK",
+                Headers = new Dictionary<string,string>(StringComparer.InvariantCultureIgnoreCase),
+                Body = null,
+                ShouldKeepAlive = false
+            },
+            new TestRequest() {
+                Name = "Response 1.1 simple",
+                Raw = Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\nContent-Length: 3\r\nConnection: keep-alive\r\n\r\n123"),
+                Method = null,
+                RequestUri = null,
+                RequestPath = null,
+                QueryString = null,
+                Fragment = null,
+                VersionMajor = 1,
+                VersionMinor = 1,
+                Body = Encoding.UTF8.GetBytes("123"),
+                StatusCode = 200,
+                StatusReason = "OK",
+                Headers = new Dictionary<string,string>(StringComparer.InvariantCultureIgnoreCase) {
+                    { "Content-Length", "3" },
+                    { "Connection", "keep-alive"}
+                },
+                ShouldKeepAlive = true
+            },
+            new TestRequest() {
+                Name = "Response 1.1 headers",
+                Raw = Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\nContent-Length: 15\r\nFoo: Bar\r\nConnection: keep-alive\r\n\r\nhelloworldhello"),
+                Method = null,
+                RequestUri = null,
+                RequestPath = null,
+                QueryString = null,
+                Fragment = null,
+                VersionMajor = 1,
+                VersionMinor = 1,
+                Body = Encoding.ASCII.GetBytes("helloworldhello"),
+                StatusCode = 200,
+                StatusReason = "OK",
+                Headers = new Dictionary<string,string>(StringComparer.InvariantCultureIgnoreCase) {
+                    { "Foo", "Bar" },
+                    { "Connection", "keep-alive" },
+                    { "Content-Length", "15" }
+                },
+                ShouldKeepAlive = true
+            },
+            new TestRequest() {
+                Name = "Response 1.1 redirect",
+                Raw = Encoding.ASCII.GetBytes("HTTP/1.1 302 Found\r\nLocation: http://www.iana.org/domains/example/\r\n\r\n"),
+                Method = null,
+                RequestUri = null,
+                RequestPath = null,
+                QueryString = null,
+                Fragment = null,
+                VersionMajor = 1,
+                VersionMinor = 1,
+                Body = null,
+                Headers = new Dictionary<string,string>(StringComparer.InvariantCultureIgnoreCase) {
+                    { "Location", "http://www.iana.org/domains/example/" }
+                },
+                StatusCode = 302,
+                StatusReason = "Found",
+                ShouldKeepAlive = true
+            },
+            new TestRequest() {
+                Name = "Response 1.1 redirect body",
+                Raw = Encoding.ASCII.GetBytes("HTTP/1.1 302 Found\r\nLocation: http://www.iana.org/domains/example/\r\nContent-Type: text/html\r\nContent-Length: 19\r\n\r\nThis page has moved"),
+                Method = null,
+                RequestUri = null,
+                RequestPath = null,
+                QueryString = null,
+                Fragment = null,
+                VersionMajor = 1,
+                VersionMinor = 1,
+                Body = Encoding.ASCII.GetBytes("This page has moved"),
+                Headers = new Dictionary<string,string>(StringComparer.InvariantCultureIgnoreCase) {
+                    { "Location", "http://www.iana.org/domains/example/" },
+                    { "Content-Type", "text/html"},
+                    {"Content-Length", "19"}
+                },
+                StatusCode = 302,
+                StatusReason = "Found",
+                ShouldKeepAlive = true
+            },
+
 //
 //            // i know you're not supposed to comment out tests, but this just takes to long to run
 //

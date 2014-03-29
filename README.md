@@ -11,12 +11,12 @@ MIT License. See LICENSE.txt.
 - Supports pipelined requests
 - Tells your server if it should keep-alive
 - Extracts the length of the entity body 
+- Support for parsing responses.
 
 ## Eminently-possible future features
 
 - Support for decoding chunked transfers.
 - Support for protocol upgrade.
-- Support for parsing responses.
 
 ## Usage
 
@@ -25,6 +25,7 @@ HttpMachine provides HTTP data through callbacks. To receive these callbacks, im
     public interface IHttpParserHandler
     {
         void OnMessageBegin(HttpParser parser);
+        void OnResponseCode(HttpParser parser, int statusCode, string statusReason);
         void OnMethod(HttpParser parser, string method);
         void OnRequestUri(HttpParser parser, string requestUri);
         void OnFragment(HttpParser parser, string fragment);

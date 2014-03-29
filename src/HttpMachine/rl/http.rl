@@ -30,7 +30,13 @@ http_request_uri = ("*" | absolute_uri | abs_path_query_fragment | authority) >c
 
 http_version = "HTTP/" (digit{1} $version_major) "." (digit{1} $version_minor);
 
+http_response_code = ( digit+ ) >clear $buf %status_code ;
+http_response_phrase = ( ascii -- ("\r" | "\n") )+ >clear $buf %status_reason;
+
+
 http_request_line = (http_crlf $matched_leading_crlf)? http_request_method " " $matched_first_space %leave_first_space %/eof_leave_first_space http_request_uri (" " http_version)? http_crlf;
+
+http_response_line = (http_crlf $matched_leading_crlf)? http_version " " $matched_first_space %leave_first_space %/eof_leave_first_space http_response_code (" " http_response_phrase)? http_crlf >clear $buf %on_response_message;
 
 # not getting fancy with header values, just reading everything until CRLF and calling it good. 
 # thus we don't support line folding. fuck that noise.
@@ -55,7 +61,7 @@ http_header_separator = (":" (" " | "\t")*);
 http_header_value = (http_header_value_text | http_interesting_header_values) >clear $buf %on_header_value;
 http_header = http_header_name http_header_separator <: http_header_value http_crlf;
 
-http_request_headers = http_request_line (http_header)* http_crlf @last_crlf; # %/leave_headers %*leave_headers;
+http_request_headers = (http_request_line | http_response_line) (http_header)* http_crlf @last_crlf; # %/leave_headers %*leave_headers;
 
 main := http_request_headers >message_begin;
 

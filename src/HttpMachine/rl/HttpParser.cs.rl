@@ -46,6 +46,8 @@ namespace HttpMachine
 
         int cs;
         // int mark;
+        int statusCode;
+        string statusReason;
 
         %%{
 
@@ -135,6 +137,23 @@ namespace HttpMachine
 		action on_query_string
 		{
 			del.OnQueryString(this, sb2.ToString());
+		}
+
+		action status_code
+		{
+			statusCode = int.Parse(sb.ToString());
+		}
+
+		action status_reason
+		{
+			statusReason = sb.ToString();
+		}
+
+		action on_response_message
+		{
+			del.OnResponseCode(this, statusCode, statusReason);
+			statusReason = null;
+			statusCode = 0;
 		}
 
         action enter_query_string {
