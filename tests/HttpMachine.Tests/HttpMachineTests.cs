@@ -538,7 +538,7 @@ namespace HttpMachine.Tests
                         }
                         else
                         {
-                            handler = new ResponseHandler();;
+                            handler = new ResponseHandler();
                             parser = new HttpParser((ResponseHandler)handler);
                         }
 
