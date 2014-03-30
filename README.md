@@ -20,7 +20,21 @@ MIT License. See LICENSE.txt.
 
 ## Usage
 
-HttpMachine provides HTTP data through callbacks. To receive these callbacks, implement the `IHttpParserHandler` interface.
+HttpMachine provides HTTP data through callbacks. To receive these callbacks, implement either the IHttpRequestParserDelegate or the IHttpResponseParserDelegate interface.
+
+    public interface IHttpRequestParserDelegate : IHttpParserDelegate
+    {
+        void OnMethod(HttpParser parser, string method);
+        void OnRequestUri(HttpParser parser, string requestUri);
+        void OnPath(HttpParser parser, string path);
+        void OnFragment(HttpParser parser, string fragment);
+        void OnQueryString(HttpParser parser, string queryString);
+    }
+
+    public interface IHttpResponseParserDelegate : IHttpParserDelegate
+    {
+        void OnResponseCode(HttpParser parser, int statusCode, string statusReason); 
+    }
 
     public interface IHttpParserHandler
     {
@@ -39,7 +53,7 @@ HttpMachine provides HTTP data through callbacks. To receive these callbacks, im
 
 Then, create an instance of `HttpParser`. Whenever you read data, execute the parser on the data. The `Execute` method returns the number of bytes successfully parsed. If value is not the same as the length of the buffer you provided, an error occurred while parsing. Make sure you provide a zero-length buffer at the end of the stream, as some callbacks may still be pending.
 
-    var handler = new MyHttpParserHandler();
+    var handler = new MyHttpParserDelegate();
     var parser = new HttpParser(handler);
     
     var buffer = new byte[1024 /* or whatever you like */]
