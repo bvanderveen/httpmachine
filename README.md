@@ -20,8 +20,20 @@ MIT License. See LICENSE.txt.
 
 ## Usage
 
-HttpMachine provides HTTP data through callbacks. To receive these callbacks, implement either the IHttpRequestParserDelegate or the IHttpResponseParserDelegate interface.
+HttpMachine provides HTTP data through callbacks. To receive these callbacks, implement either the `IHttpRequestParserDelegate` or the `IHttpResponseParserDelegate` interface.
 
+
+	// common interface for both requests and responses
+	public interface IHttpParserDelegate
+    {
+        void OnMessageBegin(HttpParser parser);
+        void OnHeaderName(HttpParser parser, string name);
+        void OnHeaderValue(HttpParser parser, string value);
+        void OnHeadersEnd(HttpParser parser);
+        void OnBody(HttpParser parser, ArraySegment<byte> data);
+        void OnMessageEnd(HttpParser parser);
+    }
+    
     public interface IHttpRequestParserDelegate : IHttpParserDelegate
     {
         void OnMethod(HttpParser parser, string method);
@@ -36,22 +48,8 @@ HttpMachine provides HTTP data through callbacks. To receive these callbacks, im
         void OnResponseCode(HttpParser parser, int statusCode, string statusReason); 
     }
 
-    public interface IHttpParserHandler
-    {
-        void OnMessageBegin(HttpParser parser);
-        void OnResponseCode(HttpParser parser, int statusCode, string statusReason);
-        void OnMethod(HttpParser parser, string method);
-        void OnRequestUri(HttpParser parser, string requestUri);
-        void OnFragment(HttpParser parser, string fragment);
-        void OnQueryString(HttpParser parser, string queryString);
-        void OnHeaderName(HttpParser parser, string name);
-        void OnHeaderValue(HttpParser parser, string value);
-        void OnHeadersEnd(HttpParser parser);
-        void OnBody(HttpParser parser, ArraySegment<byte> data);
-        void OnMessageEnd(HttpParser parser);
-    }
 
-Then, create an instance of `HttpParser`. Whenever you read data, execute the parser on the data. The `Execute` method returns the number of bytes successfully parsed. If value is not the same as the length of the buffer you provided, an error occurred while parsing. Make sure you provide a zero-length buffer at the end of the stream, as some callbacks may still be pending.
+Then, create an instance of `HttpParser`. Whenever you read data, execute the parser on the data. The `Execute` method returns the number of bytes successfully parsed. If the returned value is not the same as the length of the buffer you provided, an error occurred while parsing. Make sure you provide a zero-length buffer at the end of the stream, as some callbacks may still be pending.
 
     var handler = new MyHttpParserDelegate();
     var parser = new HttpParser(handler);
